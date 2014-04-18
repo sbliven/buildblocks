@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source $(dirname $0)/../lib/libem.bash
+
+ROOT='root'
+HDF5='hdf5'
+H5HUT='H5hut'
+H5HUT_VERSION="${H5HUT_VERSION}"
+
+function em.pre_configure() {
+	./autogen.sh
+}
+
+function em.configure() {
+	"${EM_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--enable-h5hut \
+		--enable-hdf5 \
+		--enable-root \
+		--with-pic
+}
+
+em.set_group "alternatives.d/compiler" "${COMPILER}/${COMPILER_VERSION}"
+em.set_dependencies \
+	 "root/${ROOT_VERSION}"
+em.load_build_dependencies \
+	"autoconf/${AUTOCONF_VERSION}" \
+	"automake/${AUTOMAKE_VERSION}" \
+	"libtool/${LIBTOOL_VERSION}" \
+	"${COMPILER}/${COMPILER_VERSION}" \
+	"${HDF5}/${HDF5_VERSION}" \
+	"${H5HUT}/${H5HUT_VERSION}" \
+	"${ROOT}/${ROOT_VERSION}"
+em.make_all
+

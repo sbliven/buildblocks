@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	cmake \
+		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+		-DCMAKE_BUILD_TYPE=RELEASE \
+		-DENABLE_ML_SOLVER=TRUE \
+		"${EM_SRCDIR}"
+}
+
+em.add_to_family 'core'
+em.load_family 'hdf5'
+em.set_runtime_dependencies "${COMPILER}" "${MPI}"
+em.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'hdf5' 'H5hut' 'trilinos' 'ippl' 'gsl'
+em.make_all
+
+

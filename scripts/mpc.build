@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	"${EM_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--with-gmp=$GMP_PREFIX \
+		--with-mpfr=$MPFR_PREFIX \
+		--disable-shared \
+		|| exit 1
+}
+
+# use system gcc to compile
+declare -rx CC=gcc
+
+em.set_build_dependencies "gmp" "mpfr"
+em.make_all
+

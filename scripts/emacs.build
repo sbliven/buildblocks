@@ -1,0 +1,33 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+build_dependencies="${COMPILER}"
+
+case ${OS} in
+Darwin )
+	configure_args='--with-ns'
+	build_dependencies=''
+	CC=''
+	CXX=''
+	COMPILER=''
+	COMPILER_VERSION=''
+	function em.post_install() {
+		mkdir -p "${PREFIX}"
+		cp -rv "${EM_BUILDDIR}"/nextstep/Emacs.app "${PREFIX}"
+	}
+	;;
+*)
+	;;
+esac
+
+function em.configure() {
+	"${EM_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		${configure_args} \
+		|| exit 1
+}
+
+em.set_build_dependencies ${build_dependencies}
+em.make_all
+

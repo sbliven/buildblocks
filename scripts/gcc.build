@@ -1,0 +1,31 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	"${EM_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--enable-languages=c,c++,objc,obj-c++,lto,fortran \
+		--with-gmp="${GMP_PREFIX}" \
+		--with-mpfr="${MPFR_PREFIX}" \
+		--with-mpc="${MPC_PREFIX}" \
+		--enable-lto \
+		--disable-multilib \
+		--with-pkgversion="PSI Environment Module $COMPILER $COMPILER_VERSION" \
+		|| exit 1
+}
+
+function em.install_doc() {
+	install -m 0444 \
+		COPYING* \
+		NEWS \
+		README \
+		"${DOCDIR}"
+}
+
+# use system gcc to compile
+declare -rx CC=gcc
+
+em.set_build_dependencies "gmp" "mpfr" "mpc"
+em.make_all
+

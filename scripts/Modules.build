@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source "$(dirname $0)/../config/environment.bash"
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	"${EM_SRCDIR}"/configure \
+		--prefix="${EM_BINDIR}/core" \
+		--with-module-path="${EM_MODULEROOT_PATH}" \
+		|| exit 1
+}
+# fake module command
+module() {
+    :
+}
+
+# use system gcc to compile
+declare -rx CC=gcc
+
+em.make_all

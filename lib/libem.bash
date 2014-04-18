@@ -1,0 +1,320 @@
+
+declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
+
+declare -r OS=$(uname -s)
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin
+
+source "${SHLIBDIR}/lib.bash"
+
+# the module name might be set in the build script(!)
+if [[ -z $P ]]; then
+	P=$(basename $0)
+	P=${P%.*}
+fi
+
+# unset the version of the module
+_P=$(echo $P | tr [:lower:] [:upper:])
+_V=${_P}_VERSION
+unset ${_V}
+
+declare -rx CORE_VERSIONS_DIR="${SHLIBDIR}/../config/core.d"
+
+declare -i  JOBS=3
+
+#while read _name _version; do
+#	[[ -z ${_name} ]] && continue
+#	[[ -z ${_version} ]] && continue
+#	[[ "${_name:0:1}" == '#' ]] && continue
+#	_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
+#	eval ${_NAME}_VERSION=$_version 
+#done < "${VERSIONS}"
+
+DEBUG_ON=''
+FORCE_REBUILD=''
+ENVIRONMENT_ARGS=''
+while (( $# > 0 )); do
+	case $1 in
+	-j )
+		JOBS=$2
+		shift
+		;;
+	-v )
+		DEBUG_ON=':'
+		;;
+	-f | --force-rebuild )
+		FORCE_REBUILD=':'
+		;;
+	* )
+		if [[ $1 =~ = ]]; then
+			eval $1
+			ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
+		else
+			V=$1
+		fi
+		;;
+	esac
+	shift
+done
+
+declare -rx EM_BASEDIR=$(abspath $SHLIBDIR/..)
+
+source "${EM_BASEDIR}/config/environment.bash"
+
+declare -x  PREFIX=''
+declare -x  DOCDIR=''
+declare -x  EM_FAMILY=''
+declare -x  EM_MODULENAME=''
+
+declare -x  EM_TMPDIR="${EM_BASEDIR}/tmp"
+declare -x  EM_SRCDIR=''
+declare -x  EM_BUILDDIR=''
+declare -x  CONFIG_DIR="${EM_BASEDIR}/config"
+
+declare -x  EM_BUILD_DEPENDENCIES
+
+declare -x C_INCLUDE_PATH
+declare -x CPLUS_INCLUDE_PATH
+declare -x CPP_INCLUDE_PATH
+declare -x LIBRARY_PATH
+declare -x LD_LIBRARY_PATH
+declare -x DYLD_LIBRARY_PATH
+
+module purge
+
+#unset _P _V
+
+
+[[ $DEBUG_ON ]] && trap 'eval echo \\"$BASH_COMMAND\\"' DEBUG
+
+function em.set_build_dependencies() {
+	EM_BUILD_DEPENDENCIES=("$@")
+}
+
+function _load_build_dependencies() {
+	for m in "${EM_BUILD_DEPENDENCIES[@]}"; do
+		[[ -z $m ]] && continue
+		if [[ ! $m =~ "*/*" ]]; then
+		    local _V=${m^^}_VERSION
+		    m=$m/${!_V}
+		fi
+		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
+			echo "Oops: Module \"$m\" not available"
+			return 1
+		fi
+		module load "$m"
+	done
+}
+
+function em.load_family() {
+	if [[ -z ${1} ]]; then
+		printf "${FUNCNAME}: Missing family argument"
+		exit 42
+	fi
+	if [[ ! -d ${EM_ETCDIR}/${1} ]]; then
+		printf "${FUNCNAME}: ${1}: family does not exist."
+		exit 42
+	fi
+
+	for f in "${CONFIG_DIR}/${1}.d/"*.conf; do
+		source "${f}"
+	done
+	eval ${ENVIRONMENT_ARGS}
+}
+
+function em.add_to_family() {
+	EM_FAMILY=$1
+	source "${CONFIG_DIR}/versions.conf"
+	em.load_family "$1"
+}
+
+function em.set_runtime_dependencies() {
+	EM_DEPENDENCIES=("$@")
+}
+
+function _write_runtime_dependencies() {
+	local -r fname="${PREFIX}/.dependencies"
+	local dep
+	echo -n "" > "${fname}"
+	for dep in "${EM_DEPENDENCIES[@]}"; do
+		[[ -z $dep ]] && continue
+		if [[ ! $dep =~ "*/*" ]]; then
+		    local _V=${dep^^}_VERSION
+		    dep=$dep/${!_V}
+		fi
+		echo "${dep}" >> "${fname}"
+	done
+}
+
+function _write_build_dependencies() {
+	local -r fname="${PREFIX}/.build_dependencies"
+	local dep
+	echo -n "" > "${fname}"
+	for dep in "${EM_BUILD_DEPENDENCIES[@]}"; do
+		[[ -z $dep ]] && continue
+		if [[ ! $dep =~ "*/*" ]]; then
+		    local _V=${dep^^}_VERSION
+		    dep=$dep/${!_V}
+		fi
+		echo "${dep}" >> "${fname}"
+	done
+}
+
+function _set_env() {
+	C_INCLUDE_PATH=''
+	CPLUS_INCLUDE_PATH=''
+	CPP_INCLUDE_PATH=''
+	LIBRARY_PATH=''
+	LD_LIBRARY_PATH=''
+	DYLD_LIBRARY_PATH=''
+
+	if [[ -z ${EM_FAMILY} ]]; then
+		em.add_to_family 'core'
+	fi
+
+	# overwrite environment variables with values we got on the cmd line
+	eval ${ENVIRONMENT_ARGS}
+
+	# this allows us to specify the version as PKGNAME_VERSION=1.2.3 on the cmd-line
+        if [[ -z $V ]]; then
+		V=$(eval echo \$${_P}_VERSION)
+	fi
+
+	# oops, we need a version
+	if [[ -z $V ]]; then
+		die 1 "$P: Missing version."
+	fi
+	EM_SRCDIR="${EM_TMPDIR}/src/${P/_serial}-$V"
+	EM_BUILDDIR="${EM_TMPDIR}/build/$P-$V/$COMPILER/$COMPILER_VERSION"
+
+	declare -rx DOWNLOADDIR="${EM_BASEDIR}/Downloads"
+
+	# build module name
+	case ${EM_FAMILY} in
+	    core )
+		EM_MODULENAME="${P}/${V}"
+		;;
+	    compiler )
+		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${P}/${V}"
+		;;
+	    mpi )
+		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${P}/${V}"
+		;;
+	    hdf5 )
+		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${HDF5}/${HDF5_VERSION}/${P}/${V}"
+		;;
+	    hdf5_serial )
+		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5/${HDF5_SERIAL_VERSION}/${P}/${V}"
+		;;
+
+	esac
+
+	# set PREFIX of module
+	PREFIX="${EM_BINDIR}/${EM_FAMILY}/${EM_MODULENAME}"
+
+	DOCDIR="${PREFIX}/share/doc/$P"
+
+	TARBALL="${DOWNLOADDIR}/${P/_serial}-$V.tar"
+	if [[ -r $TARBALL.gz ]]; then
+		TARBALL=${TARBALL}.gz
+		_UNTAR_FLAGS='xvzf'
+	elif [[ -r ${TARBALL}.bz2 ]]; then
+		TARBALL=${TARBALL}.bz2
+		_UNTAR_FLAGS='xvjf'
+	else
+		printf "${FUNCNAME}: tarball for ${TARBALL} not found."
+		exit 43
+	fi
+}
+
+function em.set_env() {
+	:
+}
+
+function em.prep() {
+
+	# untar sources
+	if [[ ! -d ${EM_SRCDIR} ]]; then
+		mkdir -p "${EM_TMPDIR}/src"
+		(cd "${EM_TMPDIR}/src" && tar ${_UNTAR_FLAGS} "${TARBALL}")
+	fi
+
+	# create build directory
+	mkdir -p "${EM_BUILDDIR}"
+
+}
+
+function em.pre_configure() {
+	:
+}
+
+function em.configure() {
+	${EM_SRCDIR}/configure \
+		--prefix="${PREFIX}"
+}
+
+function em.build() {
+	make -j${JOBS}
+}
+
+function em.install() {
+	make install
+}
+
+function em.post_install() {
+	:
+}
+
+function em.install_doc() {
+	:
+}
+
+function _set_link() {
+	(mkdir -p "${EM_MODULEROOT_PATH}"
+	cd "${EM_MODULEROOT_PATH}"
+	local _path="${EM_FAMILY}/${EM_MODULENAME%/*}"
+	mkdir -p "${_path}"
+	cd "${_path}"
+
+	local x
+	IFS='/' x=(${_path})
+	local -r _target="../"$(eval printf "../%.s" {1..${#x[@]}})${EM_ETCDIR##*/}/"${EM_FAMILY}/${P}"
+	ln -fs "${_target}" "${EM_MODULENAME##*/}"
+	)
+}
+
+function _cleanup_build() {
+    (
+	[[ -d /${EM_BUILDDIR} ]] || return 0
+	cd "/${EM_BUILDDIR}";
+	if [[ $(pwd) != / ]]; then
+		echo "Cleaning up $(pwd)"
+		rm -rf *
+	fi
+    );
+}
+
+function em.make_all() {
+	_set_env
+	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
+		_load_build_dependencies
+		em.prep
+		cd "${EM_SRCDIR}"
+		em.pre_configure
+		cd "${EM_BUILDDIR}"
+		em.configure
+		em.build
+		em.install
+		em.post_install
+		cd "${EM_SRCDIR}"
+		mkdir -p "${DOCDIR}"
+		em.install_doc
+	else
+ 		echo "Not rebuilding $P-$V ..."
+	fi
+	_write_runtime_dependencies
+	_write_build_dependencies
+	_set_link
+	_cleanup_build
+}
+
