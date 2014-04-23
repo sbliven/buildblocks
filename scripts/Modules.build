@@ -6,7 +6,7 @@ source "$(dirname $0)/../lib/libem.bash"
 function em.configure() {
 	"${EM_SRCDIR}"/configure \
 		--prefix="${EM_BINDIR}/core" \
-		--with-module-path="${EM_MODULEROOT_PATH}" \
+		--with-module-path="${MODULEPATH_ROOT}" \
 		|| exit 1
 }
 # fake module command
