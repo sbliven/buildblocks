@@ -14,6 +14,7 @@ function em.configure() {
 # use system gcc to compile
 declare -rx CC=gcc
 
+em.add_to_family "core"
 em.set_build_dependencies "gmp" "mpfr"
 em.make_all
 

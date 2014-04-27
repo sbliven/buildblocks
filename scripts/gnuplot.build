@@ -20,5 +20,6 @@ function em.install_doc() {
  		"${DOCDIR}"
 }
 
+em.add_to_family "core"
 em.set_build_dependencies "${COMPILER}"
 em.make_all

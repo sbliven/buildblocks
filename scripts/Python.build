@@ -9,6 +9,6 @@ function em.configure() {
 }
 
 em.set_build_dependencies "${COMPILER}"
-em.set_env
+em.add_to_family "core"
 em.make_all
 

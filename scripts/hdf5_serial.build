@@ -12,7 +12,7 @@ function em.configure() {
 		|| exit 1
 }
 
-em.set_family "compiler"
+em.add_to_family "compiler"
 em.set_build_dependencies "${COMPILER}"
 em.make_all
 
