@@ -183,8 +183,12 @@ function _load_build_dependencies() {
 		    m=$m/${!_V}
 		fi
 		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
-			echo "Oops: Module \"$m\" not available"
-			return 1
+			echo "Module \"$m\" not available, trying to build it..."
+			"${SCRIPTDIR}/${m/\/*}"
+			if -z $(module avail "$m" 2>&1); then
+				echo "Oops: Building module \"$m\" failed..."
+				exit 1
+			fi
 		fi
 		echo "Loading module: $m"
 		module load "$m"
