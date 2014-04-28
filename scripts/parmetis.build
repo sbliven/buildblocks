@@ -52,5 +52,5 @@ em.add_to_family "mpi"
 em.set_runtime_dependencies "${COMPILER}" "${MPI}"
 em.set_build_dependencies "${COMPILER}" "${MPI}"
 em.make_all
-
+em.cleanup_src
 
