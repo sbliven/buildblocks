@@ -1,0 +1,477 @@
+#+TITLE Project Environment Modules
+#+TODO: TODO(t) IN-PROGRESS(p) WAITING(w) | DONE(d) STOPPED(s)
+# Environment_Modules_Project.org 
+
+
+* Request for Comments: Environment Modules at PSI  
+
+Achim Gsell, Valeri MArkushin, Hans Christian Stadler
+
+Scientific Computing, AIT, PSI
+
+2014-04-28 
+
+
+* Introduction 
+
+This document describes the requirements for a new implementation of 
+*environment modules* at PSI that should address known problems with the 
+present implementation based on the classical TCL modules [[[env_modules_tcl]]].  
+A detailed overview of suggested solutions was presented in 
+the talk [[[env_modules_psi]]] by Achim.  
+
+The details of the specification are described in Section [[[Specification]]]. 
+The draft of design is presented in Section [[[Design]]].    
+
+There are two readily available candidates to meet the requrements of this project: 
+the extended version of TCL modules  [[[env_modules_psi]]] and the Lua based Lmod [[[lmod]]]. 
+The implementation proposal is summarized in Section [[[Implementation]]].  
+The implementation detailes will be written when the specifications are 
+fixed and a genelal agreement concerning the design is reached.   
+
+The tecnical details concerning building specific software packages are mostly 
+beyond the scope of this document: here we are interested only in the minimum and 
+complete set of environment variables and dependencies required to provide 
+and use a particular package.   
+
+Our goal is to provide the specifications and design that make the job of 
+maintaners easier and staightforward.   
+
+
+* IN-PROGRESS Specification 
+<<Specification>>
+
+Since we have a work in progress, we call it *specification*, not evaluation. 
+
+** IN-PROGRESS Must Preserve the Core Functionality of Traditional Modules :OK:
+
+The essential (to be specified) tradinional *module* *subcommands* *must* be supported. 
+Both TCL and Lua modules must meet this requirement. 
+It is desirable to support all traditional subcommands. 
+
+*** IN-PROGRESS The TCL module subcommands
+
+#+BEGIN_EXAMPLE
+  module help
+
+  Modules Release 3.2.10 2012-12-21 (Copyright GNU GPL v2 1991):
+
+  Usage: module [ switches ] [ subcommand ] [subcommand-args ]
+
+Switches:
+	-H|--help		this usage info
+	-V|--version		modules version & configuration options
+	-f|--force		force active dependency resolution
+	-t|--terse		terse    format avail and list format
+	-l|--long		long     format avail and list format
+	-h|--human		readable format avail and list format
+	-v|--verbose		enable  verbose messages
+	-s|--silent		disable verbose messages
+	-c|--create		create caches for avail and apropos
+	-i|--icase		case insensitive
+	-u|--userlvl <lvl>	set user level to (nov[ice],exp[ert],adv[anced])
+
+  Available SubCommands and Args:
+	+ add|load		modulefile [modulefile ...]
+	+ rm|unload		modulefile [modulefile ...]
+	+ switch|swap		[modulefile1] modulefile2
+	+ display|show		modulefile [modulefile ...]
+	+ avail			[modulefile [modulefile ...]]
+	+ use [-a|--append]	dir [dir ...]
+	+ unuse			dir [dir ...]
+	+ update
+	+ refresh
+	+ purge
+	+ list
+	+ clear
+	+ help			[modulefile [modulefile ...]]
+	+ whatis		[modulefile [modulefile ...]]
+	+ apropos|keyword	string
+	+ initadd		modulefile [modulefile ...]
+	+ initprepend		modulefile [modulefile ...]
+	+ initrm		modulefile [modulefile ...]
+	+ initswitch		modulefile1 modulefile2
+	+ initlist
+	+ initclear
+#+END_EXAMPLE 
+
+
+*** IN-PROGRESS The Lmod module subcommands
+
+#+BEGIN_EXAMPLE
+
+#+END_EXAMPLE
+
+
+
+** DONE Must Control the Availability of Modules Subject to Current State and Dependencies 
+   CLOSED: [2014-04-28 Mon 10:49]
+
+The *Module Hierarchy* section has been moved to [[[DesignProposal]]].
+
+*** DONE Must support SW Dependencies 
+    CLOSED: [2014-04-28 Mon 10:46]
+
+
+*** DONE Desirable to Support HW and OS Constaints
+    CLOSED: [2014-04-28 Mon 10:47]
+
+
+*** DONE Desirable to Support Licensing Constaints 
+    CLOSED: [2014-04-28 Mon 10:48]
+
+Only nonfloating licenses will be taken into account. 
+
+
+** IN-PROGRESS Settings for Standard and Application Specific Environment Variables 
+
+*** DONE Must Export a Predefined Subset of POSIX Standard and Other Common Environment Variables
+    CLOSED: [2014-04-28 Mon 10:55]
+
+Every module that *has effect* on the following POSIX standard environment variables 
+*must explicitly export* them:
+#+BEGIN_EXAMPLE
+  PATH
+  LD_LIBRARY_PATH
+  MANPATH
+#+END_EXAMPLE  
+
+FIXME (non-POSIX, e.g. common GCC shared by many other applications):  
+#+BEGIN_EXAMPLE
+  C_INCLUDE_PATH
+  ...
+#+END_EXAMPLE
+
+
+*** IN-PROGRESS Should Export Package- or Vendor-Defined Environment Variables
+
+Each module should set the environment variables that make its use easier 
+for the user without additional configuration.  
+
+Special care should be taken to the interplay of the Intel, PGI, and GCC compilers, 
+scientific libraries, and Python.  
+
+The details for specific packages must be discussed with future maintainers.
+
+Exaples follow. 
+
+**** TODO GCC Specific Environment Varaibales
+
+FIXME: 
+#+BEGIN_EXAMPLE
+  CC=gcc
+  CXX=g++
+  FC=gfort
+  
+  CFLAGS
+  FFLAGS
+
+  LIBRARY_PATH
+#+END_EXAMPLE
+
+
+**** TODO GSL Specific Environment Varaibales 
+
+#+BEGIN_EXAMPLE
+  GSL_HOME
+
+  -I$GSL_HOME/include -L$GSL_HOME/lib -l...
+#+END_EXAMPLE
+
+
+**** TODO HDF5 Specific Environment Varaibales
+
+#+BEGIN_EXAMPLE
+  HDF5_DIR
+#+END_EXAMPLE
+
+
+**** TODO Intel Specific Environment Varaibales
+
+Set the following variavbles for Intel compilers and their dependencies: 
+
+#+BEGIN_EXAMPLE
+   CPATH
+   GDBSERVER_MIC
+   GDB_CROSS
+   IDB_HOME
+   INCLUDE
+   INTEL_LICENSE_FILE
+   IPPROOT
+   LD_LIBRARY_PATH
+   LIBRARY_PATH
+   MANPATH
+   MIC_LD_LIBRARY_PATH
+   MIC_LIBRARY_PATH
+   MKLROOT
+   MKL_INCLUDE
+   MKL_LIBRARY_PATH
+   NLSPATH
+   PATH
+   TBBROOT
+   VTUNE_AMPLIFIER_XE_2013_DIR
+#+END_EXAMPLE
+
+
+**** TODO MPICH2 Specific Environment Varaibales 
+
+
+FIXME
+#+BEGIN_EXAMPLE
+  MPICH_DIR
+#+END_EXAMPLE
+
+
+**** TODO OpenMPI Specific Environment Varaibales 
+
+FIXME
+#+BEGIN_EXAMPLE  
+  OMPI_CC=mpicc
+  OMPI_CXX=mpic++
+  OMPI_F77=mpif77
+  OMPI_FC=mpif90
+# after v.1.7:
+  OMPI_FC=mpifort
+#+END_EXAMPLE
+
+To be dicussed: 
+#+BEGIN_EXAMPLE
+  MPI_COMPILE_FLAGS
+  MPI_LINK_FLAGS
+
+  MPI_COMPILE_FLAGS = $(shell mpicc --showme:compile)
+  MPI_LINK_FLAGS = $(shell mpicc --showme:link)
+
+  # Examples:
+
+  mpicc --showme:compile
+-I/opt/mpi/openmpi-1.6.5-gcc-4.8.2-compat/include -pthread
+  mpicc --showme:link
+-pthread -L/opt/mpi/openmpi-1.6.5-gcc-4.8.2-compat/lib -lmpi -ldl -lm -lnuma -Wl,--export-dynamic -lrt -lnsl -lutil -lm -ldl
+#+END_EXAMPLE
+
+
+**** TODO PGI Specific Environment Varaibales
+
+
+#+BEGIN_EXAMPLE
+   LD_LIBRARY_PATH
+   LM_LICENSE_FILE
+   PATH
+   MANPATH
+   PGI
+   PGI_INCLUDE
+   PGI_LIB
+   PGI_LIBS0
+   PGRSH
+#+END_EXAMPLE
+
+
+**** TODO System Specific Environment Variables
+
+#+BEGIN_EXAMPLE
+  TMPDIR
+#+END_EXAMPLE
+
+If /tmp may be not large enough (like on Merlin4), set suitable TMPDIR, e.g.: 
+#+BEGIN_EXAMPLE
+  TMPDIR=/scratch/tmp
+  # where /scratch ->/home/scratch 
+#+END_EXAMPLE
+
+
+
+*** IN-PROGRESS Should Export Module Identifiers
+
+The goal is to support generic module configuration and scripts.   
+
+FIXME: examples.
+
+
+
+** IN-PROGRESS Must Support both Local and Network Installation
+
+*** IN-PROGRESS Must Support Combinations of Local and Network Installations
+
+It must be possible to install locally any selfconsistent subset of environment modules. 
+The netwok modules should be hidden or can be made hidden when the network file system is not available. 
+The local modules should have priority by default. 
+
+It may be possible to select whether the locally installed modules override the 
+corresponding network modules when the latter are available.  
+
+
+*** DONE Top Level Directory				    :PROVIDER_PREFIX:
+    CLOSED: [2014-04-28 Mon 11:22]
+
+The top level directory is */opt/<provider>*, where *<provider>=psi*, in accordance with [[[FHS]]]. 
+The top level directory may be a link to a local or network file system. 
+See [[[TLD]]] for the PSI specific implementation details.  
+
+
+
+** DONE May Support Runtime Environments when Complete Development Environments are not Desirable 
+   CLOSED: [2014-04-28 Mon 11:24]
+
+The end users may wish to run applications without loading all modules required to build these applications. 
+To this end, run-time modules may be provided if the module maintainer decides so. 
+
+
+** DONE May Support HW Compartibility Requirements
+   CLOSED: [2014-04-28 Mon 11:25]
+
+This functionality should allow one to hide environment modules that lack certain capabilities   
+on a given HW platform.  For example, all 64-bit applications should be hidden on a 32-bit system. 
+A less trivial example is checking the CPU flags and hiding the applications compiled with 
+options that are not supported by the CPU.  
+
+If possible, make it "should support" requirement.  
+
+
+** DONE May Support Optional Optimization and Development Requirements
+   CLOSED: [2014-04-28 Mon 11:27]
+
+There may be a mechanism to hide (default) or unhide modules, which are not intended for general use, 
+e.g. of development and testing type, from the standard workflow.   
+
+
+** DONE Must Define Minimum System Requirements to Support Generic Modules
+   CLOSED: [2014-04-28 Mon 11:42]
+
+Example: CPU family XXX and SL6 or higher on 64-bit arch OR MacOS XYZ OR ...   
+
+
+* IN-PROGRESS Design Proposal 
+<<DesignProposal>>
+
+** IN-PROGRESS Must Support Module Hierarchy 
+
+
+*** IN-PROGRESS Must Support the Hierarchy Compiler-MPI-Application 
+
+As defined in the reference implementations of the extended TCL modules [[[env_modules_psi]]] and Lmod [[[lmod]]].  
+
+
+*** IN-PROGRESS Must Support family Functionality 
+
+As defined in the reference implementations of the extended TCL modules [[[env_modules_psi]]] and Lmod [[[lmod]]].  
+
+
+*** IN-PROGRESS May/Should Support Subcommand swap on Upper Levels of Module Hierarchy 
+
+As defined in the reference implementations of Lmod [[[lmod]]].  
+
+
+
+
+** IN-PROGRESS Molule Command 
+
+Both the extended TCL modules and Lua modules (Lmod) can be supported.  
+The user will have a choice of default module command and will be able 
+to swith to the alternative if both implementations are available. 
+
+
+*** IN-PROGRESS Extended TCL Modules 
+
+See  [[[env_modules_psi]]] and the reference implementations on Merlin4 (FIXME) 
+and MacOS (FIXME). 
+
+The extended TCL modules cannot not support Lua modules.  
+
+
+*** IN-PROGRESS Lua Modules (Lmod)
+
+See [[[lmod]]] and the reference implementaion on Merlin4 (FIXME). 
+
+The Lua modules may support (extended) TCL modules. 
+
+
+
+** IN-PROGRESS File System Layout  
+
+
+*** IN-PROGRESS Top Level Directory			    :OPT_PROVIDER=/opt/psi:
+<<TLD>>
+
+The top level directory for the PSI implememtation is */opt/psi* in accordance with [[[FHS]]].
+: PROVIDER_PREFIX=/opt/psi
+
+The top level directory may be a link to a local file system or a link to AFS (GPFS). 
+
+
+*** IN-PROGRESS Modulefile Root Directory. 
+
+There must be *only one* modulefile root directory MODULEPATH_ROOT within a given implementation 
+of environment modules:
+
+: MODULEPATH_ROOT=$OPT_PROVIDER/modulefiles
+
+For the PSI implementation *MODULEPATH_ROOT=/opt/psi/modulefiles*. 
+
+
+*** IN-PROGRESS The Layout of Subdirectories Used for Configuration of Environment Modules
+
+FIXME
+
+
+*** IN-PROGRESS The Layout of Subdirectories Used for Software Installation 
+
+FIXME
+
+
+**** IN-PROGRESS Recommended Layouts 
+    
+FIXME
+
+
+** TODO Environment Variables Reserved for Internal Use 
+
+FIXME
+#+BEGIN_EXAMPLE
+  PSI_COMPILER
+  PSI_COMPILER_VERSION
+  PSI_MPI
+  PSI_MPI_KIND
+  PSI_MPI_VERSION
+#+END_EXAMPLE
+
+
+** TODO Mainterners of Environment Modules and Their Responsibilities 
+
+FIXME
+
+
+** TODO Reference Implementations 
+
+FIXME
+
+
+
+* TODO Implementation Proposal 
+<<<Implementation>>
+
+FIXME
+
+** IN-PROGRESS Must Provide Build Environment for All Supported Computing Environments 
+ 
+** IN-PROGRESS Build Environment Should Support Regression Tests
+
+Should be done by maintaners. 
+
+
+** DONE Build and Test Environment for Each Module Must Be Available for All Maintaners
+   CLOSED: [2014-04-28 Mon 11:48]
+
+There must be no duplication of efforts.  
+Every build must be reproducable. 
+
+
+** IN-PROGRESS Should Provide Facility for Phasing Out Obsolete and Buggy Modules 
+
+
+* IN-PROGRESS References 
+
+   1. <<env_modules_tkl>> http://modules.sourceforge.net/ 
+   2. <<env_modules_psi>> https://intranet.psi.ch/AIT/EnvironmentModules 
+   3. <<lmod>> https://www.tacc.utexas.edu/tacc-projects/lmod  
+   4. <<FHS>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
