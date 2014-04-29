@@ -9,7 +9,7 @@ Achim Gsell, Valeri MArkushin, Hans Christian Stadler
 
 Scientific Computing, AIT, PSI
 
-2014-04-28 
+2014-04-29 
 
 
 * Introduction 
@@ -128,7 +128,7 @@ Only nonfloating licenses will be taken into account.
 *** DONE Must Export a Predefined Subset of POSIX Standard and Other Common Environment Variables
     CLOSED: [2014-04-28 Mon 10:55]
 
-The following environment variable *must be set* by all modules:
+The following environment variables *must be set* by all modules:
 #+BEGIN_EXAMPLE
   <NAME>_VERSION
   <NAME>_PREFIX
@@ -137,12 +137,27 @@ The following environment variable *must be set* by all modules:
 #+END_EXAMPLE
 
 Every module that *has effect* on the following POSIX standard environment variables 
-*must explicitly export* them:
+(FIXME) *must explicitly export* them:
 #+BEGIN_EXAMPLE
   PATH
   LD_LIBRARY_PATH
   MANPATH
 #+END_EXAMPLE  
+
+See [[[Open_Group_Base_Specifications_EM]]] for the list of variables that are 
+frequently exported by widely used command interpreters and applications. 
+In particular, the following variables are considered as *widely used*:
+#+BEGIN_EXAMPLE
+  CC
+  CFLAGS
+  FC
+  FFLAGS
+  LFLAGS
+  MAKEFLAGS
+  MANPATH
+  PATH
+#+END_EXAMPLE 
+
 
 FIXME (non-POSIX, e.g. common GCC shared by many other applications)
 if corresponding path exists:  
@@ -156,15 +171,49 @@ if corresponding path exists:
   LD_LIBRARY_PATH
 #+END_EXAMPLE
 
+
 *** IN-PROGRESS Must Export Family Environment Variables
+<<Family>>
 
-<FAMILY>=<implementation>
-<FAMILY>_VERSION=<implementation-version>
+#+BEGIN_EXAMPLE
+  <FAMILY>=<implementation>
+  <FAMILY>_VERSION=<implementation-version>
+  <FAMILY>_DIR=<implementation-prefix>
+#+END_EXAMPLE
 
+Example:
 #+BEGIN_EXAMPLE
   MPI=openmpi
   MPI_VERSION=1.8.0
 #+END_EXAMPLE
+
+This would replace [[[ModuleIdentifiers]]] if the following variables are used: 
+#+BEGIN_EXAMPLE
+  COMPILER
+  COMPILER_VERSION
+  COMPILER_DIR
+  MPI
+  MPI_VERSION
+  MPI_DIR 
+#+END_EXAMPLE
+
+
+*** IN-PROGRESS Should Export Module Identifiers
+<<ModuleIdentifiers>>
+
+This may be merged with [[[Family]]].
+
+The goal is to support generic module configuration and scripts.   
+#+BEGIN_EXAMPLE
+  PSI_COMPILER
+  PSI_COMPILER_VERSION
+  PSI_COMPILER_DIR
+  PSI_MPI
+  PSI_MPI_VERSION
+  PSI_MPI_DIR
+#+END_EXAMPLE
+
+
 
 **** IN-PROGRESS Must Export Environment Variables for Compiler Implementations
 
@@ -177,20 +226,10 @@ if corresponding path exists:
   FORTRAN
 #+END_EXAMPLE
 
+
 **** IN-PROGRESS Must Export Environment Variables for MPI Implementations
 
-Set environment variables to corresponding MPI wrappers
-#+BEGIN_EXAMPLE
-  CC
-  CXX
-  F77
-  F90
-  FC
-  FORTRAN
-#+END_EXAMPLE
-
-or
-
+The environment variables for MPI wrappers begin with MPI:
 #+BEGIN_EXAMPLE
   MPICC
   MPICXX
@@ -198,10 +237,40 @@ or
   MPIF90
   MPIFC
   MPIFORTRAN
+  MPIEXEC
+  MPIRUN
 #+END_EXAMPLE
 
-Note: names without underscore seems to be more common and more
+OR/AND  FIXME
+The environment variables for MPI wrappers begin with MPI_ [[[ANL_MPICH2]]]:
+#+BEGIN_EXAMPLE
+  MPI_CC
+  MPI_CXX
+  MPI_F77
+  MPI_F90
+  MPI_FC
+  MPI_FORTRAN
+  MPI_EXEC
+  MPI_RUN
+  MPI_INC
+  MPI_LIBS
+#+END_EXAMPLE
+
+Note by Achim: names without underscore seems to be more common and more
 commonly uses be autotools and cmake.
+
+|-------------------+---------------+---------------|
+| Search term       | "MPICC=mpicc" | "MPICC=mpicc" |
+|-------------------+---------------+---------------|
+| Nunber of results |          4490 | 922           |
+| Reference         |               | [[[ANL_MPICH2]]]  |
+|-------------------+---------------+---------------|
+
+
+The environment variables should allow to distiguish between MPI wrappers  
+(e.g. MPICC) and ordinary compilers (e.g. CC). 
+
+
 
 *** IN-PROGRESS Should Export Package- or Vendor-Defined Environment Variables
 
@@ -212,8 +281,8 @@ Special care should be taken to the interplay of the Intel, PGI, and GCC compile
 scientific libraries, and Python.  
 
 The details for specific packages must be discussed with future maintainers.
+Some examples are shown below. 
 
-Examples follow. 
 
 **** TODO Intel Specific Environment Varaibales
 
@@ -246,29 +315,41 @@ Set the following variavbles for Intel compilers and their dependencies:
 Are there specific environment variables? Or are the more generic
 family variables sufficient?
 
-**** TODO OpenMPI Specific Environment Varaibales 
-See comment in aboce section.
 
-To be dicussed: 
+**** IN-PROGRESS OpenMPI Specific Environment Varaibales 
+
+According to [[[Open_MPI_wrappers]]], the following variables should be set 
 #+BEGIN_EXAMPLE
-  MPI_COMPILE_FLAGS
-  MPI_LINK_FLAGS
+  MPICC=mpicc
+  MPICXX=mpic++
+  # MPICXX=mpiCC
+  # MPICXX=mpicxx
+  MPIF77=mpif77
+  MPIF90=mpif90
+  MPIFC=mpifort
+  MPIFORTRAN=mpifort
+#+END_EXAMPLE
 
+
+The variables MPI_COMPILE_FLAGS and MPI_LINK_FLAGS should not be controlled by 
+the environment modules.  These variables can be assigned, if needed, by the users 
+[[[Open_MPI_without-wrappers]]]: 
+#+BEGIN_EXAMPLE
   MPI_COMPILE_FLAGS = $(shell mpicc --showme:compile)
   MPI_LINK_FLAGS = $(shell mpicc --showme:link)
-
+  
+my_app: my_app.c
+        $(CC) $(MPI_COMPILE_FLAGS) my_app.c $(MPI_LINK_FLAGS) -o my_app
+  
   # Examples:
-
   mpicc --showme:compile
 -I/opt/mpi/openmpi-1.6.5-gcc-4.8.2-compat/include -pthread
   mpicc --showme:link
 -pthread -L/opt/mpi/openmpi-1.6.5-gcc-4.8.2-compat/lib -lmpi -ldl -lm -lnuma -Wl,--export-dynamic -lrt -lnsl -lutil -lm -ldl
 #+END_EXAMPLE
-Note (Achim): no! Never need this ...
 
 
 **** TODO PGI Specific Environment Varaibales
-
 
 #+BEGIN_EXAMPLE
    LD_LIBRARY_PATH
@@ -283,7 +364,8 @@ Note (Achim): no! Never need this ...
 #+END_EXAMPLE
 
 
-**** TODO System Specific Environment Variables
+**** STOPPED System Specific Environment Variables
+     CLOSED: [2014-04-29 Tue 16:13]
 
 #+BEGIN_EXAMPLE
   TMPDIR
@@ -294,27 +376,23 @@ If /tmp may be not large enough (like on Merlin4), set suitable TMPDIR, e.g.:
   TMPDIR=/scratch/tmp
   # where /scratch ->/home/scratch 
 #+END_EXAMPLE
-Note (Achim): TMPDIR *should not* be changed by an environment module
+Note (Achim): TMPDIR *should not* be changed by an environment module.
+Valeri: agreed. 
 
 
-*** IN-PROGRESS Should Export Module Identifiers
-
-The goal is to support generic module configuration and scripts.   
-
-FIXME: examples.
-
-
-
-** IN-PROGRESS Must Support both Local and Network Installation
+** IN-PROGRESS Must Support Modules at Multiple Locations (Local and Network Installations)
 
 *** IN-PROGRESS Must Support Combinations of Local and Network Installations
 
-It must be possible to install locally any selfconsistent subset of
-environment modules. The user can select which installation he wants
-to use.  
+It must be possible to install locally any selfconsistent subset of environment modules.  
+
+The user should be able to select which installation is used if multiple installations are available.   
+
+The should be a mechanism (e.g., environment variable) to control which installation is used 
+on per-user basis. 
 
 
-*** DONE Top Level Directory				    :PROVIDER_PREFIX:
+*** DONE Top Level Directory 				    :PROVIDER_PREFIX:
     CLOSED: [2014-04-28 Mon 11:22]
 
 The top level directory is */opt/<provider>*, where *<provider>=psi*, in accordance with [[[FHS]]]. 
@@ -322,9 +400,10 @@ The top level directory may be a link to a local or network file system.
 See [[[TLD]]] for the PSI specific implementation details.  
 
 
+*** IN-PROGRESS Must Support Modules in Home Directory
 
-** IN-PROGRESS Must Support Modules at Multiple Locations
-Idea: Modules in the user's home directory must be supported
+User should be able to install their own modules. 
+
 
 ** DONE May Support Runtime Environments when Complete Development Environments are not Desirable 
    CLOSED: [2014-04-28 Mon 11:24]
@@ -344,14 +423,16 @@ options that are not supported by the CPU.
 If possible, make it "should support" requirement.  
 
 
-** DONE May Support Optional Optimization and Development Requirements
-   CLOSED: [2014-04-28 Mon 11:27]
+** IN-PROGRESS May Support Optional Optimization and Development Requirements
 
 There may be a mechanism to hide (default) or unhide modules, which are not intended for general use, 
 e.g. of development and testing type, from the standard workflow.   
 
-Note(Achim): Hiding should be implemented via  MODULEPATH. Modules in
+Note(Achim): Hiding should be implemented via MODULEPATH. Modules in
 testing state should print a warning. Everything else will end in a nightmare.
+Valeri: this paragraph should go to Implementation. 
+
+ 
 
 ** DONE Must Define Minimum System Requirements to Support Generic Modules
    CLOSED: [2014-04-28 Mon 11:42]
@@ -430,35 +511,128 @@ Note (Achim): Actually I like the idea of something like a
 MODULEROOT_PATH. It should be possible to implement multiple
 hierarchies. This can be easly implemented with the extendet TCL
 Modules, I guess it wouldn't be to hard to implement this with Lua-Modules.
+Valeri: 'Your search - "MODULEROOT_PATH" - did not match any documents.'
 
 
 *** IN-PROGRESS The Layout of Subdirectories Used for Configuration of Environment Modules
 
-FIXME
+#+BEGIN_EXAMPLE
+  /opt/psi                 OPT_PROVIDER
+   :-- modulefiles         MODULEPATH_ROOT
+   :   :
+   :   :-- Core            ###   Compilers and compiler-independent SW 
+   :   :   :-- gcc
+   :   :   :   :-- 4.8.2
+   :   :   :   :-- x.y.z
+   :   :   :-- intel
+   :   :   :   :-- x.y.z
+   :   :   :-- pgi
+   :   :   :   :-- x.y.z
+   :   :   :
+   :   :   :-- foo
+   :   :   :   :-- x.y.z
+   :   :   :-- bar
+   :   :   :   :-- x.y.z
+   :   :  
+   :   :-- Compiler        ###   Compiler-independent SW 
+   :   :   :-- gcc
+   :   :   :   :-- 4.8.2
+   :   :   :       :-- mpi
+   :   :   :           :-- openmpi-1.6.4
+   :   :   :           :-- openmpi-1.8.0
+   :   :   :-- intel
+   :   :   :   :-- 14.0
+   :   :   :       :-- mpi
+   :   :   :           :-- openmpi-1.6.4
+   :   :   :           :-- openmpi-1.8.0
+   :   :
+   :   :-- MPI             ###    Compiler- and MPI-independent SW
+   :   :   :-- gcc
+   :   :   :   :-- 4.8.2
+   :   :   :       :-- openmpi
+   :   :   :           :-- 1.6.4
+   :   :   :               :-- scalasca
+   :   :   :                   |-- 1.4.2  
+   :   :
+#+END_EXAMPLE
+
+
 
 
 *** IN-PROGRESS The Layout of Subdirectories Used for Software Installation 
 
-FIXME
+Each version of each package should have its own installation directory, if possible 
+(the exceptions will be discussed below), specified by the corresponding PREFIX. 
+
+PREFIX should 
+   1. be easy to understand by an expert user; 
+   2. make it easier to write portable module scripts; 
+   3. avoid unneeded layers of abstarction.    
+
+Example: 
+ 
+#+BEGIN_EXAMPLE
+  /opt/psi                 OPT_PROVIDER
+   :   :  ............................................................... PREFIX Subdirectories    
+   :   : 
+   :   :-- gcc                            
+   :   :   :-- 4.8.2                       ### PREFIX=$OPT_PROVIDER/$COMPILER/$COMPILER_VERSION 
+   :   :   :-- x.y.z
+   :   :
+   :   :-- intel
+   :   :   :-- 14.0
+   :   :
+   :   :-- openmpi
+   :   :   :-- openmpi-1.6.4-gcc-4.8.2     ### PREFIX=$OPT_PROVIDER/$MPI/$MPI-$MPI_VERSION-$COMPILER-$COMPILER_VERSION
+   :   :       :-- ... 
+   :   :   :-- openmpi-1.6.4-intel-14.0
+   :   :       :-- ...
+   :   :
+   :   :-- foo
+   :   :   :-- foo-x.y.z-openmpi-1.6.4-intel-14.0     ### PREFIX=$OPT_PROVIDER/$NAME/$NAME-$VERSION-$MPI-$MPI_VERSION-$COMPILER-$COMPILER_VERSION 
+   :   : 
+   :   :-- bar
+   :   :   :-- bar-x.y.z-intel-14.0                   ### PREFIX=$OPT_PROVIDER/$NAME/$NAME-$VERSION-$COMPILER-$COMPILER_VERSION
+   :   : 
+  
+#+END_EXAMPLE
 
 
 **** IN-PROGRESS Recommended Layouts 
-    
+
+Mainterners may select any of the recommended installation layouts (defined by PREFIX).  
+ 
 FIXME
 
 
-** TODO Environment Variables Reserved for Internal Use 
+**** IN-PROGRESS Special Cases 
+
+Some of the Intel tolls depend on services that must be properly configured and started 
+by the init process.   It means that only some subset of intel versions may provide 
+full functionality of some tools (e.g. Vtune Amplifier). 
+The environment modules will not handle this issue. 
+
+
+
+
+** STOPPED Environment Variables Reserved for Internal Use 
+   CLOSED: [2014-04-29 Tue 17:10]
 
 FIXME
 #+BEGIN_EXAMPLE
   PSI_COMPILER
   PSI_COMPILER_VERSION
   PSI_MPI
-  PSI_MPI_KIND
   PSI_MPI_VERSION
 #+END_EXAMPLE
 
 Note (Achim): Use case?
+Valeri: I use them in my Lua modules. 
+The prefix PSI_ can be removed, then the variables defined in [[[Family]]] are sufficient. 
+  
+:  PREFIX=$OPT_PROVIDER/$NAME/$NAME-$VERSION-$MPI-$MPI_VERSION-$COMPILER-$COMPILER_VERSION
+
+
 
 ** TODO Mainterners of Environment Modules and Their Responsibilities 
 
@@ -499,3 +673,7 @@ Every build must be reproducable.
    2. <<env_modules_psi>> https://intranet.psi.ch/AIT/EnvironmentModules 
    3. <<lmod>> https://www.tacc.utexas.edu/tacc-projects/lmod  
    4. <<FHS>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
+   5. <<Open_Group_Base_Specifications_EM>> http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
+   6. <<Open_MPI_wrappers>> http://www.open-mpi.org/faq/?category=mpi-apps
+   7. <<Open_MPI_without-wrappers>> http://www.open-mpi.org/faq/?category=mpi-apps#cant-use-wrappers
+   8. <<ANL_MPICH2>> https://svn.mcs.anl.gov/repos/mpi/mpich2/tags/release/mpe2-1.0.7rc1/INSTALL
