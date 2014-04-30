@@ -5,7 +5,7 @@
 
 * Request for Comments: Environment Modules at PSI  
 
-Achim Gsell, Valeri MArkushin, Hans Christian Stadler
+Achim Gsell, Valeri Markushin, Hans Christian Stadler
 
 Scientific Computing, AIT, PSI
 
@@ -43,7 +43,7 @@ maintaners easier and staightforward.
 
 Since we have a work in progress, we call it *specification*, not evaluation. 
 
-** IN-PROGRESS Must Preserve the Core Functionality of Traditional Modules :OK:
+** DONE Must Preserve the Core Functionality of Traditional Modules	 :OK:
 
 The essential (to be specified) tradinional *module* *subcommands* *must* be supported. 
 Both TCL and Lua modules must meet this requirement. 
@@ -128,7 +128,7 @@ Only nonfloating licenses will be taken into account.
 *** DONE Must Export a Predefined Subset of POSIX Standard and Other Common Environment Variables
     CLOSED: [2014-04-28 Mon 10:55]
 
-The following environment variables *must be set* by all modules:
+The following environment variables *must be set* by all modules, unless there are conflicts:
 #+BEGIN_EXAMPLE
   <NAME>_VERSION
   <NAME>_PREFIX
@@ -157,7 +157,6 @@ In particular, the following variables are considered as *widely used*:
   MANPATH
   PATH
 #+END_EXAMPLE 
-
 
 FIXME (non-POSIX, e.g. common GCC shared by many other applications)
 if corresponding path exists:  
@@ -260,7 +259,7 @@ Note by Achim: names without underscore seems to be more common and more
 commonly uses be autotools and cmake.
 
 |-------------------+---------------+---------------|
-| Search term       | "MPICC=mpicc" | "MPICC=mpicc" |
+| Search term       | "MPICC=mpicc" | "MPI_CC=mpicc" |
 |-------------------+---------------+---------------|
 | Nunber of results |          4490 | 922           |
 | Reference         |               | [[[ANL_MPICH2]]]  |
