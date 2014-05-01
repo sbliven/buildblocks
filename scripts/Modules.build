@@ -17,5 +17,5 @@ module() {
 # use system gcc to compile
 declare -rx CC=gcc
 
-em.add_to_family "core"
+em.add_to_family 'Tools'
 em.make_all
