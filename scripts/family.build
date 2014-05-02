@@ -3,7 +3,7 @@
 family=$1
 shift
 
-modules=$(egrep  -l "[:space:]*\"$family\"" *)
+modules=$(egrep  -l "[:space:]*[\"\']$family[\"\']" *)
 
 for m in ${modules}; do
 	./$m "$@"
