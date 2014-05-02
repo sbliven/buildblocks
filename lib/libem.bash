@@ -286,6 +286,9 @@ function _set_env() {
 	    Programming )
 		EM_MODULENAME="${P}/${V}"
 		;;
+	    Libraries )
+		EM_MODULENAME="${P}/${V}"
+		;;
 	    Compiler )
 		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${P}/${V}"
 		;;
