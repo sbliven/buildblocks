@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	"${EM_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		|| exit 1
+}
+
+#function em.install_doc() {
+#	install -m 0444 \
+#		AUTHORS \
+#		BUGS \
+#		COPYING \
+#		ChangeLog \
+#		INSTALL \
+#		NEWS \
+#		README \
+#		THANKS \
+#		TODO \
+#		"${DOCDIR}"
+#}
+
+em.add_to_family 'Libraries'
+em.set_build_dependencies "${COMPILER}"
+em.make_all
