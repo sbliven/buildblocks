@@ -154,43 +154,16 @@ declare -x DYLD_LIBRARY_PATH
 
 module purge
 
-#unset _P _V
-
-function preexec() {
-	echo "$BASH_COMMAND"
-}
-
 if [[ $DEBUG_ON ]]; then
-	#trap 'eval echo \\"$BASH_COMMAND\\"' DEBUG
 	trap 'echo "$BASH_COMMAND"' DEBUG
-        #trap 'preexec' DEBUG
-	#set -o functrace
 fi
 
-function em.set_build_dependencies() {
-	EM_BUILD_DEPENDENCIES=("$@")
-}
-
-function _load_build_dependencies() {
-	for m in "${EM_BUILD_DEPENDENCIES[@]}"; do
-		[[ -z $m ]] && continue
-		if [[ ! $m =~ "*/*" ]]; then
-		    local _V=$(echo -n $m | tr [:lower:] [:upper:] )_VERSION
-		    m=$m/${!_V}
-		fi
-		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
-			echo "Module \"$m\" not available, trying to build it..."
-			"${SCRIPTDIR}/${m/\/*}.build" ${ARGS[@]}
-			if [[ -z $(module avail "$m" 2>&1) ]]; then
-				echo "Oops: Building module \"$m\" failed..."
-				exit 1
-			fi
-		fi
-		echo "Loading module: $m"
-		module load "$m"
+function em.supported_os() {
+	for os in "$@"; do
+		[[ ${os} == ${OS} ]] && return 0
 	done
+	die 0 "${P}: Not available for ${OS}."
 }
-
 
 function em.add_to_family() {
 	if [[ -z ${1} ]]; then
@@ -214,9 +187,35 @@ function em.add_to_family() {
 	eval ${ENVIRONMENT_ARGS}
 }
 
+function em.set_build_dependencies() {
+	EM_BUILD_DEPENDENCIES=("$@")
+}
+
 function em.set_runtime_dependencies() {
 	EM_DEPENDENCIES=("$@")
 }
+
+function _load_build_dependencies() {
+	for m in "${EM_BUILD_DEPENDENCIES[@]}"; do
+		[[ -z $m ]] && continue
+		if [[ ! $m =~ "*/*" ]]; then
+		    local _V=$(echo -n $m | tr [:lower:] [:upper:] )_VERSION
+		    m=$m/${!_V}
+		fi
+		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
+			echo "Module \"$m\" not available, trying to build it..."
+			"${SCRIPTDIR}/${m/\/*}.build" ${ARGS[@]}
+			if [[ -z $(module avail "$m" 2>&1) ]]; then
+				echo "Oops: Building module \"$m\" failed..."
+				exit 1
+			fi
+		fi
+		echo "Loading module: $m"
+		module load "$m"
+	done
+}
+
+
 
 function _write_runtime_dependencies() {
 	local -r fname="${PREFIX}/.dependencies"
@@ -278,33 +277,41 @@ function _set_env() {
 	# build module name
 	case ${EM_FAMILY} in
 	    Tools )
+		EM_PREFIX="${P}/${V}"
 		EM_MODULENAME="${P}/${V}"
 		;;
 	    Programming )
+		EM_PREFIX="${P}/${V}"
 		EM_MODULENAME="${P}/${V}"
 		;;
 	    Libraries )
+		EM_PREFIX="${P}/${V}"
 		EM_MODULENAME="${P}/${V}"
 		;;
 	    System )
+		EM_PREFIX="${P}/${V}"
 		EM_MODULENAME="${P}/${V}"
 		;;
 	    Compiler )
+		EM_PREFIX="${P}/${V}/${COMPILER}/${COMPILER_VERSION}"
 		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${P}/${V}"
 		;;
 	    MPI )
+		EM_PREFIX="${P}/${V}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
 		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${P}/${V}"
 		;;
 	    HDF5 )
+		EM_PREFIX="${P}/${V}/${HDF5}/${HDF5_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}/"
 		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${HDF5}/${HDF5_VERSION}/${P}/${V}"
 		;;
 	    HDF5_serial )
-		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_SERIAL_VERSION}/${P}/${V}"
+		EM_PREFIX="${P}/${V}/hdf5_serial/${HDF5_SERIAL_VERSION}/${COMPILER}/${COMPILER_VERSION}"
+		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_VERSION}/${P}/${V}"
 		;;
 	esac
 
 	# set PREFIX of module
-	PREFIX="${EM_BINDIR}/${EM_FAMILY}/${EM_MODULENAME}"
+	PREFIX="${EM_BINDIR}/${EM_FAMILY}/${EM_PREFIX}"
 
 	DOCDIR="${PREFIX}/share/doc/$P"
 
@@ -321,11 +328,7 @@ function _set_env() {
 	fi
 }
 
-function em.set_env() {
-	:
-}
-
-function em.prep() {
+function _prep() {
 
 	# untar sources
 	if [[ ! -d ${EM_SRCDIR} ]]; then
@@ -403,8 +406,9 @@ function em.cleanup_src() {
 function em.make_all() {
 	_set_env
 	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
+ 		echo "Building $P/$V ..."
 		_load_build_dependencies
-		em.prep
+		_prep
 		cd "${EM_SRCDIR}"
 		em.pre_configure
 		cd "${EM_BUILDDIR}"
