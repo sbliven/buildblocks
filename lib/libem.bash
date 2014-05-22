@@ -376,7 +376,7 @@ function _set_link() {
 	local x
 	IFS='/' x=(${_path})
 	local -r _target="../"$(eval printf "../%.s" {1..${#x[@]}})${EM_ETCDIR##*/}/"${EM_FAMILY}/${P}/modulefile"
-	ln -fhs "${_target}" "${EM_MODULENAME##*/}"
+	ln -fs "${_target}" "${EM_MODULENAME##*/}"
 	)
 }
 
