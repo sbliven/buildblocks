@@ -152,7 +152,9 @@ declare -x LIBRARY_PATH
 declare -x LD_LIBRARY_PATH
 declare -x DYLD_LIBRARY_PATH
 
-module purge
+if typeset -f module > /dev/null 2>&1 ; then
+	module purge
+fi
 
 if [[ $DEBUG_ON ]]; then
 	trap 'echo "$BASH_COMMAND"' DEBUG
