@@ -181,6 +181,9 @@ function em.add_to_family() {
 		eval ${_NAME}_VERSION=$_version 
 	done < "${DEFAULT_VERSIONS_FILE}"
 	#source "${CONFIG_DIR}/versions.conf"
+	if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
+		die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
+	fi
 	for f in "${CONFIG_DIR}/families.d/"*.conf; do
 		source "${f}"
 	done
