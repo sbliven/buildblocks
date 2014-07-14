@@ -12,8 +12,8 @@ function em.configure() {
 	FC=$MPIFC
 	FORTRAN=$MPIFORTRAN
 
-	BLAS_PREFIX=$MATHLIB_PREFIX
-	LAPACK_PREFIX=$MATHLIB_PREFIX
+	BLAS_PREFIX=$OPENBLAS_PREFIX
+	LAPACK_PREFIX=$OPENBLAS_PREFIX
 
 	PARMETIS_INCLUDE_DIRS=$PARMETIS_PREFIX/include
 	PARMETIS_LIBRARIES=$PARMETIS_PREFIX/lib/libparmetis.a
@@ -27,7 +27,7 @@ function em.configure() {
 
 	LAPACK_INCLUDE_DIRS="$LAPACK_PREFIX/include"
 	LAPACK_LIBRARY_DIRS="$LAPACK_PREFIX/lib"
-	LAPACK_LIBRARY_NAMES="lapacke;lapack"
+	LAPACK_LIBRARY_NAMES="openblas"
 
 	cmake \
            --prefix=$PREFIX \
@@ -53,6 +53,7 @@ function em.configure() {
            -D TPL_ParMETIS_INCLUDE_DIRS:PATH=$PARMETIS_INCLUDE_DIRS \
            -D TPL_ParMETIS_LIBRARIES:PATH=$PARMETIS_LIBRARIES \
            -D Trilinos_ENABLE_Amesos:BOOL=ON \
+           -D Trilinos_ENABLE_Amesos2:BOOL=ON \
            -D Trilinos_ENABLE_AztecOO:BOOL=ON \
            -D Trilinos_ENABLE_Belos:BOOL=ON \
            -D Trilinos_ENABLE_Epetra:BOOL=ON \
@@ -80,6 +81,6 @@ function em.install_doc() {
 
 em.add_to_family 'MPI'
 em.set_runtime_dependencies "${COMPILER}" "${MPI}"
-em.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'mathlib' 'parmetis'
+em.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
 em.make_all
 
