@@ -8,6 +8,12 @@ function em.configure() {
 		|| exit 1
 }
 
+function em.post_install() {
+	ln -fs "${PREFIX}/bin/python${V%%.*}" "${PREFIX}/bin/python"
+	ln -fs "${PREFIX}/include/python${V%.*}m" "${PREFIX}/include/python"
+	ln -fs "${PREFIX}/include/python${V%.*}m" "${PREFIX}/include/python${V%.*}"
+}
+
 em.add_to_family 'Programming'
 em.set_runtime_dependencies ""
 em.set_build_dependencies   "${COMPILER}"
