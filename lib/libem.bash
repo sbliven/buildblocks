@@ -2,6 +2,7 @@
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin
 
+declare -r	BUILDSCRIPT=$( cd $(dirname "$0") && pwd )/$(basename "$0")
 declare -rx	ARGS="$@"
 declare -rx	SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
 declare -r	OS=$(uname -s)
@@ -372,7 +373,7 @@ function em.post_install() {
 }
 
 function em.install_doc() {
-	install -m0444 ${EM_DOCFILES[*]} "${DOCDIR}"
+	install -m0444 ${EM_DOCFILES[*]} "${BUILDSCRIPT}" "${DOCDIR}"
 }
 
 function _set_link() {
