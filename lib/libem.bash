@@ -82,7 +82,7 @@ while (( $# > 0 )); do
 		v=${1/--with-hdf5=}
 		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} HDF5=hdf5 HDF5_VERSION=$v"
 		;;
-	--with-hdf5=*)
+	--with-hdf5_serial=*)
 		v=${1/--with-hdf5_serial=}
 		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} HDF5_SERIAL=hdf5_serial HDF5_SERIAL_VERSION=$v"
 		;;
@@ -175,7 +175,6 @@ function em.add_to_family() {
 		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
 		eval ${_NAME}_VERSION=$_version 
 	done < "${DEFAULT_VERSIONS_FILE}"
-	#source "${CONFIG_DIR}/versions.conf"
 	if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
 		die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
 	fi
