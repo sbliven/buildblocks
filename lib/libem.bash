@@ -117,22 +117,30 @@ while (( $# > 0 )); do
 	shift
 done
 
-eval "${ENVIRONMENT_ARGS}"
-
 declare -rx EM_BASEDIR=$(abspath $SHLIBDIR/..)
 
 source "${EM_BASEDIR}/config/environment.bash"
+declare -xr CONFIG_DIR="${EM_BASEDIR}/config"
+declare -xr SCRIPTDIR="${EM_BASEDIR}/scripts"
+declare -xr EM_TMPDIR="${EM_BASEDIR}/tmp"
+declare -xr DEFAULT_VERSIONS_FILE="${CONFIG_DIR}/versions.conf"
+
+if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
+	die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
+fi
+for f in "${CONFIG_DIR}/families.d/"*.conf; do
+	source "${f}"
+done
+
+eval "${ENVIRONMENT_ARGS}"
+
+
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
 declare -x  EM_FAMILY=''
 declare -x  EM_MODULENAME=''
 
-declare -x  CONFIG_DIR="${EM_BASEDIR}/config"
-declare -x  SCRIPTDIR="${EM_BASEDIR}/scripts"
-declare -x  EM_TMPDIR="${EM_BASEDIR}/tmp"
-
-declare -x  DEFAULT_VERSIONS_FILE="${CONFIG_DIR}/versions.conf"
 
 # these directories are module dependend
 declare -x  EM_SRCDIR=''
@@ -147,6 +155,7 @@ declare -x LIBRARY_PATH
 declare -x LD_LIBRARY_PATH
 declare -x DYLD_LIBRARY_PATH
 
+# while bootstraping the module command is not yet available
 if typeset -f module > /dev/null 2>&1 ; then
 	module purge
 fi
@@ -261,12 +270,6 @@ function _setup_env() {
 		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
 		eval ${_NAME}_VERSION=$_version 
 	done < "${DEFAULT_VERSIONS_FILE}"
-	if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
-		die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
-	fi
-	for f in "${CONFIG_DIR}/families.d/"*.conf; do
-		source "${f}"
-	done
 
 	# overwrite environment variables with values we got on the cmd line
 	eval ${ENVIRONMENT_ARGS}
