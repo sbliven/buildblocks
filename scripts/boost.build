@@ -21,6 +21,7 @@ function em.build() {
 		--build-type=minimal \
 		--build-dir="${EM_BUILDDIR}" \
 		--layout=system \
+		--without-mpi \
 		variant=release \
 		link=static \
 		threading=multi \
@@ -33,6 +34,7 @@ function em.install() {
 		--build-type=minimal \
 		--build-dir="${EM_BUILDDIR}" \
 		--layout=system \
+		--without-mpi \
 		variant=release \
 		link=static \
 		threading=multi \
