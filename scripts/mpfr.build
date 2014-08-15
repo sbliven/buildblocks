@@ -3,7 +3,7 @@
 source "$(dirname $0)/../lib/libem.bash"
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--with-gmp=$GMP_PREFIX \
 		--disable-shared \

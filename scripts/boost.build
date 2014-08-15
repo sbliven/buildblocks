@@ -6,8 +6,8 @@ source "$(dirname $0)/../lib/libem.bash"
 TOOLSET=gcc
 
 function em.configure() {
-	cd "${EM_SRCDIR}"
-	"${EM_SRCDIR}"/bootstrap.sh \
+	cd "${MODULE_SRCDIR}"
+	"${MODULE_SRCDIR}"/bootstrap.sh \
 		--prefix="${PREFIX}" \
 		--with-toolset=${TOOLSET} \
 		--with-libraries=all \
@@ -16,10 +16,10 @@ function em.configure() {
 }
 
 function em.build() {
-	cd "${EM_SRCDIR}"
+	cd "${MODULE_SRCDIR}"
 	./b2 \
 		--build-type=minimal \
-		--build-dir="${EM_BUILDDIR}" \
+		--build-dir="${MODULE_BUILDDIR}" \
 		--layout=system \
 		--without-mpi \
 		variant=release \
@@ -29,10 +29,10 @@ function em.build() {
 }
 
 function em.install() {
-	cd "${EM_SRCDIR}"
+	cd "${MODULE_SRCDIR}"
 	./b2 \
 		--build-type=minimal \
-		--build-dir="${EM_BUILDDIR}" \
+		--build-dir="${MODULE_BUILDDIR}" \
 		--layout=system \
 		--without-mpi \
 		variant=release \

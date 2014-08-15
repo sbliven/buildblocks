@@ -3,25 +3,27 @@
 source "$(dirname $0)/../lib/libem.bash"
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		|| exit 1
 }
 
-function em.install_doc() {
-	install -m 0444 \
-		AUTHORS \
-		BUGS \
-		COPYING \
-		ChangeLog \
-		INSTALL \
-		NEWS \
-		README \
-		THANKS \
-		TODO \
-		"${DOCDIR}"
-}
-
 em.add_to_family 'Compiler'
+em.set_docfiles \
+	'AUTHORS' \
+	'BUGS' \
+	'COPYING' \
+	'ChangeLog' \
+	'INSTALL' \
+	'NEWS' \
+	'README' \
+	'THANKS' \
+	'TODO'
 em.set_build_dependencies "${COMPILER}"
 em.make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

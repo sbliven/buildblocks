@@ -14,7 +14,7 @@ function em.configure() {
 function em.build() {
 	local -ri MAJOR_VERSION=${V%%.*}
 	if (( MAJOR_VERSION == 3 )) ; then
-		cd "${EM_SRCDIR}"
+		cd "${MODULE_SRCDIR}"
 		make -e -j3 || exit 1
 
 		mkdir -p $PREFIX/include/metis
@@ -24,7 +24,7 @@ function em.build() {
 		cp METISLib/*.h $PREFIX/include/metis
 		cp lib*.a $PREFIX/lib
 	elif (( MAJOR_VERSION == 4 )); then
-		cd "${EM_SRCDIR}"
+		cd "${MODULE_SRCDIR}"
 		make config prefix=$PREFIX || exit 1
 		make -j3 || exit 1
 		make install

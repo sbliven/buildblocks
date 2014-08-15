@@ -3,7 +3,7 @@
 source "$(dirname $0)/../lib/libem.bash"
 
 function em.configure() {
-	cat <<EOF > "${EM_SRCDIR}/SuiteSparse_config/SuiteSparse_config.mk"
+	cat <<EOF > "${MODULE_SRCDIR}/SuiteSparse_config/SuiteSparse_config.mk"
 CF = \$(CFLAGS) \$(CPPFLAGS) \$(TARGET_ARCH) -O3 -fexceptions -fPIC -DNTIMER
 RANLIB = ranlib
 ARCHIVE = \$(AR) \$(ARFLAGS)
@@ -27,7 +27,7 @@ EOF
 }
 
 function em.build() {
-	cd "${EM_SRCDIR}/UMFPACK"
+	cd "${MODULE_SRCDIR}/UMFPACK"
 	make TARGET=CORE2 BINARY=64 USE_THREAD=0 NO_SHARED=1
 }
 

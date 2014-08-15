@@ -7,7 +7,7 @@ function em.pre_configure() {
 }
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-h5hut \
 		--enable-hdf5 \

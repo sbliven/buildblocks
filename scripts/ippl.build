@@ -14,7 +14,7 @@ function em.configure() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=RELEASE \
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-		"${EM_SRCDIR}" \
+		"${MODULE_SRCDIR}" \
 		|| exit 1 
 }
 

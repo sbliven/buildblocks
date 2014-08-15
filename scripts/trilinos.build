@@ -67,7 +67,7 @@ function em.configure() {
            -D Trilinos_ENABLE_Teuchos:BOOL=ON \
            -D Trilinos_ENABLE_Tpetra:BOOL=ON \
            -D Trilinos_ENABLE_TESTS:BOOL=OFF \
-           "${EM_SRCDIR}" || exit 1
+           "${MODULE_SRCDIR}" || exit 1
 }
 
 em.add_to_family 'MPI'

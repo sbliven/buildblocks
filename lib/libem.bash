@@ -123,20 +123,20 @@ while (( $# > 0 )); do
 	shift
 done
 
-declare -rx EM_BASEDIR=$(abspath $SHLIBDIR/..)
+declare -rx BUILD_BASEDIR=$(abspath $SHLIBDIR/..)
 
-source "${EM_BASEDIR}/config/environment.bash"
+source "${BUILD_BASEDIR}/config/environment.bash"
 
-declare -xr EM_CONFIGDIR="${EM_BASEDIR}/config"
-declare -xr EM_SCRIPTDIR="${EM_BASEDIR}/scripts"
-declare -xr EM_TMPDIR="${EM_BASEDIR}/tmp"
-declare -rx EM_DOWNLOADDIR="${EM_BASEDIR}/Downloads"
-declare -xr EM_DEFAULT_VERSIONSFILE="${EM_CONFIGDIR}/versions.conf"
+declare -xr BUILD_CONFIGDIR="${BUILD_BASEDIR}/config"
+declare -xr BUILD_SCRIPTSDIR="${BUILD_BASEDIR}/scripts"
+declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
+declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
+declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
-if [[ -z "${EM_CONFIGDIR}/families.d/"*.conf ]]; then
-	die 1 "Default family configuration not set in ${EM_CONFIGDIR}/families.d"
+if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
+	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
 fi
-for f in "${EM_CONFIGDIR}/families.d/"*.conf; do
+for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
 	source "${f}"
 done
 
@@ -146,16 +146,17 @@ eval "${ENVIRONMENT_ARGS}"
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
-declare -x  EM_FAMILY=''
-declare	-x  EM_RELEASE='stable'
-declare -x  EM_MODULENAME=''
+declare -x  MODULE_FAMILY=''
+declare	-x  MODULE_RELEASE='stable'
+declare -x  MODULE_NAME=''
 
 
 # these directories are module dependend
-declare -x  EM_SRCDIR=''
-declare -x  EM_BUILDDIR=''
+declare -x  MODULE_SRCDIR=''
+declare -x  MODULE_BUILDDIR=''
 
-declare -x  EM_BUILD_DEPENDENCIES
+declare -x  MODULE_BUILD_DEPENDENCIES
+declare -x  MODULE_DEPENDENCIES
 
 declare -x C_INCLUDE_PATH
 declare -x CPLUS_INCLUDE_PATH
@@ -176,7 +177,7 @@ fi
 function em.release() {
 	case $1 in
 	unstable | stable | obsolete )
-		EM_RELEASE="$1"
+		MODULE_RELEASE="$1"
 		;;
 	* )
 		die 1 "$P: unknown release type: $1"
@@ -198,27 +199,27 @@ function em.add_to_family() {
 	if [[ ! -d ${EM_ETCDIR}/${1} ]]; then
 		die 43 "${1}: family does not exist."
 	fi
-	EM_FAMILY=$1
+	MODULE_FAMILY=$1
 }
 
 function em.set_build_dependencies() {
-	EM_BUILD_DEPENDENCIES=("$@")
+	MODULE_BUILD_DEPENDENCIES=("$@")
 }
 
 function em.set_runtime_dependencies() {
-	EM_DEPENDENCIES=("$@")
+	MODULE_DEPENDENCIES=("$@")
 }
 
 function em.set_supported_compilers() {
-	EM_SUPPORTED_COMPILERS=("$@")
+	MODULE_SUPPORTED_COMPILERS=("$@")
 }
 
 function em.set_docfiles() {
-	EM_DOCFILES=("$@")
+	MODULE_DOCFILES=("$@")
 }
 
 function _load_build_dependencies() {
-	for m in "${EM_BUILD_DEPENDENCIES[@]}"; do
+	for m in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $m ]] && continue
 		if [[ ! $m =~ "*/*" ]]; then
 			local _V=$(echo -n $m | tr [:lower:] [:upper:] )_VERSION
@@ -230,7 +231,7 @@ function _load_build_dependencies() {
 		fi
 		if [[ -z $(module avail "$m" 2>&1) ]]; then
 			echo "$m: info: module does not exist, trying to build it..."
-			"${EM_SCRIPTDIR}/${m/\/*}.build" ${ARGS[@]}
+			"${BUILD_SCRIPTSDIR}/${m/\/*}.build" ${ARGS[@]}
 			if [[ -z $(module avail "$m" 2>&1) ]]; then
 				die 1 "$m: oops: build failed..."
 			fi
@@ -246,7 +247,7 @@ function _write_runtime_dependencies() {
 	local -r fname="${PREFIX}/.dependencies"
 	local dep
 	echo -n "" > "${fname}"
-	for dep in "${EM_DEPENDENCIES[@]}"; do
+	for dep in "${MODULE_DEPENDENCIES[@]}"; do
 		[[ -z $dep ]] && continue
 		if [[ ! $dep =~ "*/*" ]]; then
 		    local _V=$(echo -n $dep | tr [:lower:] [:upper:] )_VERSION
@@ -260,7 +261,7 @@ function _write_build_dependencies() {
 	local -r fname="${PREFIX}/.build_dependencies"
 	local dep
 	echo -n "" > "${fname}"
-	for dep in "${EM_BUILD_DEPENDENCIES[@]}"; do
+	for dep in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $dep ]] && continue
 		if [[ ! $dep =~ "*/*" ]]; then
 		    local _V=$(echo -n $dep | tr [:lower:] [:upper:] )_VERSION
@@ -278,7 +279,7 @@ function _setup_env() {
 	LD_LIBRARY_PATH=''
 	DYLD_LIBRARY_PATH=''
 
-	if [[ -z ${EM_FAMILY} ]]; then
+	if [[ -z ${MODULE_FAMILY} ]]; then
 		die 1 "$P: family not set."
 	fi
 
@@ -288,7 +289,7 @@ function _setup_env() {
 		[[ "${_name:0:1}" == '#' ]] && continue
 		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
 		eval ${_NAME}_VERSION=$_version 
-	done < "${EM_DEFAULT_VERSIONSFILE}"
+	done < "${BUILD_VERSIONSFILE}"
 
 	# overwrite environment variables with values we got on the cmd line
 	eval "${ENVIRONMENT_ARGS}"
@@ -302,51 +303,51 @@ function _setup_env() {
 	if [[ -z $V ]]; then
 		die 1 "$P: Missing version."
 	fi
-	EM_SRCDIR="${EM_TMPDIR}/src/${P/_serial}-$V"
-	EM_BUILDDIR="${EM_TMPDIR}/build/$P-$V/$COMPILER/$COMPILER_VERSION"
+	MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
+	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V/$COMPILER/$COMPILER_VERSION"
 
 	# build module name
-	case ${EM_FAMILY} in
+	case ${MODULE_FAMILY} in
 	    Tools )
-		EM_PREFIX="${P}/${V}"
-		EM_MODULENAME="${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}"
+		MODULE_NAME="${P}/${V}"
 		;;
 	    Programming )
-		EM_PREFIX="${P}/${V}"
-		EM_MODULENAME="${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}"
+		MODULE_NAME="${P}/${V}"
 		;;
 	    Libraries )
-		EM_PREFIX="${P}/${V}"
-		EM_MODULENAME="${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}"
+		MODULE_NAME="${P}/${V}"
 		;;
 	    System )
-		EM_PREFIX="${P}/${V}"
-		EM_MODULENAME="${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}"
+		MODULE_NAME="${P}/${V}"
 		;;
 	    Compiler )
-		EM_PREFIX="${P}/${V}/${COMPILER}/${COMPILER_VERSION}"
-		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}/${COMPILER}/${COMPILER_VERSION}"
+		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/${P}/${V}"
 		;;
 	    MPI )
-		EM_PREFIX="${P}/${V}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
-		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
+		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${P}/${V}"
 		;;
 	    HDF5 )
-		EM_PREFIX="${P}/${V}/${HDF5}/${HDF5_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}/"
-		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${HDF5}/${HDF5_VERSION}/${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}/${HDF5}/${HDF5_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}/"
+		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${HDF5}/${HDF5_VERSION}/${P}/${V}"
 		;;
 	    HDF5_serial )
-		EM_PREFIX="${P}/${V}/hdf5_serial/${HDF5_SERIAL_VERSION}/${COMPILER}/${COMPILER_VERSION}"
-		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_VERSION}/${P}/${V}"
+		MODULE_RPREFIX="${P}/${V}/hdf5_serial/${HDF5_SERIAL_VERSION}/${COMPILER}/${COMPILER_VERSION}"
+		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_VERSION}/${P}/${V}"
 		;;
 	    * )
-		die 1 "$P: oops: unknown family: ${EM_FAMILY}"
+		die 1 "$P: oops: unknown family: ${MODULE_FAMILY}"
 		;;
 	esac
 
-	case ${EM_RELEASE} in
+	case ${MODULE_RELEASE} in
 	unstable | obsolete )
-		EM_FAMILY="${EM_FAMILY}.${EM_RELEASE}"
+		MODULE_FAMILY="${MODULE_FAMILY}.${MODULE_RELEASE}"
 		;;
 	stable )
 		;;
@@ -356,11 +357,11 @@ function _setup_env() {
 	esac
 
 	# set PREFIX of module
-	PREFIX="${EM_BINDIR}/${EM_FAMILY}/${EM_PREFIX}"
+	PREFIX="${EM_BINDIR}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
 
 	DOCDIR="${PREFIX}/share/doc/$P"
 
-	TARBALL="${EM_DOWNLOADDIR}/${P/_serial}-$V.tar"
+	TARBALL="${BUILD_DOWNLOADSDIR}/${P/_serial}-$V.tar"
 	if [[ -r $TARBALL.gz ]]; then
 		TARBALL=${TARBALL}.gz
 		_UNTAR_FLAGS='xvzf'
@@ -376,13 +377,13 @@ function _setup_env() {
 function _prep() {
 
 	# untar sources
-	if [[ ! -d ${EM_SRCDIR} ]]; then
-		mkdir -p "${EM_TMPDIR}/src"
-		(cd "${EM_TMPDIR}/src" && tar ${_UNTAR_FLAGS} "${TARBALL}")
+	if [[ ! -d ${MODULE_SRCDIR} ]]; then
+		mkdir -p "${BUILD_TMPDIR}/src"
+		(cd "${BUILD_TMPDIR}/src" && tar ${_UNTAR_FLAGS} "${TARBALL}")
 	fi
 
 	# create build directory
-	mkdir -p "${EM_BUILDDIR}"
+	mkdir -p "${MODULE_BUILDDIR}"
 
 }
 
@@ -391,7 +392,7 @@ function em.pre_configure() {
 }
 
 function em.configure() {
-	${EM_SRCDIR}/configure \
+	${MODULE_SRCDIR}/configure \
 		--prefix="${PREFIX}"
 }
 
@@ -408,27 +409,27 @@ function em.post_install() {
 }
 
 function em.install_doc() {
-	install -m0444 ${EM_DOCFILES[*]} "${BUILDSCRIPT}" "${DOCDIR}"
+	install -m0444 ${MODULE_DOCFILES[*]} "${BUILDSCRIPT}" "${DOCDIR}"
 }
 
 function _set_link() {
 	(mkdir -p "${MODULEPATH_ROOT}"
 	cd "${MODULEPATH_ROOT}"
-	local _path="${EM_FAMILY}/${EM_MODULENAME%/*}"
+	local _path="${MODULE_FAMILY}/${MODULE_NAME%/*}"
 	mkdir -p "${_path}"
 	cd "${_path}"
 
 	local x
 	IFS='/' x=(${_path})
-	local -r _target="../"$(eval printf "../%.s" {1..${#x[@]}})${EM_ETCDIR##*/}/"${EM_FAMILY}/${P}/modulefile"
-	ln -fs "${_target}" "${EM_MODULENAME##*/}"
+	local -r _target="../"$(eval printf "../%.s" {1..${#x[@]}})${EM_ETCDIR##*/}/"${MODULE_FAMILY}/${P}/modulefile"
+	ln -fs "${_target}" "${MODULE_NAME##*/}"
 	)
 }
 
 function _cleanup_build() {
     (
-	[[ -d /${EM_BUILDDIR} ]] || return 0
-	cd "/${EM_BUILDDIR}/..";
+	[[ -d /${MODULE_BUILDDIR} ]] || return 0
+	cd "/${MODULE_BUILDDIR}/..";
 	if [[ $(pwd) != / ]]; then
 		echo "Cleaning up $(pwd)/${COMPILER_VERSION}"
 		rm -rf *
@@ -438,18 +439,18 @@ function _cleanup_build() {
 
 function em.cleanup_src() {
     (
-	[[ -d /${EM_SRCDIR} ]] || return 0
-	cd "/${EM_SRCDIR}/..";
+	[[ -d /${MODULE_SRCDIR} ]] || return 0
+	cd "/${MODULE_SRCDIR}/..";
 	if [[ $(pwd) != / ]]; then
 		echo "Cleaning up $(pwd)"
-		rm -rf ${EM_SRCDIR##*/}
+		rm -rf ${MODULE_SRCDIR##*/}
 	fi
     );
 }
 
 function _check_compiler() {
-	test -z ${EM_SUPPORTED_COMPILERS} && return 0
-	for cc in ${EM_SUPPORTED_COMPILERS[@]}; do
+	test -z ${MODULE_SUPPORTED_COMPILERS} && return 0
+	for cc in ${MODULE_SUPPORTED_COMPILERS[@]}; do
 		if [[ ${COMPILER}/${COMPILER_VERSION} =~ ${cc} ]]; then
 			return 0
 		fi
@@ -464,14 +465,14 @@ function em.make_all() {
 		_load_build_dependencies
 		_check_compiler
 		_prep
-		cd "${EM_SRCDIR}"
+		cd "${MODULE_SRCDIR}"
 		em.pre_configure
-		cd "${EM_BUILDDIR}"
+		cd "${MODULE_BUILDDIR}"
 		em.configure
 		em.build
 		em.install
 		em.post_install
-		cd "${EM_SRCDIR}"
+		cd "${MODULE_SRCDIR}"
 		mkdir -p "${DOCDIR}"
 		em.install_doc
 	else

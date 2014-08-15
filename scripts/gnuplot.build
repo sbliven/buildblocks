@@ -3,23 +3,20 @@
 source "$(dirname $0)/../lib/libem.bash"
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--with-gif=no \
 		--with-tiff=no \
 		|| exit 1
 }
 
-function em.install_doc() {
-	install -m 0444 \
-		Copyright \
-		ChangeLog \
-		NEWS \
-		README \
-		README.1ST \
- 		"${DOCDIR}"
-}
-
 em.add_to_family 'Tools'
+em.set_docfiles 'Copyright' 'ChangeLog' 'NEWS' 'README' 'README.1ST'
 em.set_build_dependencies "${COMPILER}"
 em.make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

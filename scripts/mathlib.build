@@ -7,7 +7,7 @@ function em.configure() {
 }
 
 function em.build() {
-	cd "${EM_SRCDIR}"
+	cd "${MODULE_SRCDIR}"
 
 
 	install -m 0755 -d "${PREFIX}/include"

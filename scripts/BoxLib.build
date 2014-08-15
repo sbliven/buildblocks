@@ -6,7 +6,7 @@ function em.configure() {
 	CC=$MPICC CXX=$MPICXX cmake \
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		-DCMAKE_BUILD_TYPE=RELEASE \
-		"${EM_SRCDIR}"
+		"${MODULE_SRCDIR}"
 }
 
 em.add_to_family 'MPI'

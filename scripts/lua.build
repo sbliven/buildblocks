@@ -6,14 +6,14 @@
 source "$(dirname $0)/../lib/libem.bash"
 
 function em.configure() {
-        cd "${EM_SRCDIR}"
-	"${EM_SRCDIR}"/configure \
+        cd "${MODULE_SRCDIR}"
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		|| exit 1
 }
 
 function em.build() {
-        cd "${EM_SRCDIR}"
+        cd "${MODULE_SRCDIR}"
 
 	make -j ${JOBS}
 }

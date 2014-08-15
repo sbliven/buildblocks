@@ -13,7 +13,7 @@ function em.configure() {
 	F90=$MPIF90
 	FC=$MPIFC
 	FORTRAN=$MPIFORTRAN
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-netcdf-4 \
 		--with-pic \

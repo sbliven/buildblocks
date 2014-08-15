@@ -13,8 +13,8 @@ function em.configure() {
 	F90=$MPIF90
 	FC=$MPIFC
 	FORTRAN=$MPIFORTRAN
-	#( cd "${EM_SRCDIR}" && ./autogen.sh )
-	"${EM_SRCDIR}"/configure \
+	#( cd "${MODULE_SRCDIR}" && ./autogen.sh )
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-parallel \
 		--enable-debug \

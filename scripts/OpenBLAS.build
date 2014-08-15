@@ -3,14 +3,14 @@
 source "$(dirname $0)/../lib/libem.bash"
 
 function em.configure() {
-	cat <<EOF > "${EM_SRCDIR}/make.inc"
+	cat <<EOF > "${MODULE_SRCDIR}/make.inc"
 SHELL = /bin/sh
 PLAT = 
 DRVOPTS  = \$(OPTS)
 LOADER   = \$(FORTRAN) -pthread
 ARCHFLAGS= -ru
 EOF
-	cat <<EOF > "${EM_SRCDIR}/Makefile.rule"
+	cat <<EOF > "${MODULE_SRCDIR}/Makefile.rule"
 VERSION = 0.2.9
 TARGET = CORE2
 CC = gcc
@@ -26,7 +26,7 @@ EOF
 }
 
 function em.build() {
-	cd "${EM_SRCDIR}"
+	cd "${MODULE_SRCDIR}"
 	make
 }
 

@@ -10,7 +10,7 @@ function em.configure() {
 	FC=$MPIFC
 	FORTRAN=$MPIFORTRAN
 
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-shared \
 		--enable-parallel \

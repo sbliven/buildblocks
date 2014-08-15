@@ -13,7 +13,7 @@ Darwin )
 esac
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--disable-ldap \
 		--disable-mysql \
 		--disable-opengl \

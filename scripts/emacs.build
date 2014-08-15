@@ -14,7 +14,7 @@ Darwin )
 	COMPILER_VERSION=''
 	function em.post_install() {
 		mkdir -p "${PREFIX}"
-		cp -rv "${EM_BUILDDIR}"/nextstep/Emacs.app "${PREFIX}"
+		cp -rv "${MODULE_BUILDDIR}"/nextstep/Emacs.app "${PREFIX}"
 	}
 	;;
 *)
@@ -22,7 +22,7 @@ Darwin )
 esac
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		${configure_args} \
 		|| exit 1
