@@ -357,7 +357,7 @@ function _setup_env() {
 	esac
 
 	# set PREFIX of module
-	PREFIX="${EM_BINDIR}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
+	PREFIX="${EM_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
 
 	DOCDIR="${PREFIX}/share/doc/$P"
 
