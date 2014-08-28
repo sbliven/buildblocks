@@ -362,8 +362,6 @@ function _setup_env() {
 		;;
 	esac
 
-	MODULE_FAMILY="${MODULE_FAMILY}${MODULE_RELEASE}"
-
 	# set PREFIX of module
 	PREFIX="${EM_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
 
@@ -423,7 +421,7 @@ function em.install_doc() {
 function _set_link() {
 	(mkdir -p "${MODULEPATH_ROOT}"
 	cd "${MODULEPATH_ROOT}"
-	local _path="${MODULE_FAMILY}/${MODULE_NAME%/*}"
+	local _path="${MODULE_FAMILY}${MODULE_RELEASE}/${MODULE_NAME%/*}"
 	mkdir -p "${_path}"
 	cd "${_path}"
 
@@ -466,21 +464,13 @@ function _check_compiler() {
 	die 0 "Package cannot be build with ${COMPILER}/${COMPILER_VERSION}."
 }
 
-#
-# if a build dependency is deprecated, then this module is deprecated
-# if a build dependency is unstable: this module is unstable (or deprecated)
-function _set_release() {
-	# skip if release specified on command line
-	[[ -n ${MODULE_RELEASE} ]] && return 0
-
-}
-
 function em.make_all() {
+	# build release - and thereby the PREFIX - depends on other modules
+	_load_build_dependencies
+	
 	_setup_env
 	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
  		echo "Building $P/$V ..."
-		_load_build_dependencies
-		_set_release
 		_check_compiler
 		_prep
 		cd "${MODULE_SRCDIR}"
