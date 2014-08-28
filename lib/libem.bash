@@ -17,6 +17,47 @@ if typeset -f module > /dev/null 2>&1 ; then
 	module purge
 fi
 
+declare -rx BUILD_BASEDIR=$(abspath $SHLIBDIR/..)
+
+source "$(readlink ${BUILD_BASEDIR}/config/environment.bash)"
+
+declare -xr BUILD_CONFIGDIR="${BUILD_BASEDIR}/config"
+declare -xr BUILD_SCRIPTSDIR="${BUILD_BASEDIR}/scripts"
+declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
+declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
+declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
+
+if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
+	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
+fi
+for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
+	source "${f}"
+done
+
+declare -x  PREFIX=''
+declare -x  DOCDIR=''
+declare -x  MODULE_FAMILY=''
+declare	-x  MODULE_RELEASE=''
+declare -x  MODULE_NAME=''
+
+
+# these directories are module dependend
+declare -x  MODULE_SRCDIR=''
+declare -x  MODULE_BUILDDIR=''
+
+declare -x  MODULE_BUILD_DEPENDENCIES
+declare -x  MODULE_DEPENDENCIES
+
+declare -x C_INCLUDE_PATH
+declare -x CPLUS_INCLUDE_PATH
+declare -x CPP_INCLUDE_PATH
+declare -x LIBRARY_PATH
+declare -x LD_LIBRARY_PATH
+declare -x DYLD_LIBRARY_PATH
+
+if [[ $DEBUG_ON ]]; then
+	trap 'echo "$BASH_COMMAND"' DEBUG
+fi
 
 function usage() {
 	error "
@@ -66,6 +107,7 @@ DEBUG_ON=''
 FORCE_REBUILD=''
 ENVIRONMENT_ARGS=''
 WITH_ARGS=''
+
 while (( $# > 0 )); do
 	case $1 in
 	-j )
@@ -83,6 +125,15 @@ while (( $# > 0 )); do
 		;;
 	-? | -h | --help )
 		usage
+		;;
+	--release=* )
+		MODULE_RELEASE=${1/--release=}
+		if [[ -n ${MODULE_RELEASE} ]] && [[ ${MODULE_RELASE:0:1} != . ]]; then
+			MODULE_RELEASE=".${MODULE_RELEASE}"
+		fi
+		if [[ ${MODULE_RELEASE} == .stable ]]; then
+			MODULE_RELEASE=''
+		fi
 		;;
 	--with-hdf5=*)
 		v=${1/--with-hdf5=}
@@ -123,66 +174,23 @@ while (( $# > 0 )); do
 	shift
 done
 
-declare -rx BUILD_BASEDIR=$(abspath $SHLIBDIR/..)
-
-source "$(readlink ${BUILD_BASEDIR}/config/environment.bash)"
-
-declare -xr BUILD_CONFIGDIR="${BUILD_BASEDIR}/config"
-declare -xr BUILD_SCRIPTSDIR="${BUILD_BASEDIR}/scripts"
-declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
-declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
-declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
-
-if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
-	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
-fi
-for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
-	source "${f}"
-done
 
 eval "${ENVIRONMENT_ARGS}"
 
+function is_release () {
+	local -a releases=( '' )
+	releases+=( $(< "${EM_RELEASES_CONF}") )
+        local rel
+        for rel in "${releases[@]}"; do
+		[[ "${rel}" == "$1" ]] && return 0
+	done
+        return 1
+}
 
 
-declare -x  PREFIX=''
-declare -x  DOCDIR=''
-declare -x  MODULE_FAMILY=''
-declare	-x  MODULE_RELEASE='stable'
-declare -x  MODULE_NAME=''
-
-
-# these directories are module dependend
-declare -x  MODULE_SRCDIR=''
-declare -x  MODULE_BUILDDIR=''
-
-declare -x  MODULE_BUILD_DEPENDENCIES
-declare -x  MODULE_DEPENDENCIES
-
-declare -x C_INCLUDE_PATH
-declare -x CPLUS_INCLUDE_PATH
-declare -x CPP_INCLUDE_PATH
-declare -x LIBRARY_PATH
-declare -x LD_LIBRARY_PATH
-declare -x DYLD_LIBRARY_PATH
-
-if [[ $DEBUG_ON ]]; then
-	trap 'echo "$BASH_COMMAND"' DEBUG
-fi
-
-#
-# allowwd arguments are
-#	'unstable'
-#	'stable'
-#	'obsolete'
-function em.release() {
-	case $1 in
-	unstable | stable | obsolete )
-		MODULE_RELEASE="$1"
-		;;
-	* )
-		die 1 "$P: unknown release type: $1"
-		;;
-	esac
+function em.set_release() {
+	is_release "$1" || die 1 "$P: unknown release type: $1"
+	MODULE_RELEASE=".$1"
 }
 
 function em.supported_os() {
@@ -236,8 +244,17 @@ function _load_build_dependencies() {
 				die 1 "$m: oops: build failed..."
 			fi
 		fi
-		echo "Loading module: $m"
-		module load "$m"
+		local tmp=$( module display "${m}" 2>&1 | grep -m1 -- "${MODULEPATH_ROOT}" )
+		tmp=${tmp/${MODULEPATH_ROOT}\/}
+		tmp=${tmp%%/*}
+		local _family=( ${tmp//./ } )
+		if [[ ${_family[1]} == deprecated ]]; then
+			MODULE_RELEASE=.deprecated
+		elif [[ ${_family[1]} == unstable ]] && [[ -z ${MODULE_RELEASE} ]]; then
+			MODULE_RELEASE=.unstable
+		fi
+		echo "Loading module: ${m}"
+		module load "${m}"
 	done
 }
 
@@ -345,16 +362,7 @@ function _setup_env() {
 		;;
 	esac
 
-	case ${MODULE_RELEASE} in
-	unstable | obsolete )
-		MODULE_FAMILY="${MODULE_FAMILY}.${MODULE_RELEASE}"
-		;;
-	stable )
-		;;
-	* )
-		die "$P: oops: unknown release type..."
-		;;
-	esac
+	MODULE_FAMILY="${MODULE_FAMILY}${MODULE_RELEASE}"
 
 	# set PREFIX of module
 	PREFIX="${EM_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
@@ -458,11 +466,21 @@ function _check_compiler() {
 	die 0 "Package cannot be build with ${COMPILER}/${COMPILER_VERSION}."
 }
 
+#
+# if a build dependency is deprecated, then this module is deprecated
+# if a build dependency is unstable: this module is unstable (or deprecated)
+function _set_release() {
+	# skip if release specified on command line
+	[[ -n ${MODULE_RELEASE} ]] && return 0
+
+}
+
 function em.make_all() {
 	_setup_env
 	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
  		echo "Building $P/$V ..."
 		_load_build_dependencies
+		_set_release
 		_check_compiler
 		_prep
 		cd "${MODULE_SRCDIR}"
