@@ -9,8 +9,8 @@ DSuperLUroot 	= \${PREFIX}
 DSUPERLULIB   	= \$(DSuperLUroot)/lib/libsuperlu_dist.a
 BLASDEF	     	= -DUSE_VENDOR_BLAS
 BLASLIB      	= \${OPENBLAS_PREFIX}/lib/libopenblas.a
-METISLIB	=
-PARMETISLIB	=
+METISLIB	= \${PARMETIS_PREFIX}/lib/libmetis.a
+PARMETISLIB	= \${PARMETIS_PREFIX}/lib/libparmetis.a
 FLIBS	 	= 
 LIBS            = \$(DSUPERLULIB) \$(BLASLIB) \$(PARMETISLIB) \$(METISLIB)
 ARCH         	= ar
@@ -44,6 +44,6 @@ function em.install_doc() {
 }
 
 em.add_to_family 'MPI'
-em.set_runtime_dependencies "${COMPILER}" "${MPI}"
-em.set_build_dependencies "${COMPILER}" "${MPI}" "OpenBLAS"
+em.set_runtime_dependencies "${COMPILER}" "${MPI} 'OpenBLAS' 'parmetis'"
+em.set_build_dependencies "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
 em.make_all
