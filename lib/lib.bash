@@ -44,7 +44,20 @@ log() {
 	local -ri fd=$1
 	local -r fmt="$2\n"
 	shift 2
-	printf "$fmt" "$@" >> /dev/fd/$fd
+	printf -- "$fmt" "$@" >> /dev/fd/$fd
+}
+
+info() {
+	log 1 "$1\n" "${@:2}"
+}
+
+error() {
+	log 2 "$1\n" "${@:2}"
+}
+
+debug() {
+	[[ ${EM_DEBUG} ]] || return 0
+	log "$@"
 }
 
 die() {
@@ -81,6 +94,3 @@ append_path () {
 	fi
 }
 
-error() {
-	printf "$1\n" "${@:2}" 1>&2
-}
