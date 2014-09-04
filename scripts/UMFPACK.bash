@@ -37,10 +37,6 @@ function em.install() {
 	make PREFIX="${PREFIX}" install
 }
 
-function em.install_doc() {
-	:
-}
-
 em.add_to_family 'Compiler'
 em.set_runtime_dependencies "${COMPILER}" 'OpenBLAS'
 em.set_build_dependencies "${COMPILER}" 'OpenBLAS'

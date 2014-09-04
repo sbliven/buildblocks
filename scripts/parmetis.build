@@ -43,19 +43,11 @@ function em.install() {
 	:
 }
 
-function em.install_doc() {
-	install -m 0444 \
-		CHANGES \
-		INSTALL \
-		LICENSE.txt \
-		README \
-		VERSION \
-		"${DOCDIR}"
-}
 
 em.add_to_family 'MPI'
 em.set_runtime_dependencies "${COMPILER}" "${MPI}"
 em.set_build_dependencies "${COMPILER}" "${MPI}"
+em.set_docfiles 'CHANGES' 'INSTALL' 'LICENSE.txt' 'README' 'VERSION' 
 em.make_all
 em.cleanup_src
 
