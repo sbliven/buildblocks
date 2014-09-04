@@ -71,7 +71,7 @@ function em.configure() {
 }
 
 em.add_to_family 'MPI'
-em.set_runtime_dependencies "${COMPILER}" "${MPI}"
+em.set_runtime_dependencies "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
 em.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
 em.set_docfiles Copyright.txt LICENSE README RELEASE_NOTES
 em.make_all

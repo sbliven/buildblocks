@@ -425,7 +425,6 @@ function _prep() {
 		(cd "${BUILD_TMPDIR}/src" && tar ${_UNTAR_FLAGS} "${TARBALL}")
 	fi
 
-	install -m 0755 -d "${DOCDIR}"
 	# create build directory
 	mkdir -p "${MODULE_BUILDDIR}"
 
@@ -454,7 +453,7 @@ function em.post_install() {
 
 function em.install_doc() {
 	info "Installing documentation to ${DOCDIR}"
-	mkdir -p "${DOCDIR}"
+	install -m 0755 -d "${DOCDIR}"
 	install -m0444 "${MODULE_DOCFILES[@]/#/${MODULE_SRCDIR}/}" "${BUILDSCRIPT}" "${DOCDIR}"
 }
 
