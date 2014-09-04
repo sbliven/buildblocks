@@ -459,6 +459,7 @@ function em.install_doc() {
 }
 
 function _set_link() {
+	info "Setting sym-link ..."
 	(mkdir -p "${MODULEPATH_ROOT}"
 	cd "${MODULEPATH_ROOT}"
 	local _path="${MODULE_FAMILY}${MODULE_RELEASE}/${MODULE_NAME%/*}"
@@ -514,6 +515,7 @@ function _post_install_linux() {
 function _post_install() {
 	info "Run post-installation for ${OS}"
 	[[ "${OS}" == "Linux" ]] && _post_install_linux
+	return 0
 }
 
 function em.make_all() {
