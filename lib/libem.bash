@@ -113,7 +113,7 @@ FORCE_REBUILD=''
 ENVIRONMENT_ARGS=''
 WITH_ARGS=''
 DRY_RUN=''
-
+with_modules=()
 while (( $# > 0 )); do
 	case $1 in
 	-j )
@@ -140,6 +140,9 @@ while (( $# > 0 )); do
 		if [[ -n ${MODULE_RELEASE} ]] && [[ ${MODULE_RELASE:0:1} != . ]]; then
 			MODULE_RELEASE=".${MODULE_RELEASE}"
 		fi
+		;;
+	--with=*/* )
+		with_modules+=( ${1/--with=} )
 		;;
 	--with-hdf5=*)
 		v=${1/--with-hdf5=}
@@ -238,6 +241,9 @@ function is_module_available() {
 }
 
 function _load_build_dependencies() {
+	for m in "${with_modules[@]}"; do
+		module load "${m}"
+	done
 	for m in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $m ]] && continue
 		if [[ ! $m =~ "*/*" ]]; then
