@@ -31,6 +31,7 @@ function em.configure() {
 }
 
 function em.post_install() {
+	mkdir "${PREFIX}/bin"
 	cat > "${PREFIX}/bin/Emacs" <<\EOF
 #!/bin/bash
 
