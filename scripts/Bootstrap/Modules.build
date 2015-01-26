@@ -1,0 +1,57 @@
+#!/bin/bash
+#set -o functrace
+source "$(dirname $0)/../../lib/libem.bash"
+
+TCL_DIR="${PSI_PREFIX}/Tools/Pmodules/0.99.0"
+
+PATH="${TCL_DIR}/bin:${PATH}"
+
+function em.configure() {
+	case ${OS} in
+		Linux )
+			declare -x LIBS="-lz -lpthread"
+			;;
+		Darwin )
+			declare -x LIBS="-lz -framework CoreFoundation"
+			;;
+	esac
+	CPPFLAGS="-DUSE_INTERP_ERRORLINE" "${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--exec-prefix="${PREFIX}" \
+		--with-module-path="${PSI_PREFIX}/${PSI_MODULES_ROOT}" \
+		--with-tcl="${TCL_DIR}/lib" \
+		--without-x \
+		--disable-versioning \
+		|| exit 1
+}
+
+function em.post_install() {
+	rm -v    ${PREFIX}/Modules/bin/add.modules
+	rm -v    ${PREFIX}/Modules/bin/mkroot
+	rm -rfv  ${PREFIX}/Modules/modulefiles
+	mv -v    ${PREFIX}/Modules/share/man/man1/module.1 ${PREFIX}/share/man/man1
+	mv -v    ${PREFIX}/Modules/share/man/man4/modulefile.4 ${PREFIX}/share/man/man4
+	rmdir    ${PREFIX}/Modules/bin
+	rmdir    ${PREFIX}/Modules/share/man/man1
+	rmdir    ${PREFIX}/Modules/share/man/man4
+	rmdir    ${PREFIX}/Modules/share/man
+	rmdir    ${PREFIX}/Modules/share
+	rmdir    ${PREFIX}/Modules
+}
+	
+# fake module command
+module() {
+    :
+}
+
+# use system gcc to compile
+declare -rx CC=gcc
+
+em.add_to_family 'Tools'
+em.make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

@@ -1,0 +1,8 @@
+#%Module1.0
+
+setenv PSI_LIBMODULES	"$env(PSI_PREFIX)/$env(PSI_CONFIG_DIR)/libmodules.tcl"
+
+if { ! [info exists env(PSI_LIBMODULES) ] } {
+	puts stderr "Module cannot be loaded, because the shell environment is not setup correctly."
+	exit 42
+}

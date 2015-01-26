@@ -1,0 +1,70 @@
+#!/bin/bash
+
+if [ ${BASH_VERSINFO:-0} -lt 3 ]; then
+	echo "BASH version ${BASH_VERSION} ist not supported! You need at least version 3..."
+	return
+fi
+
+if [ "${LOADEDMODULES:-}" = "" ]; then
+	declare -x LOADEDMODULES=
+fi
+
+if [[ -r "${PSI_BASH_COMPLETION}" ]]; then
+	source "${PSI_BASH_COMPLETION}"
+fi
+
+module() {
+	local -r modulecmd="${PMODULES_HOME}/bin/modulecmd"
+
+	local -a args=()
+	local -a switches=()
+	local -a sub_switches=()
+	local subcommand=''
+
+	while (( $# > 0 )); do
+		case $1 in
+		-u|--userlvl )
+			switches+=( $1 $2 )
+			shift 2
+			;;
+		-* )
+			switches+=( $1 )
+			shift
+			;;
+		[a-z]* )
+			subcommand=$1
+			shift
+			break
+			;;
+		esac
+	done
+
+	while (( $# > 0 ));do
+		case $1 in
+			-* )
+				sub_switches+=( $1 )
+				;;
+			[a-zA-Z]* )
+				args+=( $1 )
+				;;
+		esac
+		shift
+	done
+
+	if [[ ${subcommand} == '' ]]; then
+	        subcommand='help'
+	fi
+	if (( ${#args} == 0 )); then
+		args+=( '' )
+	fi
+	for arg in "${args[@]}"; do
+		eval $( "${modulecmd}" bash ${switches[@]} "${subcommand}" "${sub_switches[@]}" "${arg}" )
+	done
+}
+export -f module
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
