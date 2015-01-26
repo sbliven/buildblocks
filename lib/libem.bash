@@ -5,24 +5,16 @@ PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin
 shopt -s expand_aliases
 
 source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
-module use unstable
 
-declare -r	MODULECMD="${PSI_PREFIX}/${PSI_CONFIG_DIR}/modulecmd.bash"
-
-declare -r	BUILDSCRIPT=$( cd $(dirname "$0") && pwd )/$(basename "$0")
-declare -rx	ARGS="$@"
-declare -rx	SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
-declare -r	OS=$(uname -s)
+declare -r  BUILDSCRIPT=$( cd $(dirname "$0") && pwd )/$(basename "$0")
+declare -rx ARGS="$@"
+declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
+declare -r OS=$(uname -s)
 
 # number of parallel make jobs
-declare -i	JOBS=3
+declare -i  JOBS=3
 
 source "${SHLIBDIR}/lib.bash"
-
-# while bootstraping the module command is not yet available
-if typeset -f module > /dev/null 2>&1 ; then
-	module purge
-fi
 
 declare -rx BUILD_BASEDIR=$(abspath $SHLIBDIR/..)
 
@@ -37,6 +29,7 @@ declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
 	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
 fi
+
 for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
 	source "${f}"
 done
@@ -46,7 +39,6 @@ declare -x  DOCDIR=''
 declare -x  MODULE_FAMILY=''
 declare	-x  MODULE_RELEASE=''
 declare     cur_module_release=''
-
 
 declare     DEPEND_RELEASE=''
 declare -x  MODULE_NAME=''
@@ -58,16 +50,13 @@ declare -x  MODULE_BUILDDIR=''
 declare -x  MODULE_BUILD_DEPENDENCIES
 declare -x  MODULE_DEPENDENCIES
 
-declare -x C_INCLUDE_PATH
-declare -x CPLUS_INCLUDE_PATH
-declare -x CPP_INCLUDE_PATH
-declare -x LIBRARY_PATH
-declare -x LD_LIBRARY_PATH
-declare -x DYLD_LIBRARY_PATH
+declare -x  C_INCLUDE_PATH
+declare -x  CPLUS_INCLUDE_PATH
+declare -x  CPP_INCLUDE_PATH
+declare -x  LIBRARY_PATH
+declare -x  LD_LIBRARY_PATH
+declare -x  DYLD_LIBRARY_PATH
 
-if [[ $DEBUG_ON ]]; then
-	trap 'echo "$BASH_COMMAND"' DEBUG
-fi
 
 function usage() {
 	error "
@@ -92,6 +81,9 @@ ENV=VALUE
 -f | --force-rebuild
         Force rebuild of module.
 
+-b | --bootstrap 
+	Bootstrap Pmodules
+
 --with=P/V
         Preload module P with version V. To preload multiple modules,
         use this option per module. Nete that order may matter.
@@ -103,18 +95,15 @@ ENV=VALUE
 }
 
 
-P=$(basename $0)
-P=${P%.*}
-_P=$(echo $P | tr [:lower:] [:upper:])
-_P=${_P//-/_}
-_V=${_P}_VERSION
-
-DEBUG_ON=''
-FORCE_REBUILD=''
+debug_on='no'
+force_rebuild='no'
 ENVIRONMENT_ARGS=''
-WITH_ARGS=''
-DRY_RUN=''
+dry_run='no'
+bootstrap='no'
+
+# array collecting all modules specified on the command line via '--with=module'
 with_modules=()
+
 while (( $# > 0 )); do
 	case $1 in
 	-j )
@@ -125,16 +114,20 @@ while (( $# > 0 )); do
 		JOBS=${1/--jobs=}
 		;;
 	-v | --verbose)
-		DEBUG_ON=':'
+		debug_on='yes'
 		;;
 	-f | --force-rebuild )
-		FORCE_REBUILD=':'
+		force_rebuild='yes'
+		;;
+	-b | --bootstrap )
+		bootstrap='yes'
+		force_rebuild='yes'
 		;;
 	-? | -h | --help )
 		usage
 		;;
 	--dry-run )
-		DRY_RUN='dry-run'
+		dry_run='yes'
 		;;
 	--release=* )
 		MODULE_RELEASE=${1/--release=}
@@ -153,6 +146,22 @@ while (( $# > 0 )); do
 	shift
 done
 
+if [[ ${debug_on} == yes ]]; then
+	trap 'echo "$BASH_COMMAND"' DEBUG
+fi
+
+# while bootstraping the module command is not yet available
+if [[ ${bootstrap} == no ]]; then
+	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
+	module use unstable
+	module purge
+fi
+
+P=$(basename $0)
+P=${P%.*}
+_P=$(echo $P | tr [:lower:] [:upper:])
+_P=${_P//-/_}
+_V=${_P}_VERSION
 
 eval "${ENVIRONMENT_ARGS}"
 
@@ -233,7 +242,9 @@ function _load_build_dependencies() {
 					die 1 "${m}: module available with release \"${rel}\", add this release with \"module use ${rel}\" and re-run build script."
 				fi
 			done
-			[[ ${DRY_RUN} ]] && die 1 "${m}: module does not exist, cannot continue with dry run..."
+			[[ ${dry_run} == yes ]] && {
+				die 1 "${m}: module does not exist, cannot continue with dry run..."
+				}
 
 			echo "$m: module does not exist, trying to build it..."
 			local args=( '' )
@@ -272,19 +283,25 @@ function _load_build_dependencies() {
 		tmp=${tmp/${modulepath_root}\/}
 		tmp=${tmp%%/*}
 		local _family=( ${tmp//./ } )
-		# set module release to 'deprecated' if a build dependency
-		# is deprecated
 		if [[ ${_family[1]} == deprecated ]]; then
+			# set module release to 'deprecated' if a build dependency
+			# is deprecated
 			DEPEND_RELEASE='deprecated'
-		# set module release to 'unstable' if a build dependency is
-		# unstable and release not yet set
 		elif [[ ${_family[1]} == unstable ]] && [[ -z ${DEPEND_RELEASE} ]]; then
+			# set module release to 'unstable' if a build dependency is
+			# unstable and release not yet set
 			DEPEND_RELEASE='unstable'
 		fi
 		echo "Loading module: ${m}"
 		module load "${m}"
 	done
 }
+
+if [[ ${bootstrap} == yes ]]; then
+    function _load_build_dependencies() {
+	    :
+    }
+fi
 
 function _write_runtime_dependencies() {
 	local -r fname="${PREFIX}/.dependencies"
@@ -325,6 +342,12 @@ function _setup_env1() {
 	LD_LIBRARY_PATH=''
 	DYLD_LIBRARY_PATH=''
 
+	CFLAGS=''
+	CPPFLAGS=''
+	CXXFLAGS=''
+	LIBS=''
+	LDFLAGS=''
+	
 	while read _name _version; do
 		[[ -z ${_name} ]] && continue
 		[[ -z ${_version} ]] && continue
@@ -344,7 +367,8 @@ function _setup_env2() {
 	# overwrite environment variables with values we got on the cmd line
 	eval "${ENVIRONMENT_ARGS}"
 
-	# this allows us to specify the version as PKGNAME_VERSION=1.2.3 on the cmd-line
+	# this allows us to specify the version as PKGNAME_VERSION=1.2.3 on
+	# the cmd-line
         if [[ -z $V ]]; then
 		V=$(eval echo \$${_P}_VERSION)
 	fi
@@ -354,47 +378,67 @@ function _setup_env2() {
 		die 1 "$P: Missing version."
 	fi
 	MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
-	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V/$COMPILER/$COMPILER_VERSION"
+	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
 
 	# build module name
 	# :FIXME: the MODULE_PREFIX should be derived from MODULE_NAME
 	# :FIXME: this should be read from a configuration file
 	case ${MODULE_FAMILY} in
-	    Tools )
-		MODULE_RPREFIX="${P}/${V}"
-		MODULE_NAME="${P}/${V}"
-		;;
-	    Programming )
-		MODULE_RPREFIX="${P}/${V}"
-		MODULE_NAME="${P}/${V}"
-		;;
-	    Libraries )
-		MODULE_RPREFIX="${P}/${V}"
-		MODULE_NAME="${P}/${V}"
-		;;
-	    System )
-		MODULE_RPREFIX="${P}/${V}"
-		MODULE_NAME="${P}/${V}"
-		;;
-	    Compiler )
-		MODULE_RPREFIX="${P}/${V}/${COMPILER}/${COMPILER_VERSION}"
-		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/${P}/${V}"
-		;;
-	    MPI )
-		MODULE_RPREFIX="${P}/${V}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
-		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${P}/${V}"
-		;;
-	    HDF5 )
-		MODULE_RPREFIX="${P}/${V}/${HDF5}/${HDF5_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}/"
-		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${HDF5}/${HDF5_VERSION}/${P}/${V}"
-		;;
-	    HDF5_serial )
-		MODULE_RPREFIX="${P}/${V}/hdf5_serial/${HDF5_SERIAL_VERSION}/${COMPILER}/${COMPILER_VERSION}"
-		MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_VERSION}/${P}/${V}"
-		;;
-	    * )
-		die 1 "$P: oops: unknown family: ${MODULE_FAMILY}"
-		;;
+		Tools )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_NAME="${P}/${V}"
+			;;
+		Programming )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_NAME="${P}/${V}"
+			;;
+		Libraries )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_NAME="${P}/${V}"
+			;;
+		System )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_NAME="${P}/${V}"
+			;;
+		Compiler )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_RPREFIX+="/${COMPILER}/${COMPILER_VERSION}"
+			
+			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
+			MODULE_NAME+="${P}/${V}"
+			;;
+		MPI )
+			MODULE_RPREFIX="${P}/${V}/"
+			MODULE_RPREFIX+="${MPI}/${MPI_VERSION}/"
+			MODULE_RPREFIX+="${COMPILER}/${COMPILER_VERSION}"
+			
+			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
+			MODULE_NAME+="${MPI}/${MPI_VERSION}/"
+			MODULE_NAME+="${P}/${V}"
+			;;
+		HDF5 )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_RPREFIX+="/${HDF5}/${HDF5_VERSION}"
+			MODULE_RPREFIX+="/${MPI}/${MPI_VERSION}"
+			MODULE_RPREFIX+="/${COMPILER}/${COMPILER_VERSION}"
+			
+			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
+			MODULE_NAME+="${MPI}/${MPI_VERSION}/"
+			MODULE_NAME+="${HDF5}/${HDF5_VERSION}/"
+			MODULE_NAME+="${P}/${V}"
+			;;
+		HDF5_serial )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_RPREFIX+="/hdf5_serial/${HDF5_SERIAL_VERSION}"
+			MODULE_RPREFIX+="/${COMPILER}/${COMPILER_VERSION}"
+			
+			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
+			MODULE_NAME+="hdf5_serial/${HDF5_VERSION}/"
+			MODULE_NAME+="${P}/${V}"
+			;;
+		* )
+			die 1 "$P: oops: unknown family: ${MODULE_FAMILY}"
+			;;
 	esac
 
 	# set PREFIX of module
@@ -430,7 +474,8 @@ function _setup_env2() {
 	# release is stable
 	#   - if all build-dependency are stable or
 	#   - the module already exists and is stable
-	#   - an unstable release of the module exists and the release is changed to stable on the command line
+	#   - an unstable release of the module exists and the release is
+	#     changed to stable on the command line
 	elif [[ "${depend_release}" == 'stable' ]] \
 		|| [[ "${cur_module_release}" == 'stable' ]] \
 		|| [[ "${MODULE_RELEASE}" == 'stable' ]]; then
@@ -439,7 +484,8 @@ function _setup_env2() {
 	#
 	# release is unstable
 	#   - if a build-dependency is unstable or 
-	#   - if the module does not exists and no other release-type is given on the command line
+	#   - if the module does not exists and no other release-type is
+	#     given on the command line
 	#   - and all the cases I didn't think of
 	else
 		MODULE_RELEASE='unstable'
@@ -465,6 +511,59 @@ function _setup_env2() {
 	fi
 
 }
+
+if [[ ${bootstrap} == yes ]]; then
+    # redefine function for bootstrapping
+    function _setup_env2() {
+	    if [[ -z ${MODULE_FAMILY} ]]; then
+		die 1 "$P: family not set."
+	    fi
+
+            if [[ -z $V ]]; then
+		V=$(eval echo \$${_P}_VERSION)
+	    fi
+
+	    # oops, we need a version
+	    if [[ -z $V ]]; then
+		die 1 "$P: Missing version."
+	    fi
+	    MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
+	    MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
+	    MODULE_FAMILY='Tools'
+	    MODULE_NAME="Pmodules/0.99.0"
+	    # set PREFIX of module
+	    PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_NAME}"
+	    
+	    MODULE_RELEASE='unstable'
+	    info "${MODULE_NAME}: will be released as \"${MODULE_RELEASE}\""
+
+	    # directory for README's, license files etc
+	    DOCDIR="${PREFIX}/share/doc/$P"
+
+	    # set tar-ball and flags for tar
+	    TARBALL="${BUILD_DOWNLOADSDIR}/${P/_serial}"
+	    if [[ -r "${TARBALL}-${V}.tar.gz" ]]; then
+		    TARBALL+="-${V}.tar.gz"
+	    elif [[ -r "${TARBALL}-${OS}-${V}.tar.gz" ]]; then
+		    TARBALL+="-${OS}-${V}.tar.gz"
+	    elif [[ -r "${TARBALL}-${V}.tar.bz2" ]]; then
+		    TARBALL+="-${V}.tar.bz2"
+	    elif [[ -r "${TARBALL}-${OS}-${V}.tar.bz2" ]]; then
+		    TARBALL+="-${OS}-${V}.tar.bz2"
+	    else
+		    error "tar-ball for $P/$V not found."
+		    exit 43
+	    fi
+	    C_INCLUDE_PATH="${PREFIX}/include"
+	    CPLUS_INCLUDE_PATH="${PREFIX}/include"
+	    CPP_INCLUDE_PATH="${PREFIX}/include"
+	    LIBRARY_PATH="${PREFIX}/lib"
+	    LD_LIBRARY_PATH="${PREFIX}/lib"
+	    DYLD_LIBRARY_PATH="${PREFIX}/lib"
+
+	    PATH+=":${PREFIX}/bin"
+    }
+fi
 
 function _prep() {
 
@@ -526,7 +625,7 @@ function _set_link() {
 	echo "${MODULE_RELEASE}" > "${release_file}"
 }
 
-function _cleanup_build() {
+function em.cleanup_build() {
     (
 	[[ -d /${MODULE_BUILDDIR} ]] || return 0
 	cd "/${MODULE_BUILDDIR}/..";
@@ -581,9 +680,9 @@ function em.make_all() {
 	# setup module specific environment
 	_setup_env2
 
-	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
+	if [[ ! -d "${PREFIX}" ]] || [[ ${force_rebuild} == 'yes' ]]; then
  		echo "Building $P/$V ..."
-		[[ "${DRY_RUN}" ]] && die 0 ""
+		[[ ${dry_run} == yes ]] && die 0 ""
 		_check_compiler
 		_prep
 		cd "${MODULE_SRCDIR}"
@@ -595,16 +694,19 @@ function em.make_all() {
 		em.post_install
 		em.install_doc
 		_post_install
-		_write_runtime_dependencies
-		_write_build_dependencies
+		if [[ ${bootstrap} == 'no' ]]; then
+			_write_runtime_dependencies
+			_write_build_dependencies
+		fi
 		
 	else
  		echo "Not rebuilding $P/$V ..."
 	fi
-	_set_link
-	_cleanup_build
+	if [[ ${bootstrap} == 'no' ]]; then
+		_set_link
+	fi
+	em.cleanup_build
 }
-
 
 # Local Variables:
 # mode: sh
