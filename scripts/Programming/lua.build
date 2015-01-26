@@ -3,7 +3,7 @@
 # Lua cannot be build in a seperate directory!
 #
 
-source "$(dirname $0)/../lib/libem.bash"
+source "$(dirname $0)/../../lib/libem.bash"
 
 function em.configure() {
         cd "${MODULE_SRCDIR}"

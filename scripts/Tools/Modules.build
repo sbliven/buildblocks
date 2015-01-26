@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(dirname $0)/../lib/libem.bash"
+source "$(dirname $0)/../../lib/libem.bash"
 
 TCL_VERSION='8.6.3'
 TCL_DIR="${PSI_PREFIX}/Programming/Tcl/${TCL_VERSION}"
