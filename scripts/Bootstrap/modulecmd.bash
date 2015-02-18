@@ -3,7 +3,9 @@
 declare -r  PMODULES_DIR=$( cd "$(dirname $0)/.." && pwd )
 declare -r  version='@PMODULES_VERSION@'
 declare -r  modulecmd="${PMODULES_DIR}/bin/modulecmd.tcl"
-#declare -rx TCL_LIBRARY="${PMODULES_DIR}/lib/tcl8.6"
+
+declare -rx TCL_LIBRARY="${PMODULES_DIR}/lib/tcl8.6"
+declare -rx PSI_LIBMODULES="${PMODULES_DIR}/lib/libmodules.tcl"
 
 declare -r modulepath_root="${PSI_PREFIX}/${PSI_MODULES_ROOT}"
 declare -ra modulepath=( ${MODULEPATH//:/ } )
@@ -398,11 +400,11 @@ get_release() {
 	echo ${release}
 }
 
-if [[ ${PSI_RELEASES_CONF} ]] && [[ -r "${PSI_PREFIX}/${PSI_CONFIG_DIR}/${PSI_RELEASES_CONF}" ]]; then
-        declare -r available_releases=:$(< "${PSI_PREFIX}/${PSI_CONFIG_DIR}/${PSI_RELEASES_CONF}"):
+if [[ -n ${PSI_RELEASES} ]]; then
+        declare -r available_releases="${PSI_RELEASES}"
 else
 	# set defaults, if file doesn't exist or isn't readable
-	declare -r available_releases=":unstable:stable:deprecated:"
+	declare -r available_releases=':unstable:stable:deprecated:'
 fi
 declare used_releases=":${PSI_USED_RELEASES}:"
 
@@ -414,19 +416,7 @@ is_used_release() {
 	[[ ${used_releases} =~ :$1: ]]
 }
 
-declare  available_families=':'
-declare family
-declare depth
-while read family depth rest; do
-	if (( depth == 0 )); then
-	    available_families+="${family}:"
-	fi
-done < "${PSI_PREFIX}/${PSI_CONFIG_DIR}/${PSI_FAMILY_CONF}"
 declare used_families=":${PSI_LOADEDFAMILIES}:"
-
-is_family() {
-	[[ ${available_families} =~ :$1: ]]
-}
 
 is_used_family() {
 	[[ ${used_families} =~ :$1: ]]
@@ -677,6 +667,20 @@ subcommand_avail() {
 	done
 }
 
+#
+# $1: family name (not path!)
+compute_family_depth () {
+	{
+		local -r family=$1
+		cd "${modulepath_root}"
+		local -r tmp=$(find "${family}" -d -type f -o -type l | head -1)
+		local -ar tmp2=( ${tmp//\// } )
+		local depth=${#tmp2[@]}
+		let depth-=3
+		echo ${depth} 
+	};
+}
+
 subcommand_use() {
 	if [[ $# == 0 ]]; then
 		local f
@@ -686,11 +690,18 @@ subcommand_use() {
 			echo -e "\t${f}" 1>&2
 		done
 		echo -e "\nFamilies you may use in addition:" 1>&2
-		for f in ${available_families//:/ }; do
-			if ! is_used_family $f; then
-				echo -e "\t${f}" 1>&2
-			fi
-		done
+		local available_families=':'
+		{
+			cd "${PSI_PREFIX}/${PSI_MODULES_ROOT}"
+			for f in *; do
+				local  tmp=$(find $f -d -type f -o -type l | head -1)
+				local -a tmp2=( ${tmp//\// } )
+				local -i depth=${#tmp2[@]}-3
+				if ! is_used_family $f && (( depth == 0 )); then
+					echo -e "\t${f}" 1>&2
+				fi
+			done
+		}
 		
 		echo -e "\nUsed releases:" 1>&2
 		for r in ${used_releases//:/ }; do
@@ -699,7 +710,7 @@ subcommand_use() {
 		echo -e "\nReleases you may use in addition:" 1>&2
 		for r in ${available_releases//:/ }; do
 			if ! is_used_release $r; then
-				echo -e "\t${r}"
+				echo -e "\t${r}" 1>&2
 			fi
 		done
 
@@ -710,6 +721,7 @@ subcommand_use() {
 			fi
 		done
 	else
+
 		local dirs_to_add=()
 		local subcommand_switches=''
 		while (( $# > 0)); do
@@ -722,7 +734,16 @@ subcommand_use() {
 			        # releases are always *appended*
 			        append_path PSI_USED_RELEASES "${arg}"
 			elif [[ ! ${arg} =~ */* ]] && [[ -d ${modulepath_root}/${arg} ]]; then
-			        dirs_to_add+=( ${modulepath_root}/${arg} )
+				local -i depth=$(compute_family_depth "${arg}")
+				if (( depth == 0 )); then	
+			        	dirs_to_add+=( ${modulepath_root}/${arg} )
+				else
+					echo "${0##_}: cannot add family ${arg} to module path"
+					return 3
+				fi
+			elif [[ ${arg} =~ ^${modulepath_root} ]]; then
+				echo "${0##_}: illegal directory: ${arg}" 1>&2
+				return 3
 			elif [[ -d ${arg} ]]; then
 			        local normalized_dir=$(cd "${arg}" && pwd)
 				dirs_to_add+=( ${normalized_dir} )
@@ -808,9 +829,16 @@ subcommand_search() {
 		local -r module=$1
 		# we must write temporary results to a file for sorting
 		local -r tmpfile=$( mktemp /tmp/$(basename $0).XXXXXX ) || exit 1
-		local family depth unused
+		local family
 		# loop over all families
-		while read family depth unused; do
+		push -n .
+		cd "${PSI_PREFIX}/${PSI_MODULES_ROOT}"
+		for family in *; do
+			local tmp=$( find "${family}" -d -type f -o -type l 2>&1 | head -1 )
+			local -a tmp2=( ${tmp//\// } )
+			echo ${tmp2[0]}
+			local -i depth=${tmp2[@]}
+			let depth-=3
 			# get all potential directories of family $f with module-files 
 			local mpaths=( $(find \
 					     "${modulepath_root}/${family}" \
@@ -841,7 +869,8 @@ subcommand_search() {
 					       ${family} "${requires}" >> "${tmpfile}"
 				done
 			done
-		done < "${PSI_PREFIX}/${PSI_CONFIG_DIR}/${PSI_FAMILY_CONF}"
+		done
+		popd
 		sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}" 1>&2
 		
 		rm -f "${tmpfile}"
