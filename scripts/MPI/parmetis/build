@@ -1,0 +1,53 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	CC=$MPICC
+	CXX=$MPICXX
+	F77=$MPIF77
+	F90=$MPIF90
+	FC=$MPIFC
+	FORTRAN=$MPIFORTRAN
+}
+
+function em.build() {
+	local -ri MAJOR_VERSION=${V%%.*}
+	if (( MAJOR_VERSION == 3 )) ; then
+		cd "${MODULE_SRCDIR}"
+		make -e -j3 || exit 1
+
+		mkdir -p $PREFIX/include/metis
+		mkdir -p $PREFIX/lib
+
+		cp *.h $PREFIX/include
+		cp METISLib/*.h $PREFIX/include/metis
+		cp lib*.a $PREFIX/lib
+	elif (( MAJOR_VERSION == 4 )); then
+		cd "${MODULE_SRCDIR}"
+		make config prefix=$PREFIX || exit 1
+		make -j3 || exit 1
+		make install
+
+		LIBMETIS_A=$(find . -name libmetis.a)
+		METIS_H=$(find . -name metis.h)
+
+		install -m 0644 $METIS_H    $PREFIX/include
+		install -m 0644 $LIBMETIS_A $PREFIX/lib
+	else
+		die 42 "Unsupported version: $V"
+	fi
+}
+
+function em.install() {
+	:
+}
+
+
+em.add_to_family 'MPI'
+em.set_runtime_dependencies "${COMPILER}" "${MPI}"
+em.set_build_dependencies "${COMPILER}" "${MPI}"
+em.set_docfiles 'CHANGES' 'INSTALL' 'LICENSE.txt' 'README' 'VERSION' 
+em.make_all
+em.cleanup_src
+

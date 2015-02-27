@@ -1,0 +1,31 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		|| exit 1
+}
+
+# use system gcc to compile
+declare -rx CC=gcc
+
+em.add_to_family 'Programming'
+em.set_docfiles \
+	AUTHORS \
+	COPYING \
+	ChangeLog \
+	HACKING \
+	NEWS \
+	README \
+	THANKS
+em.set_build_dependencies 'm4' 'autoconf'
+em.make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
+

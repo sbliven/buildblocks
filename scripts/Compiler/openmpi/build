@@ -1,0 +1,22 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--enable-mpi-cxx \
+		--enable-mpi-cxx-seek \
+		--enable-mpi-f90 \
+		--enable-mpi-profile \
+		--enable-shared \
+		--enable-smp-locks \
+		|| exit 1
+}
+
+
+em.add_to_family 'Compiler'
+em.set_runtime_dependencies "${COMPILER}"
+em.set_build_dependencies "${COMPILER}"
+em.set_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
+em.make_all

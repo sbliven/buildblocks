@@ -1,18 +1,16 @@
 #!/bin/bash
 
+#############################################################################
+# bash 3 or newer ...
+#
 if [ ${BASH_VERSINFO:-0} -lt 3 ]; then
 	echo "BASH version ${BASH_VERSION} ist not supported! You need at least version 3..."
 	return
 fi
 
-if [ "${LOADEDMODULES:-}" = "" ]; then
-	declare -x LOADEDMODULES=
-fi
-
-if [[ -r "${PSI_BASH_COMPLETION}" ]]; then
-	source "${PSI_BASH_COMPLETION}"
-fi
-
+#############################################################################
+# implement module comand as function
+#
 module() {
 	local -r modulecmd="${PMODULES_HOME}/bin/modulecmd"
 
@@ -62,6 +60,72 @@ module() {
 	done
 }
 export -f module
+
+#############################################################################
+# helper functions
+#
+append_path () {
+	local -r P=$1
+	local -r d=$2
+
+        if ! echo ${!P} | egrep -q "(^|:)${d}($|:)" ; then
+		if [[ -z ${!P} ]]; then
+			eval $P=${d}
+		else
+			eval $P="${!P}:${d}"
+        	fi
+	fi
+}
+
+prepend_path () {
+	local -r P=$1
+	local -r d=$2
+
+        if ! echo ${!P} | egrep -q "(^|:)${d}($|:)" ; then
+		if [[ -z ${!P} ]]; then
+			eval $P=${d}
+		else
+			eval $P="${d}:${!P}"
+        	fi
+	fi
+}
+
+#############################################################################
+# setup environment
+#
+if [[ -z ${LOADEDMODULES} ]]; then
+	declare -x LOADEDMODULES=''
+fi
+
+if [[ -z ${MODULEPATH} ]]; then
+	declare -x MODULEPATH=''
+fi
+
+if [[ -z ${PSI_LOADEDFAMILIES} ]]; then
+	declare -x PSI_LOADEDFAMILIES=''
+fi
+for f in ${PSI_DEFAULT_FAMILIES}; do
+	append_path MODULEPATH "${PSI_PREFIX}/${PSI_MODULES_ROOT}/$f"
+	append_path PSI_LOADEDFAMILIES "${f}"
+done
+
+append_path PATH    "${PMODULES_HOME}/bin"
+append_path MANPATH "${PMODULES_HOME}/share/man"
+
+#############################################################################
+# initialize bash completion
+#
+if [[ -r "${PMODULES_HOME}/init/bash_completion" ]]; then
+	source "${PMODULES_HOME}/init/bash_completion"
+fi
+
+#############################################################################
+# legacy...
+#
+declare -x MODULE_VERSION=${PMODULES_VERSION}
+declare -x MODULE_VERSION_STACK="${PMODULE_VERSION}"
+declare -x MODULESHOME="${PMODULES_HOME}"
+
 
 # Local Variables:
 # mode: sh

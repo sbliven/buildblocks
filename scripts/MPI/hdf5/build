@@ -1,0 +1,33 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	CC=$MPICC
+	CXX=$MPICXX
+	F77=$MPIF77
+	F90=$MPIF90
+	FC=$MPIFC
+	FORTRAN=$MPIFORTRAN
+
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--enable-shared \
+		--enable-parallel \
+		--enable-cxx \
+		--enable-unsupported \
+		--with-pic \
+		|| exit 1
+}
+
+
+em.add_to_family 'MPI'
+em.set_runtime_dependencies "${COMPILER}" "${MPI}"
+em.set_build_dependencies "${COMPILER}" "${MPI}"
+em.set_docfiles \
+		ACKNOWLEDGMENTS \
+		COPYING \
+		MANIFEST \
+		README.txt
+em.make_all
+

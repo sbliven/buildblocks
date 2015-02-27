@@ -1,0 +1,48 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+# :TODO: detect compiler
+TOOLSET=gcc
+
+function em.configure() {
+	cd "${MODULE_SRCDIR}"
+	"${MODULE_SRCDIR}"/bootstrap.sh \
+		--prefix="${PREFIX}" \
+		--with-toolset=${TOOLSET} \
+		--with-libraries=all \
+		--with-python-root="${PYTHON_PREFIX}" \
+		|| exit 1
+}
+
+function em.build() {
+	cd "${MODULE_SRCDIR}"
+	./b2 \
+		--build-type=minimal \
+		--build-dir="${MODULE_BUILDDIR}" \
+		--layout=system \
+		--without-mpi \
+		variant=release \
+		link=static \
+		threading=multi \
+		stage
+}
+
+function em.install() {
+	cd "${MODULE_SRCDIR}"
+	./b2 \
+		--build-type=minimal \
+		--build-dir="${MODULE_BUILDDIR}" \
+		--layout=system \
+		--without-mpi \
+		variant=release \
+		link=static \
+		threading=multi \
+		install
+}
+
+em.add_to_family 'Compiler'
+em.set_runtime_dependencies "${COMPILER}"
+em.set_build_dependencies "${COMPILER}" 'Python'
+em.make_all
+

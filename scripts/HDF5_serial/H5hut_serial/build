@@ -1,0 +1,30 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	(cd "${MODULE_SRCDIR}" && ./autogen.sh)
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--enable-debug \
+		--enable-vtkconverter \
+		--with-hdf5="${HDF5_SERIAL_PREFIX}" \
+		--with-pic \
+		|| exit 1
+}
+
+function em.build() {
+	make -C src
+	make -C tools 
+}
+
+function em.install() {
+	make -C src install
+	make -C tools install
+}
+
+em.add_to_family 'HDF5_serial'
+em.set_runtime_dependencies "${COMPILER}" 'hdf5_serial'
+em.set_build_dependencies   "autoconf" "automake" "libtool" "${COMPILER}" "vtk" "hdf5_serial"
+em.make_all
+

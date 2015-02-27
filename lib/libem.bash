@@ -25,6 +25,8 @@ declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
 declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
 declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
+declare -xr PSI_TEMPLATES_DIR='templates'
+
 if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
 	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
 fi
@@ -151,26 +153,27 @@ fi
 
 # while bootstraping the module command is not yet available
 if [[ ${bootstrap} == no ]]; then
-	source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
+        source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
+	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
 	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
 	module use unstable
 	module purge
 fi
 
-P=$(basename $0)
-P=${P%.*}
+P=$(basename $(dirname "${BUILDSCRIPT}"))
 _P=$(echo $P | tr [:lower:] [:upper:])
 _P=${_P//-/_}
 _V=${_P}_VERSION
 
 eval "${ENVIRONMENT_ARGS}"
 
-if [[ ${PSI_RELEASES_CONF} ]] && [[ -r "${PSI_PREFIX}/${PSI_RELEASES_CONF}" ]]; then
-        declare -r releases=:$(< "${PSI_PREFIX}/${PSI_RELEASES_CONF}"):
+if [[ -n ${PSI_RELEASES} ]]; then
+        declare -r releases="${PSI_RELEASES}"
 else
 	# set defaults, if file doesn't exist or isn't readable
 	declare -r releases=":unstable:stable:deprecated:"
 fi
+
 is_release () {
 	[[ ${releases} =~ :$1: ]]
 }
@@ -192,7 +195,7 @@ function em.add_to_family() {
 	if [[ -z ${1} ]]; then
 		die 42 "${FUNCNAME}: Missing family argument."
 	fi
-	if [[ ! -d ${PSI_PREFIX}/${PSI_CONFIG_DIR}/${1} ]]; then
+	if [[ ! -d ${PSI_PREFIX}/${PSI_MODULES_ROOT}/${1} ]]; then
 		die 43 "${1}: family does not exist."
 	fi
 	MODULE_FAMILY=$1
@@ -219,8 +222,14 @@ function module_is_available() {
 }
 
 function _load_build_dependencies() {
+	# :FIXME: merge this two loops, load only modules which are required
+	#         this merge is not as easy as it looks like at a first glance!
 	for m in "${with_modules[@]}"; do
-		module load "${m}"
+		if module_is_available "$m"; then
+			module load "${m}"
+		else
+			die 44 "$m: module not available!"
+		fi
 	done
 	for m in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $m ]] && continue
@@ -273,7 +282,7 @@ function _load_build_dependencies() {
 				esac
 				shift
 			done
-			"${BUILD_SCRIPTSDIR}/${m/\/*}.build" ${args[@]}
+			"${BUILD_SCRIPTSDIR}"/*/"${m/\/*}/build" ${args[@]}
 			if [[ -z $(module avail "$m" 2>&1) ]]; then
 				die 1 "$m: oops: build failed..."
 			fi
@@ -530,7 +539,7 @@ if [[ ${bootstrap} == yes ]]; then
 	    MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
 	    MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
 	    MODULE_FAMILY='Tools'
-	    MODULE_NAME="Pmodules/0.99.0"
+	    MODULE_NAME="Pmodules/${PMODULES_VERSION}"
 	    # set PREFIX of module
 	    PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_NAME}"
 	    
@@ -617,7 +626,7 @@ function _set_link() {
 		    local x
 		    IFS='/' x=( ${dir_name/${PSI_PREFIX}\/${PSI_MODULES_ROOT}\/} )
 		    local n=${#x[@]}
-		    local -r _target="../"$(eval printf "../%.s" {1..${n}})${PSI_CONFIG_DIR##*/}/"${MODULE_FAMILY}/${P}/modulefile"
+		    local -r _target="../"$(eval printf "../%.s" {1..${n}})${PSI_TEMPLATES_DIR##*/}/"${MODULE_FAMILY}/${P}/modulefile"
 		    ln -fs "${_target}" "${MODULE_NAME##*/}"
 	    )
 	fi

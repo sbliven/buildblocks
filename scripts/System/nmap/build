@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	cd "${MODULE_SRCDIR}"
+	./configure \
+		--prefix="${PREFIX}" \
+		--with-libpcap=included \
+		--with-libpcre=included \
+		--with-libdnet=included \
+		--with-liblua=included \
+		--with-liblinear=included
+}
+
+function em.build() {
+	cd "${MODULE_SRCDIR}"
+	make -j "${JOBS}"
+}
+
+function em.install() {
+	cd "${MODULE_SRCDIR}"
+	make install
+}
+
+em.release 'unstable'
+em.add_to_family 'System'
+em.set_build_dependencies "${COMPILER}"
+em.make_all

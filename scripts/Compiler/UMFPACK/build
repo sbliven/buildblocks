@@ -1,0 +1,44 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	cat <<EOF > "${MODULE_SRCDIR}/SuiteSparse_config/SuiteSparse_config.mk"
+CF = \$(CFLAGS) \$(CPPFLAGS) \$(TARGET_ARCH) -O3 -fexceptions -fPIC -DNTIMER
+RANLIB = ranlib
+ARCHIVE = \$(AR) \$(ARFLAGS)
+CP = cp -f
+MV = mv -f
+F77 = gfortran
+F77FLAGS = \$(FFLAGS) -O
+F77LIB =
+LIB = -lm
+INSTALL_LIB = \${PREFIX}/lib
+INSTALL_INCLUDE = \${PREFIX}/include
+BLAS = -lopenblas -lgfortran
+XERBLA = 
+GPU_BLAS_PATH =
+GPU_CONFIG =
+UMFPACK_CONFIG = -DNCHOLMOD
+CHOLMOD_CONFIG = \$(GPU_CONFIG)
+SPQR_CONFIG =
+TBB =
+EOF
+}
+
+function em.build() {
+	cd "${MODULE_SRCDIR}/UMFPACK"
+	make TARGET=CORE2 BINARY=64 USE_THREAD=0 NO_SHARED=1
+}
+
+function em.install() {
+	install -d "${PREFIX}/include"
+	install -d "${PREFIX}/lib"
+	make PREFIX="${PREFIX}" install
+}
+
+em.add_to_family 'Compiler'
+em.set_runtime_dependencies "${COMPILER}" 'OpenBLAS'
+em.set_build_dependencies "${COMPILER}" 'OpenBLAS'
+em.make_all
+#em.cleanup_src

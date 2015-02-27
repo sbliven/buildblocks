@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	cat <<EOF > "${MODULE_SRCDIR}/make.inc"
+SHELL = /bin/sh
+PLAT = 
+DRVOPTS  = \$(OPTS)
+LOADER   = \$(FORTRAN) -pthread
+ARCHFLAGS= -ru
+EOF
+	cat <<EOF > "${MODULE_SRCDIR}/Makefile.rule"
+VERSION = 0.2.9
+TARGET = CORE2
+CC = gcc
+BINARY=64
+USE_THREAD = 1
+USE_OPENMP = 1
+NO_SHARED = 1
+NO_WARMUP = 1
+NO_AFFINITY = 1
+FCOMMON_OPT = -frecursive
+COMMON_PROF = -pg
+EOF
+}
+
+function em.build() {
+	cd "${MODULE_SRCDIR}"
+	make
+}
+
+function em.install() {
+	make PREFIX="${PREFIX}" install
+	# We have to build shared libs and remove them here.
+	# Building with NOSHARED gives an error during install -
+	# due to a bug in the Makefile(s).
+	rm -f "${PREFIX}/lib/"*.so
+	rm -f "${PREFIX}/lib/"*.dylib 
+	#( cd "${PREFIX}/lib"; ln -fs
+}
+
+em.add_to_family 'Compiler'
+em.set_runtime_dependencies "${COMPILER}"
+em.set_build_dependencies "${COMPILER}"
+em.set_docfiles 'LICENSE' 'README.md'
+em.set_supported_compilers 'gcc'
+em.make_all
+em.cleanup_src

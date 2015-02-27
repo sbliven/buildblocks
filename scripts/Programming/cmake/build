@@ -1,0 +1,12 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	"${MODULE_SRCDIR}/bootstrap" --prefix="${PREFIX}"
+}
+
+em.add_to_family 'Programming'
+em.set_build_dependencies "${COMPILER}"
+em.make_all
+

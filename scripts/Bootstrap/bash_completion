@@ -2,7 +2,7 @@
 # Bash commandline completion (bash 3.0 and above) for Modules 3.2.10
 #
 _module_avail() {
-	"${MODULESHOME}"/bin/modulecmd bash -t avail 2>&1 | sed '
+	"${PMODULES_HOME}"/bin/modulecmd bash -t avail 2>&1 | sed '
 		/:$/d;
 		/:ERROR:/d;
 		s#^\(.*\)/\(.\+\)(default)#\1\n\1\/\2#;

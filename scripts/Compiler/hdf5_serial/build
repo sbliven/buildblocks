@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source "$(dirname $0)/../../../lib/libem.bash"
+
+function em.configure() {
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		--enable-shared \
+		--enable-cxx \
+		--enable-unsupported \
+		--with-pic \
+		|| exit 1
+}
+
+em.add_to_family 'Compiler'
+em.set_runtime_dependencies "${COMPILER}"
+em.set_build_dependencies "${COMPILER}"
+em.make_all
+
