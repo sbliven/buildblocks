@@ -15,8 +15,24 @@ unset _init_env_file
 ############################################################################
 # check configuration
 #
-if [[ ! -d ${PSI_PREFIX} ]] || [[ ! -d ${PMODULES_HOME} ]]; then
-	echo "Oops: cannot initialize module environment !"
+if [[ -z ${PSI_PREFIX} ]]; then 
+	echo "Oops: Pmodules prefix not set." 1>&2
+	return 1
+fi
+if [[ ! -d ${PSI_PREFIX} ]]; then 
+	echo "Oops: ${PSI_PREFIX}: Set as Pmodules prefix, but this is not a directory." 1>&2
+	return 1
+fi
+if [[ -z ${PMODULES_VERSION} ]]; then
+	echo "Oops: ${PMODULES_VERSION}: Pmodules version not set." 1>&2
+	return 1
+fi
+if [[ -z ${PMODULES_HOME} ]]; then
+	echo "Oops: ${PMODULES_HOME}: Pmodules home not set." 1>&2
+	return 1
+fi
+if [[ ! -d ${PMODULES_HOME} ]]; then
+	echo "Oops: ${PMODULES_HOME}: Set as Pmodules home, but this is not a directory." 1>&2
 	return 1
 fi
 
