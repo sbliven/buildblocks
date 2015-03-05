@@ -25,7 +25,7 @@ declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
 declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
 declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
-declare -xr PSI_TEMPLATES_DIR='templates'
+#declare -xr PSI_TEMPLATES_DIR='templates'
 
 if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
 	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
@@ -226,6 +226,7 @@ function _load_build_dependencies() {
 	#         this merge is not as easy as it looks like at a first glance!
 	for m in "${with_modules[@]}"; do
 		if module_is_available "$m"; then
+			echo "Loading module: ${m}"
 			module load "${m}"
 		else
 			die 44 "$m: module not available!"
