@@ -105,18 +105,24 @@ sync_module() {
 	$DRY rsync --links --perms --recursive --delete \
 	      "${src_prefix}/${rel_module_prefix}/" \
 	      "${target_prefix}/${rel_module_prefix}/" || return $?
-	
-	local dir=$( dirname "${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}" )
-	mkdir -p "${dir}" || return $?
-	$DRY rsync --links --perms --recursive \
-	      "${src_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}" \
-	      "${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}" \
-	    || return $?
 
-	$DRY rsync --links --perms --recursive \
-	      "${src_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}" \
-	      "${target_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}" \
-	    || return $?
+	local -r src_modulefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
+	local -r src_releasefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
+	local -r target_modulefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
+	local -r target_releasefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
+
+	if [[ -e "${src_modulefile}" ]] || [[ -e "${src_releasefile}" ]]; then
+	        local dir=$( dirname "${target_modulefile}" )
+		mkdir -p "${dir}" || return $?
+	fi
+	if [[ -e "${src_modulefile}" ]]; then
+	        $DRY rsync --links --perms --recursive \
+		     "${src_modulefile}" "${target_modulefile}" || return $?
+	fi
+	if [[ -e "${src_releasefile}" ]]; then
+	        $DRY rsync --links --perms --recursive \
+		     "${src_releasefile}" "${target_releasefile}" || return $?
+	fi
 }
 
 subcommand_init() {
