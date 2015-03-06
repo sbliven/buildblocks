@@ -1,0 +1,25 @@
+#!/bin/bash
+
+declare -r basedir=$(dirname $0)
+source '../../config/Pmodules.conf'
+
+declare -r recipe="${basedir}/$1/build"
+shift
+
+if [[ ! -x "${recipe}" ]]; then
+	echo "Error: no recipe to build '$1'!"
+	exit 1
+fi
+
+for cc in "${COMPILER_VERSIONS[@]}"; do
+	for mpi in "${MPI_VERSIONS[@]}"; do
+		for hdf5 in "${HDF5_VERSIONS[@]}"; do
+			"${recipe}" "$@" --with=$cc --with=$mpi --with=$hdf5 || {
+				echo "Oops: build failed for:"
+				echo "        compile: $cc"
+				echo "        mpi:     $mpi"
+				echo "        hdf5:    $hdf5"
+			}
+		done
+	done
+done
