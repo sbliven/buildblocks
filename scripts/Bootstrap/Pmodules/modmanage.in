@@ -101,7 +101,7 @@ sync_module() {
 	local -r rel_module_prefix=$( get_module_prefix "${rel_modulefile}" )
 	local -r rel_releasefile=$( get_releasefile_name "${rel_modulefile}" )
 
-	mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
+	$DRY mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
 	$DRY rsync --links --perms --recursive --delete \
 	      "${src_prefix}/${rel_module_prefix}/" \
 	      "${target_prefix}/${rel_module_prefix}/" || return $?
@@ -113,7 +113,7 @@ sync_module() {
 
 	if [[ -e "${src_modulefile}" ]] || [[ -e "${src_releasefile}" ]]; then
 	        local dir=$( dirname "${target_modulefile}" )
-		mkdir -p "${dir}" || return $?
+		$DRY mkdir -p "${dir}" || return $?
 	fi
 	if [[ -e "${src_modulefile}" ]]; then
 	        $DRY rsync --links --perms --recursive \
