@@ -817,6 +817,7 @@ subcommand_search() {
 	local modules=()
 	local with_modules='//'
 	local _print_header='yes'
+	local _print_modulefiles='no'
 	local use_releases=':'
 	local -r fmt="%-20s %-10s %-12s %-s\n"
 
@@ -869,8 +870,17 @@ subcommand_search() {
 				done
 			done
 		done
-		sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}" 1>&2
-		
+		if [[ "{_print_modulefiles}" == "no" ]]; then
+			sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}" 1>&2
+		else
+			while read -a line; do
+				echo -n "${line[2]}/"
+				for d in "${line[@]:3}"; do
+					echo -n "$d/"
+				done
+				echo "${line[0]}"
+			done < <(sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}")
+		fi
 		rm -f "${tmpfile}"
 	}
 
@@ -878,6 +888,10 @@ subcommand_search() {
 	while (( $# > 0 )); do
 		case $1 in
 			--no-header )
+				_print_header='no'
+				;;
+			--print-modulefiles )
+				_print_modulefiles='yes'
 				_print_header='no'
 				;;
 			--release=* )
