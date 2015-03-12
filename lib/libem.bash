@@ -34,6 +34,7 @@ fi
 #for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
 #	source "${f}"
 #done
+source "${BUILD_CONFIGDIR}/Pmodules.conf"
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
