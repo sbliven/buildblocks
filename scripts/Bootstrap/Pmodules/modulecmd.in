@@ -10,6 +10,8 @@ declare -rx PSI_LIBMODULES="${PMODULES_DIR}/lib/libmodules.tcl"
 declare -r modulepath_root="${PSI_PREFIX}/${PSI_MODULES_ROOT}"
 declare -ra modulepath=( ${MODULEPATH//:/ } )
 
+source "${PMODULES_DIR}/lib/libpmodules.bash"
+
 if set -o | grep 'xtrace' | grep -q 'on'; then
         declare -r __XTRACE__='on'
 else
@@ -668,22 +670,25 @@ subcommand_avail() {
 }
 
 get_families () {
-	if [[ ! -d "${modulepath_root}" ]]; then
+	local -r module_hierarchy_root="$1"
+	if [[ ! -d "${module_hierarchy_root}" ]]; then
 		echo ""
 	else
 	{
-		cd "${modulepath_root}"
+		cd "${module_hierarchy_root}"
 		ls -1
 	}
 	fi
 }
 
 #
-# $1: family name (not path!)
+# $1: root of modulefile hierarchy
+# $2: family name (not path!)
 compute_family_depth () {
+	local -r module_hierarchy_root="$1"
+	local -r family=$2
 	{
-		local -r family=$1
-		cd "${modulepath_root}"
+		cd "${module_hierarchy_root}"
 		local -r tmp=$(find "${family}" -depth -type f -o -type l | head -1)
 		local -ar tmp2=( ${tmp//\// } )
 		local depth=${#tmp2[@]}
@@ -701,8 +706,8 @@ subcommand_use() {
 			echo -e "\t${f}" 1>&2
 		done
 		echo -e "\nFamilies you may use in addition:" 1>&2
-		for family in $(get_families); do
-			local -i depth=$( compute_family_depth "${family}")
+		for family in $(get_families "${modulepath_root}"); do
+			local -i depth=$( compute_family_depth "${modulepath_root}" "${family}")
 			if ! is_used_family $f && (( depth == 0 )); then
 			    echo -e "\t${f}" 1>&2
 			fi
@@ -739,7 +744,7 @@ subcommand_use() {
 			        # releases are always *appended*
 			        append_path PSI_USED_RELEASES "${arg}"
 			elif [[ ! ${arg} =~ */* ]] && [[ -d ${modulepath_root}/${arg} ]]; then
-				local -i depth=$(compute_family_depth "${arg}")
+				local -i depth=$(compute_family_depth "${modulepath_root}" "${arg}")
 				if (( depth == 0 )); then	
 			        	dirs_to_add+=( ${modulepath_root}/${arg} )
 				else
@@ -816,6 +821,7 @@ subcommand_clear() {
 subcommand_search() {
 	local modules=()
 	local with_modules='//'
+	local src_prefix=''
 	local _print_header='yes'
 	local _print_modulefiles='no'
 	local use_releases=':'
@@ -833,22 +839,23 @@ subcommand_search() {
 	# $1: module name pattern
 	search () {
 		local -r module=$1
+		local -r module_hierarchy_root="${src_prefix}/${PSI_MODULES_ROOT}"
 		# we must write temporary results to a file for sorting
 		local -r tmpfile=$( mktemp /tmp/$(basename $0).XXXXXX ) || exit 1
 		local family
 		# loop over all families
-		for family in $(get_families); do
-			local -i depth=$( compute_family_depth ${family} )
+		for family in $(get_families "${module_hierarchy_root}"); do
+			local -i depth=$( compute_family_depth "${module_hierarchy_root}" "${family}" )
 			# get all potential directories of family $f with module-files 
 			local mpaths=( $(find \
-					     "${modulepath_root}/${family}" \
+					     "${module_hierarchy_root}/${family}" \
 					     -type d \
 					     -mindepth ${depth} -maxdepth ${depth} \
 					     2>/dev/null))
 			local mpath
 			for mpath in "${mpaths[@]}"; do
 				# get dependencies encoded in directory name
-				local p="${mpath/${modulepath_root}}"
+				local p="${mpath/${module_hierarchy_root}}"
 				p=( ${p//\// } )
 				local deps=()
 				local -i i
@@ -870,7 +877,7 @@ subcommand_search() {
 				done
 			done
 		done
-		if [[ "{_print_modulefiles}" == "no" ]]; then
+		if [[ "${_print_modulefiles}" == "no" ]]; then
 			sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}" 1>&2
 		else
 			while read -a line; do
@@ -914,6 +921,10 @@ subcommand_search() {
 			-a | --all-releases )
 				use_releases=${available_releases}
 				;;
+			--src=* )
+				src_prefix=${1/--src=}
+				check_pmodules_directories "${src_prefix}"
+				;;
 			-? | -h | --help )
 				usage
 				;;
@@ -927,9 +938,12 @@ subcommand_search() {
 		esac
 		shift
 	done
-
+	if [[ -z "${src_prefix}" ]]; then
+	        src_prefix="${PSI_PREFIX}"
+	fi
+	
 	if [[ "${use_releases}" == ":" ]]; then
-	    use_releases=":${PSI_USED_RELEASES}:"
+                use_releases=":${PSI_USED_RELEASES}:"
 	fi
 	
 	[[ "${_print_header}" == "yes" ]] && print_header
