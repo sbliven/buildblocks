@@ -30,9 +30,12 @@ Available SubCommands and Args:
 
         install <module> [--with=<dep>...]
                 Install matching modules
+
+        sync [--delete] [--dst=<dst>] <src>
+                Synchronize modules.
 "
 }
-     
+
 
 declare force='no'
 declare dry_run='no'
@@ -53,6 +56,17 @@ subcommand_help_install() {
 	echo "
 install <module> [--with=<dep>...]
                 Install matching modules
+" 1>&2
+}
+
+subcommand_help_sync() {
+	echo "
+sync [--delete] [--dst=<dst>] <src>
+                Synchronize environment modules and configuration files
+                from Pmodule environment <src> to Pmodule environment <dst>
+                (default: currently active Pmodule environment).
+                If --delete is given, unmarked modules present in <dst>
+                will be deleted.
 " 1>&2
 }
 
@@ -135,6 +149,26 @@ sync_module() {
 	fi
 }
 
+#
+# Sync the Pmodules configuration and templates
+#
+# $1: source prefix of Pmodule environment
+# $2: target prefix of Pmodule environment
+#
+sync_config() {
+	src="$1/${PSI_CONFIG_DIR}/"
+	dst="$2/${PSI_CONFIG_DIR}/"
+	$DRY rsync --recursive --links --perms --delete \
+		"${src}" "${dst}" || die 1 "Error: synch operation failed!"
+	echo
+
+	src="$1/${PSI_TEMPLATES_DIR}/"
+	dst="$2/${PSI_TEMPLATES_DIR}/"
+	$DRY rsync --recursive --links --perms --delete \
+		"${src}" "${dst}" || die 1 "Error: synch operation failed!"
+	echo
+}
+
 subcommand_init() {
 	local src=''
 	local target_prefixes=()
@@ -147,7 +181,7 @@ subcommand_init() {
 	fi
 	eval set --  "${opts}"
 	while (($# > 0)); do
-		case $1 in 
+		case $1 in
 			--src )
 				src=$2
 				shift
@@ -188,9 +222,9 @@ subcommand_init() {
 		[[ -z "${user}" ]] || \
 		    die 1 "Error: --user option is only allowed if running as root!"
 	fi
-	
-	check_pmodules_env || die 1 "Giving up ..."
-	
+
+	check_pmodules_env || die 1 "Giving up..."
+
 	echo "
 Attempting to create a minimal module environment from the
 environment at '${PSI_PREFIX}'
@@ -212,26 +246,16 @@ environment at '${PSI_PREFIX}'
 		$DRY mkdir -p "${target_prefix}" || die 1 "Error: make directory failed!"
 		echo
 
-		src="${PSI_PREFIX}/${PSI_CONFIG_DIR}/"
-		dst="${target_prefix}/${PSI_CONFIG_DIR}/"
-		echo "Synching configuration from '${src}' to '${dst}'..."
-		$DRY rsync --recursive --links --perms --delete \
-		     "${src}" "${dst}" || die 1 "Error: synch operation failed!"
-		echo
-		
-		src="${PSI_PREFIX}/${PSI_TEMPLATES_DIR}/"
-		dst="${target_prefix}/${PSI_TEMPLATES_DIR}/"
-		echo "Synching template files from '${src}' to '${dst}'..."
-		$DRY rsync --recursive --links --perms --delete \
-		     "${src}" "${dst}" || die 1 "Error: synch operation failed!"
-		echo
+		echo "Syncing configuration ..."
+		sync_config "${PSI_PREFIX}" \
+		            "${target_prefix}" || die 1 "Error: configuration synchronization failed!"
 
 		echo "Syncing Pmodules ..."
 		sync_module "Tools/Pmodules/${PMODULES_VERSION}" \
 			    "${PSI_PREFIX}" \
 			    "${target_prefix}" || die 1 "Error: sync Pmodules failed!"
 		echo
-		
+
 		if [[ -n "${user}" ]]; then
 	                echo "Changing user of new module environment to '${user}'..."
                         $DRY chown -R "${user}" "${target_prefix}" || die 1 "Error: changing owner failed!"
@@ -290,6 +314,121 @@ subcommand_install() {
 	${PMODULES_HOME}/bin/modulecmd bash search "${module_pattern[@]}" "${with[@]/#/--with}" "${releases[@]/#/--release=}" --no-header
 }
 
+subcommand_sync() {
+	local delete=false
+	local opts=''
+	local dst_prefix=''
+	local source_prefix=''
+	opts=$(get_options -o h -l dst: -l delete -l help -- "$@")
+	if [[ $? != 0 ]]; then
+		subcommand_help_sync
+		exit 1
+	fi
+	eval set --  "${opts}"
+	while (($# > 0)); do
+		case $1 in
+			--dst )
+				dst_prefix="$2"
+				shift
+				;;
+			--delete )
+				delete=true
+				;;
+			-- )
+				:
+				;;
+			-* | -h | --help )
+				echo "$1: illegal option" 1>&2
+				subcommand_help_init
+				exit 1
+				;;
+			* )
+				[[ -n "${source_prefix}" ]] && die 1 "Error: Only one source is allowed!"
+				source_prefix="$1"
+				;;
+		esac
+		shift
+	done
+	unset -v opts
+	if [[ -z "${dst_prefix}" ]]; then
+		[[ -z "${PSI_PREFIX}" ]] && die 1 "Error: No current module environment and no destination specified!"
+		dst_prefix="${PSI_PREFIX}"
+	fi
+	(
+		PSI_PREFIX="${dst_prefix}" check_pmodules_env || die 1 "Error: invalid destination modules environment!"
+	) || die 1 "Giving up..."
+	(
+		PSI_PREFIX="${src_prefix}" check_pmodules_env || die 1 "Error: invalid source modules environment!"
+	) || die 1 "Giving up..."
+	[[ "$( cd "$src_prefix"; pwd -P )" == "$( cd "$dst_prefix"; pwd -P )" ]] && die 1 "Error: source and destination are equal!"
+	local modbin=${PMODULES_HOME#"${PSI_PREFIX}/"}/bin/modulecmd.tcl
+	local file_type_src=$( file -b "${src_prefix}/${modbin}" 2>&1 || echo err1 )
+	local file_type_dst=$( file -b "${dst_prefix}/${modbin}" 2>&1 || echo err2 )
+	[[ "${file_type_src}" == "${file_type_dst}" ]] || die 1 "Error: The file signatures in the source and destination installation do not match!"
+	unset -v file_type_src file_type_dst
+
+	local profile_script="${src_prefix}/${PSI_CONFIG_DIR}/profile.bash"
+	[[ -r "${profile_script}" ]] || die 1 "Error: Unable to find profile script of installation $profile_script";
+	local search_script="${src_prefix}/${modbin}/bin/modulecmd"
+	[[ -x "${search_script}" ]] || die 1 "Error: Unable to find search script of installation $search_script";
+#	local dialog_script="${src_prefix}/${modbin}/bin/dialog.bash"
+	local dialog_script="./dialog.bash"
+	[[ -r "$dialog_script" ]] || die 1 "Error: Unable to find dialog script of installation $dialog_script";
+
+	source "$profile_script"    # set variables for the source installation
+	DIALOG_LIB=1                # use dialog script as a library
+	source "$dialog_script"     # dialog functions
+
+	local -a selected_modules
+
+	# Redefine module_out to append modules to the selected_modules variable
+	function module_out() {
+		local -a args=(${modlist[$1]})
+		local path=""
+		IFS=/
+		[[ -n "${args[3]}" ]] && path="/${args[*]:3}"
+		unset IFS
+		selected_modules+=( "${args[2]}${path}/${args[0]}" )
+	}
+
+	module_picker "${dst_prefix}" < <("$search_script" bash search --no-header -a 2>&1)   # this calls module_out for each selected module, filling up the selected_modules array
+
+	local -a destination_modules=( $(cd "${dst_prefix}/${PSI_MODULES_ROOT}"; find -L . -type f | while read f; do echo ${f#./}; done) )
+
+	# redefine set difference, the version in dialog.bash only handles integers
+	function set_difference() {  #  $1 \ $2
+		local -a operand1=($1)
+		local -a operand2=($2)
+		local -A members
+		local elem
+		for elem in "${operand1[@]}"; do
+			members[$elem]=1
+		done
+		for elem in "${operand2[@]}"; do
+			unset members[$elem]
+		done
+		echo ${!members[@]}
+	}
+
+	if [[ "$delete" == "true" ]]; then
+		local -a modules_delete=( $(set_difference "${destination_modules[*]}" "${selected_modules[*]}") )
+		for m in "${modules_delete[@]}"; do
+			delete_module "$m" "$dst_prefix"
+		done
+		unset modules_delete
+	fi
+
+	local -a modules_copy=( $(set_difference "${selected_modules[*]}" "${destination_modules[*]}") )
+	if [[ -n $modules_copy ]]; then
+		echo "Syncing configuration ..."
+		sync_config "$src_prefix" "$dst_prefix" || die 1 "Error: syncing the configuration failed"
+        fi
+        for m in "${modules_copy[@]}"; do
+		sync_module "$m" "$src_prefix" "$dst_prefix" || die 1 "Error: syncing of module $m failed!"
+        done
+	unset modules_copy
+}
+
 while (($# > 0)); do
 	case $1 in
 		-h | -H | -\? | --help | -help )
@@ -311,7 +450,7 @@ while (($# > 0)); do
 			echo "$1: unknown switch.\n" 1>&2
 			exit 1
 			;;
-		init|install|help )
+		init|install|sync|help )
 			subcommand="subcommand_$1"
 			shift
 			sargs=( $* )

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Hardcoded path to dialog software
-LOCAL_DIALOGHOME=Tools/dialog/1.2.1
-DIALOG_CMD=$PSI_PREFIX/$LOCAL_DIALOGHOME/bin/dialog
+DIALOG_CMD=$PMODULES_HOME/bin/dialog
 
 declare -a modlist      # module info
 declare -A selected     # module info indices selected
@@ -338,9 +337,9 @@ function module_picker() {
 
 # if DIALOG_LIB is NOT set, call module picker
 [[ ${DIALOG_LIB:+"is_lib"} == "is_lib" ]] || {
-    if [[ -x ${PSI_PREFIX}/${PSI_CONFIG_DIR}/modulecmd.bash ]]; then
-        module_picker "$1" < <(${PSI_PREFIX}/${PSI_CONFIG_DIR}/modulecmd.bash bash search --no-header -a 2>&1)
+    if [[ -x ${PMODULES_HOME}/bin/modulecmd ]]; then
+        module_picker "$1" < <(${PMODULES_HOME}/bin/modulecmd bash search --no-header -a 2>&1)
     else
-        echo "ERROR: module environment configuration: ${PSI_PREFIX}/${PSI_CONFIG_DIR}/modulecmd.bash is not an executable!"
+        echo "ERROR: module environment configuration: ${PMODULES_HOME}/bin/modulecmd is not an executable!"
     fi
 }

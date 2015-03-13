@@ -28,7 +28,7 @@ die() {
                 cout='1'
         else
                 cout='2'
-        fi      
+        fi
         if [[ -n $@ ]]; then
                 local -r fmt=$1
                 shift
@@ -47,7 +47,7 @@ get_YN_answer() {
 	local ans
 	read -p "${prompt}" ans
 	case ${ans} in
-		y|Y ) 
+		y|Y )
 			return 0;;
 		* )
 			return 1;;
@@ -65,15 +65,14 @@ check_pmodules_env() {
 	    [[ -n "${PSI_TEMPLATES_DIR}" ]] &&
 	    [[ -n "${PMODULES_HOME}" ]] &&
 	    [[ -n "${PMODULES_VERSION}" ]] || die 1 "
-Error: the module environment you are going to use as source has not been
-initialized properly!"
+Error: not running within a valid module environment!"
 
 	[[ -d "${PSI_PREFIX}" ]] &&
 	    [[ -d "${PSI_PREFIX}/${PSI_CONFIG_DIR}" ]] &&
 	    [[ -d "${PSI_PREFIX}/${PSI_MODULES_ROOT}" ]] &&
 	    [[ -d "${PSI_PREFIX}/${PSI_TEMPLATES_DIR}" ]] &&
 	    [[ -d "${PMODULES_HOME}" ]] || die 1 "
-Error: the module environment '$PSI_PREFIX' has not been initialized properly!"
+Error: the module environment '$PSI_PREFIX' is invalid!"
 
 }
 
