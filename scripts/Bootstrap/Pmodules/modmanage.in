@@ -25,7 +25,7 @@ Switches:
         --force       force overwrite
 
 Available SubCommands and Args:
-        init [--src=<src>] [--user=<user>] --dst=<dst>
+        init [--src=<src>] [--user=<user>] <dst>
                 Initialize a new minimal Pmodule environment.
 
         install <module> [--with=<dep>...]
@@ -197,6 +197,7 @@ environment at '${PSI_PREFIX}'
 "
 
 	init_pmodules_environment() {
+		local -r src_prefix="${PSI_PREFIX}"
 		local -r target_prefix=$1
 		local src=''
 		local dst=''
@@ -212,26 +213,37 @@ environment at '${PSI_PREFIX}'
 		$DRY mkdir -p "${target_prefix}" || die 1 "Error: make directory failed!"
 		echo
 
-		src="${PSI_PREFIX}/${PSI_CONFIG_DIR}/"
+		src="${src_prefix}/${PSI_CONFIG_DIR}/"
 		dst="${target_prefix}/${PSI_CONFIG_DIR}/"
 		echo "Synching configuration from '${src}' to '${dst}'..."
 		$DRY rsync --recursive --links --perms --delete \
 		     "${src}" "${dst}" || die 1 "Error: synch operation failed!"
 		echo
 		
-		src="${PSI_PREFIX}/${PSI_TEMPLATES_DIR}/"
+		src="${src_prefix}/${PSI_TEMPLATES_DIR}/"
 		dst="${target_prefix}/${PSI_TEMPLATES_DIR}/"
 		echo "Synching template files from '${src}' to '${dst}'..."
 		$DRY rsync --recursive --links --perms --delete \
 		     "${src}" "${dst}" || die 1 "Error: synch operation failed!"
 		echo
 
+		dst="${target_prefix}/${PSI_MODULES_ROOT}/"
+		echo "Creating root directory '${dst}' for module hierarchy ..."
+		$DRY mkdir -p "${dst}"
+		echo
+
 		echo "Syncing Pmodules ..."
 		sync_module "Tools/Pmodules/${PMODULES_VERSION}" \
-			    "${PSI_PREFIX}" \
+			    "${src_prefix}" \
 			    "${target_prefix}" || die 1 "Error: sync Pmodules failed!"
 		echo
-		
+
+		dst="${target_prefix}/${PSI_CONFIG_DIR}/environment.bash"
+		echo "Adding installation source '${src_prefix}' to '${dst}'..."
+		sed -i .bak '/PMODULES_INSTALL_SOURCE/d' "${dst}"
+		echo "declare -x PMODULES_INSTALL_SOURCE=\"${src_prefix}\"" >> "${dst}"
+		echo
+
 		if [[ -n "${user}" ]]; then
 	                echo "Changing user of new module environment to '${user}'..."
                         $DRY chown -R "${user}" "${target_prefix}" || die 1 "Error: changing owner failed!"
@@ -287,7 +299,7 @@ subcommand_install() {
 		esac
 		shift
 	done
-	${PMODULES_HOME}/bin/modulecmd bash search "${module_pattern[@]}" "${with[@]/#/--with}" "${releases[@]/#/--release=}" --no-header
+	PSI_PREFIX="${PMODULES_INSTALL_SOURCE}" ${PMODULES_HOME}/bin/modulecmd bash search "${module_pattern[@]}" "${with[@]/#/--with}" "${releases[@]/#/--release=}" --no-header
 }
 
 while (($# > 0)); do
