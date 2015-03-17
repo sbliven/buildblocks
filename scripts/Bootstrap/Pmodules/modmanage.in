@@ -267,8 +267,10 @@ subcommand_install() {
 	local -a with=()
 	local -a releases=()
 	local -a module_pattern=()
+	local -r src_prefix="${PMODULES_INSTALL_SOURCE}"
+	local -r target_prefix="${PSI_PREFIX}"
 
-	opts=$(get_options -o h -l with: -l release: -l help -- "$@")
+	opts=$(get_options -o h -l with: -l release: -l help -l src: -- "$@")
 	if [[ $? != 0 ]]; then
 		subcommand_help_install
 		exit 1
@@ -278,7 +280,10 @@ subcommand_install() {
 		case $1 in
 			--release )
 				releases+=( "$2" )
-				echo $2
+				shift
+				;;
+			--src )
+				src_prefix="$2"
 				shift
 				;;
 			--with )
@@ -299,7 +304,36 @@ subcommand_install() {
 		esac
 		shift
 	done
-	PSI_PREFIX="${PMODULES_INSTALL_SOURCE}" ${PMODULES_HOME}/bin/modulecmd bash search "${module_pattern[@]}" "${with[@]/#/--with}" "${releases[@]/#/--release=}" --no-header
+	local -A modules_to_install
+	local -i n=0
+	while read rel_modulefile; do
+		modules_to_install["${rel_modulefile}"]+='.'
+		let n+=1
+	done < <(${PMODULES_HOME}/bin/modulecmd bash search \
+				 "${module_pattern[@]}" \
+				 "${with[@]/#/--with}" \
+				 "${releases[@]/#/--release=}" \
+				 --no-header --print-modulefiles \
+				 --src="${src_prefix}" 2>&1)
+	(( n == 0 )) && die 0 "Nothing to install..."
+	echo -e "The following modules will be installed/updated:\n" 1>&2
+	for key in "${!modules_to_install[@]}"; do
+		echo "    ${key}" 1>&2
+	done
+	echo 1>&2
+	get_YN_answer "Do you want to continue? [n] " || die 1 "Aborting..."
+	echo 1>&2
+	for rel_modulefile in "${!modules_to_install[@]}"; do
+		if [[ -d "${target_prefix}/${rel_modulefile}" ]]; then
+			echo "    Updating; ${rel_modulefile}..." 1>&2
+		else
+			echo "    Installing: ${rel_modulefile}..."
+		fi
+		sync_module "${rel_modulefile}" \
+			    "${src_prefix}" \
+			    "${target_prefix}"
+	done
+	echo -e "\nDone!\n" 1>&2
 }
 
 while (($# > 0)); do
