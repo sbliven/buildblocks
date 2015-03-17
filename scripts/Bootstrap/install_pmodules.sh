@@ -14,6 +14,7 @@ sed_cmd+="s:@PMODULES_VERSION@:${PMODULES_VERSION}:g;"
 sed_cmd+="s:@MODULES_VERSION@:${MODULES_VERSION}:g"
 sed "${sed_cmd}" "${SRC_DIR}/modulecmd.in" > "${SRC_DIR}/modulecmd"
 sed "${sed_cmd}" "${SRC_DIR}/modmanage.in" > "${SRC_DIR}/modmanage.bash"
+sed "${sed_cmd}" "${SRC_DIR}/environment.bash.in" > "${SRC_DIR}/environment.bash"
 
 install -d -m 0755 "${PMODULES_HOME}/bin"
 install -d -m 0755 "${PMODULES_HOME}/config"
