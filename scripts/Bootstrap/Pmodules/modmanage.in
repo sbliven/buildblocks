@@ -1,5 +1,7 @@
 #!@PMODULES_HOME@/bin/bash
 
+unset CDPATH
+
 shopt -s expand_aliases
 
 declare -r bindir=$(cd $(dirname "$0") && pwd)
@@ -141,7 +143,7 @@ subcommand_init() {
 	local target_prefixes=()
 	local user=''
 	local opts=''
-	opts=$(get_options -o h -l src: -l user: -l help -- "$@")
+	opts=$(get_options -o h -l src: -l user: -l help -l version: -- "$@")
 	if [[ $? != 0 ]]; then
 		subcommand_help_init
 		exit 1
@@ -155,6 +157,10 @@ subcommand_init() {
 				;;
 			--user )
 				user=$2
+				shift
+				;;
+			--version )
+				PMODULES_VERSION=$2
 				shift
 				;;
 			-- )

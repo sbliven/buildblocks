@@ -117,24 +117,18 @@ function replace_path () {
                    sed '/^\s*$/d' | tr "\n" ":" | sed -e 's|^:||' -e 's|:$||')
 }
 
+module purge
+
 #############################################################################
 # setup environment
 #
-if [[ -z ${LOADEDMODULES} ]]; then
-	declare -x LOADEDMODULES=''
-fi
-
-if [[ -z ${MODULEPATH} ]]; then
-	declare -x MODULEPATH=''
-	for f in ${PSI_DEFAULT_FAMILIES}; do
-		append_path MODULEPATH "${PSI_PREFIX}/${PSI_MODULES_ROOT}/$f"
-		append_path PSI_LOADEDFAMILIES "${f}"
-	done
-fi
-
-if [[ -z ${PSI_LOADEDFAMILIES} ]]; then
-	declare -x PSI_LOADEDFAMILIES=''
-fi
+declare -x LOADEDMODULES=''
+declare -x PSI_LOADEDFAMILIES=''
+declare -x MODULEPATH=''
+for f in ${PSI_DEFAULT_FAMILIES}; do
+	append_path MODULEPATH "${PSI_PREFIX}/${PSI_MODULES_ROOT}/$f"
+	append_path PSI_LOADEDFAMILIES "${f}"
+done
 
 replace_path PATH    "${PMODULES_HOME%/*}/.*"
 replace_path MANPATH "${PMODULES_HOME%/*}/.*"
@@ -151,9 +145,6 @@ fi
 #############################################################################
 # legacy...
 #
-#declare -x MODULE_VERSION=${PMODULES_VERSION}
-#declare -x MODULE_VERSION_STACK="${PMODULE_VERSION}"
-#declare -x MODULESHOME="${PMODULES_HOME}"
 unset MODULE_VERSION
 unset MODULE_VERSION_STACK
 unset MODULESHOME
