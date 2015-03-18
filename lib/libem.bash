@@ -96,85 +96,6 @@ ENV=VALUE
 	exit 1
 }
 
-
-debug_on='no'
-force_rebuild='no'
-ENVIRONMENT_ARGS=''
-dry_run='no'
-bootstrap='no'
-
-# array collecting all modules specified on the command line via '--with=module'
-with_modules=()
-
-while (( $# > 0 )); do
-	case $1 in
-	-j )
-		JOBS=$2
-		shift
-		;;
-	--jobs=[0-9]* )
-		JOBS=${1/--jobs=}
-		;;
-	-v | --verbose)
-		debug_on='yes'
-		;;
-	-f | --force-rebuild )
-		force_rebuild='yes'
-		;;
-	-b | --bootstrap )
-		bootstrap='yes'
-		force_rebuild='yes'
-		;;
-	-? | -h | --help )
-		usage
-		;;
-	--dry-run )
-		dry_run='yes'
-		;;
-	--release=* )
-		MODULE_RELEASE=${1/--release=}
-		;;
-	--with=*/* )
-		with_modules+=( ${1/--with=} )
-		;;
-	*=* )
-		eval $1
-		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
-		;;
-	* )
-		V=$1
-		;;
-	esac
-	shift
-done
-
-if [[ ${debug_on} == yes ]]; then
-	trap 'echo "$BASH_COMMAND"' DEBUG
-fi
-
-# while bootstraping the module command is not yet available
-if [[ ${bootstrap} == no ]]; then
-        source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
-	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
-	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
-	module use unstable
-	module purge
-fi
-
-P=$(basename $(dirname "${BUILDSCRIPT}"))
-_P=$(echo $P | tr [:lower:] [:upper:])
-_P=${_P//-/_}
-_V=${_P}_VERSION
-
-eval "${ENVIRONMENT_ARGS}"
-
-if [[ -n ${PSI_RELEASES} ]]; then
-        declare -r releases="${PSI_RELEASES}"
-else
-	# set defaults, if file doesn't exist or isn't readable
-	declare -r releases=":unstable:stable:deprecated:"
-fi
-
 is_release () {
 	[[ ${releases} =~ :$1: ]]
 }
@@ -223,16 +144,6 @@ function module_is_available() {
 }
 
 function _load_build_dependencies() {
-	# :FIXME: merge this two loops, load only modules which are required
-	#         this merge is not as easy as it looks like at a first glance!
-	for m in "${with_modules[@]}"; do
-		if module_is_available "$m"; then
-			echo "Loading module: ${m}"
-			module load "${m}"
-		else
-			die 44 "$m: module not available!"
-		fi
-	done
 	for m in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $m ]] && continue
 		if [[ ! $m =~ "*/*" ]]; then
@@ -718,6 +629,94 @@ function em.make_all() {
 	fi
 	em.cleanup_build
 }
+
+##############################################################################
+#
+debug_on='no'
+force_rebuild='no'
+ENVIRONMENT_ARGS=''
+dry_run='no'
+bootstrap='no'
+
+# array collecting all modules specified on the command line via '--with=module'
+with_modules=()
+
+while (( $# > 0 )); do
+	case $1 in
+	-j )
+		JOBS=$2
+		shift
+		;;
+	--jobs=[0-9]* )
+		JOBS=${1/--jobs=}
+		;;
+	-v | --verbose)
+		debug_on='yes'
+		;;
+	-f | --force-rebuild )
+		force_rebuild='yes'
+		;;
+	-b | --bootstrap )
+		bootstrap='yes'
+		force_rebuild='yes'
+		;;
+	-? | -h | --help )
+		usage
+		;;
+	--dry-run )
+		dry_run='yes'
+		;;
+	--release=* )
+		MODULE_RELEASE=${1/--release=}
+		;;
+	--with=*/* )
+		with_modules+=( ${1/--with=} )
+		;;
+	*=* )
+		eval $1
+		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
+		;;
+	* )
+		V=$1
+		;;
+	esac
+	shift
+done
+
+if [[ ${debug_on} == yes ]]; then
+	trap 'echo "$BASH_COMMAND"' DEBUG
+fi
+
+# while bootstraping the module command is not yet available
+if [[ ${bootstrap} == no ]]; then
+        source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
+	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
+	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
+	module use unstable
+	module purge
+	for m in "${with_modules[@]}"; do
+		if module_is_available "$m"; then
+			echo "Loading module: ${m}"
+			module load "${m}"
+		else
+			die 44 "$m: module not available!"
+		fi
+	done
+fi
+
+P=$(basename $(dirname "${BUILDSCRIPT}"))
+_P=$(echo $P | tr [:lower:] [:upper:])
+_P=${_P//-/_}
+_V=${_P}_VERSION
+
+eval "${ENVIRONMENT_ARGS}"
+
+if [[ -n ${PSI_RELEASES} ]]; then
+        declare -r releases="${PSI_RELEASES}"
+else
+	# set defaults, if file doesn't exist or isn't readable
+	declare -r releases=":unstable:stable:deprecated:"
+fi
 
 # Local Variables:
 # mode: sh
