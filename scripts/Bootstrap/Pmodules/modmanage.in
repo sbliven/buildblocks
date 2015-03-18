@@ -1,5 +1,7 @@
 #!@PMODULES_HOME@/bin/bash
 
+unset CDPATH
+
 shopt -s expand_aliases
 
 declare -r bindir=$(cd $(dirname "$0") && pwd)
