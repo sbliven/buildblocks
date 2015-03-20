@@ -28,7 +28,7 @@ declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
 declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
 declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
-source "${BUILD_CONFIGDIR}/Pmodules.conf"
+#source "${BUILD_CONFIGDIR}/Pmodules.conf"
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
@@ -91,8 +91,24 @@ ENV=VALUE
 	exit 1
 }
 
+##############################################################################
+#
+# test whether a the string passed in $1 is a valid release name
+#
+# $1: string to be tested
+#
 is_release () {
 	[[ ${releases} =~ :$1: ]]
+}
+
+##############################################################################
+#
+# test whether a module is loaded or not
+#
+# $1: module name
+#
+em.is_loaded() {
+        [[ :${LOADEDMODULES}: =~ :$1: ]]
 }
 
 function em.set_release() {
@@ -149,6 +165,7 @@ function _load_build_dependencies() {
 				echo "$m: warning: No version set, loading default ..."
 			fi
 		fi
+		em.is_loaded "$m" && continue
 		if ! module_is_available "$m"; then
 		        debug "${m}: module not available"
 			local rels=( ${releases//:/ } )
