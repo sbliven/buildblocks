@@ -18,7 +18,6 @@ function em.configure() {
 		--prefix="${PREFIX}" \
 		--enable-parallel \
 		--enable-debug \
-		--enable-vtkconverter \
 		--with-hdf5=$HDF5_PREFIX \
 		--with-pic \
 		|| exit 1
