@@ -16,6 +16,7 @@ function em.build() {
 }
 
 em.add_to_family 'Tools'
+em.set_runtime_dependencies 'Tcl' 'Tk'
 em.set_docfiles 'COPYING' 'README'
 em.make_all
 
