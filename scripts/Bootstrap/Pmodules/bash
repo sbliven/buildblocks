@@ -52,12 +52,13 @@ module() {
 	if [[ ${subcommand} == '' ]]; then
 	        subcommand='help'
 	fi
-	if (( ${#args} == 0 )); then
-		args+=( '' )
+	if (( ${#args[@]} == 0 )); then
+	        eval $( "${modulecmd}" bash ${switches[@]} "${subcommand}" "${sub_switches[@]}" )
+	else
+		for arg in "${args[@]}"; do
+			eval $( "${modulecmd}" bash ${switches[@]} "${subcommand}" "${sub_switches[@]}" "${arg}" )
+		done
 	fi
-	for arg in "${args[@]}"; do
-		eval $( "${modulecmd}" bash ${switches[@]} "${subcommand}" "${sub_switches[@]}" "${arg}" )
-	done
 }
 export -f module
 
