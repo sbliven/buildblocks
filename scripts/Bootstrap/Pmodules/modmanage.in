@@ -1,4 +1,4 @@
-#!/opt/psi/Tools/Pmodules/0.99.2/bin/bash
+#!@PMODULES_HOME@/bin/bash
 
 unset CDPATH
 
