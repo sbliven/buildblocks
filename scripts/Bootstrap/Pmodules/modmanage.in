@@ -176,10 +176,11 @@ sync_config() {
 #
 # Delete a module
 #
-# $1: module environment prefix
+# $1: relative modulefile path
+# $2: target prefix of Pmodule environment
 #
 delete_module() {
-    echo "Not implemented yet!"
+        echo "Not implemented yet!"
 }
 
 subcommand_init() {
@@ -433,6 +434,7 @@ subcommand_sync() {
 	(
 		PSI_PREFIX="${dst_prefix}" check_pmodules_env || die 1 "Error: invalid destination modules environment!"
 	) || die 1 "Giving up..."
+	: ${src_prefix:=${PMODULES_INSTALL_SOURCE}} 
 	if [[ -z "${src_prefix}" ]]; then
             die 1 "Error: no source module environment was specified!"
         fi
