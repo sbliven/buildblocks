@@ -1029,6 +1029,7 @@ subcommand_use() {
 				if (( ${HIERARCHY_DEPTHS[$arg]} != 0 )); then
 					die 3 "${CMD} ${0##_}: cannot add family ${arg} to module path"
 				fi
+				append_path PSI_LOADEDFAMILIES "${arg}"
 			       	dirs_to_add+=( ${modulepath_root}/${arg} )
 			elif [[ ${arg} =~ ^${modulepath_root} ]]; then
 				die 3 "${CMD} ${0##_}: illegal directory: ${arg}"
@@ -1043,6 +1044,7 @@ subcommand_use() {
 			shift
 		done
 		echo "export PSI_USED_RELEASES=${PSI_USED_RELEASES}"
+		echo "export PSI_LOADEDFAMILIES=${PSI_LOADEDFAMILIES}"
 		[[ ${#dirs_to_add[@]} == 0 ]] && return
 
 		for dir in "${dirs_to_add[@]}"; do
