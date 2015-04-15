@@ -1272,7 +1272,7 @@ subcommand_search() {
 				use_releases="${available_releases}"
 				;;
 			--src )
-				src_prefix=$1
+				src_prefix=$2
 				check_pmodules_directories "${src_prefix}"
 				shift
 				;;
