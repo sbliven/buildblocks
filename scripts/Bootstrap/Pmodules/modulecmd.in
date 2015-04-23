@@ -40,7 +40,15 @@ save_env() {
 	echo export PMODULES_ENV=$( base64 <<< "$s" )	
 }
 
-trap 'save_env FAMILIES HIERARCHY_DEPTHS' EXIT
+export_env() {
+	local s=''
+	while (( $# > 0 )); do
+		echo -n "export $1=${!1};"
+		shift
+	done
+}
+
+trap 'save_env FAMILIES HIERARCHY_DEPTHS USED_RELEASES PSI_DEFAULT_FAMILIES PSI_DEFINED_RELEASES PSI_DEFAULT_RELEASES' EXIT
 
 print_version() {
 	echo "
@@ -415,16 +423,12 @@ get_release() {
 	return 0
 }
 
-if [[ -n ${PSI_RELEASES} ]]; then
-        declare -r available_releases="${PSI_RELEASES}"
-else
-	# set defaults, if file doesn't exist or isn't readable
-	declare -r available_releases=':unstable:stable:deprecated:'
-fi
-declare used_releases=":${PSI_USED_RELEASES}:"
+: ${PSI_DEFINED_RELEASES:=':unstable:stable:deprecated:'}
+
+declare used_releases=":${USED_RELEASES}:"
 
 is_release() {
-	[[ ${available_releases} =~ :$1: ]]
+	[[ ${PSI_DEFINED_RELEASES} =~ :$1: ]]
 }
 
 is_used_release() {
@@ -508,12 +512,12 @@ subcommand_generic1plus() {
 	while (( $# > 0 )); do
 		case $1 in
 			-- )
-				shift
 				;;
 			* )
 				args+=( "$1" )
 				;;
 		esac
+		shift
 	done
 	if (( ${#args[@]} == 0 )); then
 	        die 3 "${CMD} ${subcommand}: missing argument"
@@ -569,7 +573,7 @@ subcommand_load() {
 	#
 	is_loadable() {
 		release=$( get_release "$1" )			
-		[[ :${PSI_USED_RELEASES}: =~ ${release} ]] && return 0
+		[[ :${USED_RELEASES}: =~ ${release} ]] && return 0
 		return 1
 	}
 
@@ -652,7 +656,7 @@ subcommand_load() {
 	# Args:
 	#	none
 	output_load_hints() {
-		local -ra rels=( ${available_releases//:/ } )
+		local -ra rels=( ${PSI_DEFINED_RELEASES//:/ } )
 		for rel in "${rels[@]}"; do
 			eval $( subcommand_use "${rel}" )
 			if is_available "${m}"; then
@@ -672,15 +676,16 @@ subcommand_load() {
 		while read -a line; do
 			output[n]="module load ${line[@]:3} ${line[0]}"
 			release[n]=${line[1]}
-			if [[ ":${PSI_USED_RELEASES}:" =~ "${release[n]}" ]]; then
+			if [[ ":${USED_RELEASES}:" =~ "${release[n]}" ]]; then
 				loadable[n]='yes'
 			else
 				loadable[n]='no'
 			fi
 			n+=1
 		done < <(subcommand_search  "${m}" -a --no-header 2>&1)
+		info "${CMD} load: module unavailable -- ${m}"
 		if (( n > 0 )); then
-			info "The following modules chain(s) are available:"
+			info "\nBut the following modules chain(s) are available in the hierarchy:"
 			for ((i=n-1; i >=0; i--)); do
 				if [[ "${loadable[i]}" == "no" ]]; then
  				        info "${output[i]}\t# ${release[i]}"
@@ -688,8 +693,6 @@ subcommand_load() {
 					info "${output[i]}"
 				fi
 			done
-		else
-			info "${m}: module does not exist!"
 		fi
 	}
 
@@ -777,7 +780,7 @@ subcommand_show() {
 get_available_modules() {
 	local -r dir=$1
 	local -r module=$2
-	local -r use_releases=${3:-${PSI_USED_RELEASES}}
+	local -r use_releases=${3:-${USED_RELEASES}}
 	local -a mods=()
 	while read mod; do
 		local release=$( get_release "${dir}/${mod}" )
@@ -992,7 +995,7 @@ subcommand_use() {
 			info "\t${r}"
 		done
 		info "\nReleases you may use in addition:"
-		for r in ${available_releases//:/ }; do
+		for r in ${PSI_DEFINED_RELEASES//:/ }; do
 			if ! is_used_release $r; then
 				info "\t${r}"
 			fi
@@ -1024,7 +1027,7 @@ subcommand_use() {
 			        subcommand_switches=''
 			elif is_release "${arg}"; then
 			        # releases are always *appended*
-			        append_path PSI_USED_RELEASES "${arg}"
+			        append_path USED_RELEASES "${arg}"
 			elif [[ ! ${arg} =~ */* ]] && [[ -d ${modulepath_root}/${arg} ]]; then
 				if (( ${HIERARCHY_DEPTHS[$arg]} != 0 )); then
 					die 3 "${CMD} ${0##_}: cannot add family ${arg} to module path"
@@ -1043,7 +1046,6 @@ subcommand_use() {
 			fi
 			shift
 		done
-		echo "export PSI_USED_RELEASES=${PSI_USED_RELEASES}"
 		echo "export PSI_LOADEDFAMILIES=${PSI_LOADEDFAMILIES}"
 		[[ ${#dirs_to_add[@]} == 0 ]] && return
 
@@ -1074,7 +1076,7 @@ subcommand_unuse() {
 		fi
 		arg=$1
 		if is_release "${arg}"; then
-			remove_path PSI_USED_RELEASES "${arg}"
+			remove_path USED_RELEASES "${arg}"
 		elif [[ ! ${arg} =~ */* ]] &&  [[ -d ${modulepath_root}/${arg} ]]; then
 			dirs_to_remove+=( ${modulepath_root}/${arg} )
 		elif [[ -d ${arg} ]]; then
@@ -1087,7 +1089,6 @@ subcommand_unuse() {
 		fi
 		shift
 	done
-	echo "export PSI_USED_RELEASES=${PSI_USED_RELEASES}"
 	[[ ${#dirs_to_remove[@]} == 0 ]] && return
 	for dir in "${dirs_to_remove[@]}"; do
 		subcommand_generic1 unuse "${dir}"
@@ -1157,7 +1158,32 @@ subcommand_list() {
 # clear
 #
 subcommand_clear() {
-	subcommand_generic0 clear "$@"
+	local opts=''
+	opts=$(get_options -- '' "$@") || subcommand_help_${subcommand}
+	eval set --  "${opts}"
+	while (( $# > 0 )); do
+		case $1 in
+			-- )
+				shift
+				;;
+			* )
+				die 3 "${CMD} ${subcommand}: illegal argument -- $1"
+				;;
+		esac
+	done
+	LOADEDMODULES=''
+	PSI_LOADEDFAMILIES=''
+	MODULEPATH=''
+	_LMFILES_=''
+	for f in ${PSI_DEFAULT_FAMILIES}; do
+		append_path MODULEPATH "${PSI_PREFIX}/${PSI_MODULES_ROOT}/$f"
+		append_path PSI_LOADEDFAMILIES "${f}"
+	done
+	USED_RELEASES=''
+	for r in ${PSI_DEFAULT_RELEASES//:/ }; do
+		append_path USED_RELEASES "${r}"
+	done
+	export_env LOADEDMODULES PSI_LOADEDFAMILIES MODULEPATH _LMFILES_
 }
 
 #
@@ -1259,7 +1285,8 @@ subcommand_search() {
 				_print_header='no'
 				;;
 			--release )
-				is_release "$2" || die 1 "${CMD} search: illegal release name -- $2"
+				is_release "$2" || \
+				    die 1 "${CMD} search: illegal release name -- $2"
 				use_releases+="$2:"
 				shift
 				;;
@@ -1271,7 +1298,7 @@ subcommand_search() {
 				shift
 				;;
 			-a | --all-releases )
-				use_releases="${available_releases}"
+				use_releases="${PSI_DEFINED_RELEASES}"
 				;;
 			--src )
 				src_prefix=$2
@@ -1294,7 +1321,7 @@ subcommand_search() {
 	fi
 	
 	if [[ "${use_releases}" == ":" ]]; then
-                use_releases=":${PSI_USED_RELEASES}:"
+                use_releases=":${USED_RELEASES}:"
 	fi
 	
 	[[ "${_print_header}" == "yes" ]] && print_header
@@ -1341,7 +1368,7 @@ subcommand_help() {
 		subcommand_help_${arg}
 	else
 		# :FIXME: print help of newest *available* module
-		# (respecting PSI_USED_RELEASES)
+		# (respecting USED_RELEASES)
 		subcommand_generic1plus help "${arg}"
 	fi
 }
@@ -1350,12 +1377,11 @@ subcommand_help() {
 # whatis [module]
 #
 subcommand_whatis() {
-	local -r subcommand=$1
-	shift
-	local opts=''
-	opts=$(get_options -- '' "$@") || subcommand_help_whatis
-	eval set --  "${opts}"
-	"${modulecmd}" "${shell}" "${subcommand}" "$@"
+	if (( $# == 0 )); then
+	        subcommand_generic0 whatis
+	else
+		subcommand_generic1plus whatis "$@"
+	fi
 }
 
 #
