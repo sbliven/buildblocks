@@ -19,6 +19,11 @@ Darwin )
 		cp -rv "${MODULE_BUILDDIR}"/nextstep/Emacs.app "${PREFIX}"
 	}
 	;;
+Linux )
+	# with 24.5 configure complains about missing libjpeg even it
+	# is installed!
+	configure_args='--with-jpeg=no'
+	;;
 *)
 	;;
 esac
@@ -32,7 +37,7 @@ function em.configure() {
 }
 
 function em.post_install() {
-	mkdir "${PREFIX}/bin"
+	mkdir -p "${PREFIX}/bin"
 	cat > "${PREFIX}/bin/Emacs" <<\EOF
 #!/bin/bash
 
