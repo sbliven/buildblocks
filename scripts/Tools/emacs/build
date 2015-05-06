@@ -28,6 +28,7 @@ function em.configure() {
 		--prefix="${PREFIX}" \
 		${configure_args} \
 		|| exit 1
+	install -m 0755 -d "${PREFIX}"
 }
 
 function em.post_install() {
