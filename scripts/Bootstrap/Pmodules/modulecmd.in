@@ -1221,7 +1221,7 @@ subcommand_search() {
 	# no args
 	print_header() {
 		printf '\n' 1>&1
-		printf "${fmt}" "Module" "Release" "Family" "Requires" 1>&2
+		printf "${fmt}" "Module" "Release" "Group" "Requires" 1>&2
 		printf -- '-%.0s' {1..60} 1>&2
 		printf '\n' 1>&2
 	}
@@ -1234,7 +1234,7 @@ subcommand_search() {
 		local -r tmpfile=$( mktemp /tmp/$(basename $0).XXXXXX ) \
 		    || die 1 "Oops: unable to create tmp file!"
 		local family
-		# loop over all families
+		# loop over all groups
 		for family in "${FAMILIES[@]}"; do
 			local depth=${HIERARCHY_DEPTHS[$family]}
 			# get all potential directories of family $f with module-files 
