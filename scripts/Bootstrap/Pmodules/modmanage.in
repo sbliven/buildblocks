@@ -7,13 +7,15 @@ shopt -s expand_aliases
 declare -r bindir=$(cd $(dirname "$0") && pwd)
 declare -r libdir=$(cd "${bindir}/../lib" && pwd)
 
+declare PMODULES_VERSION='@PMODULES_VERSION@'
+
 source "${libdir}/libpmodules.bash"
 
 PATH="${bindir}:${PATH}"
 
 print_version() {
 	echo "
-Pmodules ${version} using Tcl Environment Modules @MODULES_VERSION@
+Pmodules @PMODULES_VERSION@ using Tcl Environment Modules @MODULES_VERSION@
 Copyright GNU GPL v2
 " 1>&2
 }
@@ -175,6 +177,7 @@ sync_config() {
 	dst="$2/${PSI_CONFIG_DIR}/"
 	$DRY rsync --recursive --links --perms --delete \
 		"${src}" "${dst}" || die 1 "Error: synch operation failed!"
+	sed -i.bak "s/PMODULES_VERSION=\(.*\)/PMODULES_VERSION=${PMODULES_VERSION}/" "${dst}/environment.bash"
 	echo
 
 	src="$1/${PSI_TEMPLATES_DIR}/"
@@ -565,6 +568,10 @@ while (($# > 0)); do
 	shift
 done
 
+if [[ -z ${subcommand} ]]; then
+        usage
+	exit 1
+fi
 $subcommand "${sargs[@]}"
 
 # Local Variables:
