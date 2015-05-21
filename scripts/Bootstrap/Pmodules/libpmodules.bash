@@ -9,7 +9,7 @@ log() {
         local -ri fd=$1
         local -r fmt="$2\n"
         shift 2
-        printf -- "$fmt" "$@" >> /dev/fd/$fd
+        printf -- "$fmt" "$@" 1>&$fd
 }
 
 info() {
