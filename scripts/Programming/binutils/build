@@ -9,7 +9,8 @@ function em.configure() {
 }
 
 # use system gcc to compile
-declare -rx CC=gcc
+#declare -rx CC=gcc
 
+em.set_build_dependencies "${COMPILER}"
 em.add_to_family 'Programming'
 em.make_all
