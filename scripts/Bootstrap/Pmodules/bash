@@ -136,17 +136,17 @@ declare -x LOADEDMODULES=''
 declare -x _LMFILES_=''
 declare -x PMODULES_USED_GROUPS=''
 declare -x MODULEPATH=''
-for f in ${PMODULES_DEFAULT_GROUPS//:/ }; do
-	append_path MODULEPATH "${PSI_PREFIX}/${PSI_MODULES_ROOT}/$f"
-	append_path PMODULES_USED_GROUPS "${f}"
+for group in ${PMODULES_DEFAULT_GROUPS//:/ }; do
+	append_path MODULEPATH "${PMODULES_ROOT}/${group}/${PMODULES_MODULEFILES_DIR}"
+	append_path PMODULES_USED_GROUPS "${group}"
 done
-declare -x USED_RELEASES=''
+declare -x UsedReleases=''
 for r in ${PMODULES_DEFAULT_RELEASES//:/ }; do
-	append_path USED_RELEASES "${r}"
+	append_path UsedReleases "${r}"
 done
 
-eval $(save_env USED_RELEASES PMODULES_DEFAULT_RELEASES PMODULES_DEFAULT_GROUPS PMODULES_DEFINED_RELEASES)
-unset USED_RELEASES
+eval $(save_env UsedReleases PMODULES_DEFAULT_RELEASES PMODULES_DEFAULT_GROUPS PMODULES_DEFINED_RELEASES)
+unset UsedReleases
 unset PMODULES_DEFAULT_RELEASES
 unset PMODULES_DEFAULT_GROUPS
 unset PMODULES_DEFINED_RELEASES

@@ -21,7 +21,7 @@ error() {
 }
 
 debug() {
-        [[ ${PSI_DEBUG} ]] || return 0
+        [[ ${PMODULES_DEBUG} ]] || return 0
         log 2 "$@"
 }
 
@@ -72,10 +72,9 @@ get_options() {
 }
 
 check_pmodules_env_vars() {
-	[[ -n "${PSI_PREFIX}" ]] &&
-	    [[ -n "${PSI_CONFIG_DIR}" ]] &&
-	    [[ -n "${PSI_MODULES_ROOT}" ]] &&
-	    [[ -n "${PSI_TEMPLATES_DIR}" ]] &&
+	[[ -n "${PMODULES_ROOT}" ]] &&
+	    [[ -n "${PMODULES_CONFIG_DIR}" ]] &&
+	    [[ -n "${PMODULES_TEMPLATES_DIR}" ]] &&
 	    [[ -n "${PMODULES_HOME}" ]] &&
 	    [[ -n "${PMODULES_VERSION}" ]] || die 1 "
 Error: the module environment you are going to use as source has not been
@@ -86,16 +85,15 @@ check_pmodules_directories() {
 	local -r src_prefix="$1"
 
 	[[ -d "${src_prefix}" ]] &&
-	    [[ -d "${src_prefix}/${PSI_CONFIG_DIR}" ]] &&
-	    [[ -d "${src_prefix}/${PSI_MODULES_ROOT}" ]] &&
-	    [[ -d "${src_prefix}/${PSI_TEMPLATES_DIR}" ]] &&
+	    [[ -d "${src_prefix}/${PMODULES_CONFIG_DIR}" ]] &&
+	    [[ -d "${src_prefix}/${PMODULES_TEMPLATES_DIR}" ]] &&
 	    [[ -d "${src_prefix}/Tools/Pmodules/${PMODULES_VERSION}" ]] || die 1 "
 Error: the module environment '${src_prefix}' has not been initialized properly!"
 }
 
 check_pmodules_env() {
 	check_pmodules_env_vars
-	check_pmodules_directories "${PSI_PREFIX}"
+	check_pmodules_directories "${PMODULES_ROOT}"
 }
 
 append_path () {

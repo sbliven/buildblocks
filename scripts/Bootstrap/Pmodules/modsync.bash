@@ -25,8 +25,8 @@ function die() {
 # check if directory $1 is a valid prefix
 function is_module_prefix() {
     if [[ -d "$1" ]] &&
-       [[ -d "$1/$PSI_CONFIG_DIR" ]] &&
-       [[ -d "$1/$PSI_MODULES_ROOT" ]]
+       [[ -d "$1/$PMODULES_CONFIG_DIR" ]] &&
+       [[ -d "$1/$PMODULES_MODULEFILES_DIR" ]]
     then
         return 0
     fi
@@ -69,7 +69,7 @@ function get_options() {
     dst_dir=$( cd "$dst_dir"; pwd -P )
     [[ "$src_dir" == "$dst_dir" ]] && { die "same source and destination installations"; }
     local modbin=$( cd "$PMODULES_HOME"; pwd -P )
-    local prefix=$( cd "$PSI_PREFIX"; pwd -P )
+    local prefix=$( cd "$PMODULES_PREFIX"; pwd -P )
     modbin=${modbin#"$prefix/"}/bin/modulecmd
     local -r file_type_src=$( file -b "$src_dir/$modbin" 2>&1 || echo err1 )
     local -r file_type_dst=$( file -b "$dst_dir/$modbin" 2>&1 || echo err2 )
@@ -114,9 +114,9 @@ function delete_module() {
     [[ -z "$modpath" ]] && {
 	die "Unable to retrieve module file and installation paths";
     }
-    echo "rm -v \"$3/$PSI_MODULES_ROOT/$2\""
-    echo "rm -v \"$3/$PSI_MODULES_ROOT/$( get_release_path $2 )\""
-    echo "rmdir -vp \"$( dirname "$3/$PSI_MODULES_ROOT/$2" )\""
+    echo "rm -v \"$3/$PMODULES_MODULEFILES_DIR/$2\""
+    echo "rm -v \"$3/$PMODULES_MODULEFILES_DIR/$( get_release_path $2 )\""
+    echo "rmdir -vp \"$( dirname "$3/$PMODULES_MODULEFILES_DIR/$2" )\""
     echo "rm -vrf \"$3/$modpath\""
     echo "rmdir -vp \"$( dirname "$3/$modpath" )\""
     echo "deleted: $2" 1>&2
@@ -133,11 +133,11 @@ function copy_module() {
     fi
     local modpath=$( get_modpath "$2" )
     [[ -z "$modpath" ]] && { die "Unable to retrieve module file and installation paths"; }
-    install -d $( dirname "$3/$PSI_MODULES_ROOT/$2" )
+    install -d $( dirname "$3/$PMODULES_MODULEFILES_DIR/$2" )
     (
         cd $3
-        rsync --links --perms --relative --verbose "$PSI_MODULES_ROOT/$2" "$4"
-        rsync --links --perms --relative --verbose "$PSI_MODULES_ROOT/$( get_release_path "$2" )" "$4"
+        rsync --links --perms --relative --verbose "$PMODULES_MODULEFILES_DIR/$2" "$4"
+        rsync --links --perms --relative --verbose "$PMODULES_MODULEFILES_DIR/$( get_release_path "$2" )" "$4"
         rsync --recursive --links --perms --relative --verbose "$modpath" "$4"
     )
     echo "copied: $2" 1>&2
@@ -156,7 +156,7 @@ function sync_modules() {
     local delete="${options[3]}"
     unset options
 
-    local profile_script="$src_dir/$PSI_CONFIG_DIR/profile.bash"
+    local profile_script="$src_dir/$PMODULES_CONFIG_DIR/profile.bash"
     [[ -r "$profile_script" ]] || {
 	die "Unable to find profile script of installation $profile_script";
     }
@@ -188,7 +188,7 @@ function sync_modules() {
 
     module_picker "$dst_dir" < <("$search_script" bash search --no-header -a 2>&1)
 
-    local -a destination_modules=( $(cd "$dst_dir/$PSI_MODULES_ROOT"; find -L . -type f | while read f; do echo ${f#./}; done) )
+    local -a destination_modules=( $(cd "$dst_dir/$PMODULES_MODULEFILES_DIR"; find -L . -type f | while read f; do echo ${f#./}; done) )
 
     # redefine set difference, the version in dialog.bash only handles integers
     function set_difference() {  #  $1 \ $2
@@ -217,13 +217,13 @@ function sync_modules() {
     local -a modules_copy=( $(set_difference "${selected_modules[*]}" "${destination_modules[*]}") )
     [[ -z $modules_copy ]] || {
         if [[ "$dryrun" != "false" ]]; then
-            echo "(dryrun) update: $dst_dir/$PSI_CONFIG_DIR from $src_dir/$PSI_CONFIG_DIR" 1>&2
+            echo "(dryrun) update: $dst_dir/$PMODULES_CONFIG_DIR from $src_dir/$PMODULES_CONFIG_DIR" 1>&2
         else
             (
             local -a extraoption="$( [[ "$delete" == "true" ]] && echo --delete )"
             cd "$src_dir"
-            rsync --recursive --links --perms --relative $extraoption --verbose --exclude .git "$PSI_CONFIG_DIR" "$dst_dir"
-            echo "updated: $PSI_CONFIG_DIR from $src_dir" 1>&2
+            rsync --recursive --links --perms --relative $extraoption --verbose --exclude .git "$PMODULES_CONFIG_DIR" "$dst_dir"
+            echo "updated: $PMODULES_CONFIG_DIR from $src_dir" 1>&2
             )
         fi
         for m in "${modules_copy[@]}"; do

@@ -2,7 +2,7 @@
 #set -o functrace
 source "$(dirname $0)/../../../lib/libem.bash"
 
-TCL_DIR="${PSI_PREFIX}/Tools/Pmodules/${PMODULES_VERSION}"
+TCL_DIR="${PMODULES_ROOT}/Tools/Pmodules/${PMODULES_VERSION}"
 
 PATH="${TCL_DIR}/bin:${PATH}"
 
@@ -18,7 +18,7 @@ function em.configure() {
 	CPPFLAGS="-DUSE_INTERP_ERRORLINE" "${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--exec-prefix="${PREFIX}" \
-		--with-module-path="${PSI_PREFIX}/${PSI_MODULES_ROOT}" \
+		--with-module-path="${PMODULES_ROOT}/Tools/${PMODULES_MODULEFILES_DIR}" \
 		--with-tcl="${TCL_DIR}/lib" \
 		--without-x \
 		--disable-versioning \

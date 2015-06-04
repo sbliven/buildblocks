@@ -61,7 +61,7 @@ function unique_id() { # $1: module info index
 function mod_path() {   # $1: module info index
     local -i i
     local -a m=(${modlist[$1]})
-    local res="$PSI_PREFIX/${fmmap[${m[0]%%/*}]}/${m[0]}"
+    local res="$PMODULES_ROOT/${fmmap[${m[0]%%/*}]}/${m[0]}"
     for (( i=${#m[@]}; i>3; i-- )); do
         res+="/${m[i-1]}"
     done
@@ -156,7 +156,7 @@ function find_families() {
             t=( ${l##*:} )
             fdmap[$n]=${t[-1]//\"}
         fi
-    done < <(grep -R set-family "$1/${PSI_MODULES_ROOT}")
+    done < <(grep -R set-family "$1/*/${PMODULES_MODULEFILES_DIR}")
 }
 
 function select_uid() { # $1: module uid
@@ -174,7 +174,7 @@ function preselect() { # "$1": prefix for preselected modules
     local -a mpc # module path components
     local -i i
     local uid n
-    pushd "$1/$PSI_MODULES_ROOT" > /dev/null || exit 1;
+    pushd "$1/$PMODULES_MODULEFILES_DIR" > /dev/null || exit 1;
     trap "popd" EXIT
 
     for m in $(find . -follow -type f); do
@@ -186,7 +186,7 @@ function preselect() { # "$1": prefix for preselected modules
             uid+="${mpc[i]}/${mpc[i+1]} "
         done
         uid+="${mpc[-2]}/${mpc[-1]}"
-        PSI_PREFIX="$1" select_uid "$uid"
+        PMODULES_ROOT="$1" select_uid "$uid"
     done
 
     popd
@@ -309,8 +309,8 @@ function module_picker() {
                     0)  #OK
                         oldsel=${selected[$sel]}        # old selection
                         selected[$sel]=$(< $tempfile)   # new selection
-                        PSI_PREFIX="$2" update_deps -1 "$(set_difference "$oldsel" "${selected[$sel]}")" # remove dependencies
-                        PSI_PREFIX="$2" update_deps 1 "$(set_difference "${selected[$sel]}" "$oldsel")"  # add dependencies
+                        PMODULES_ROOT="$2" update_deps -1 "$(set_difference "$oldsel" "${selected[$sel]}")" # remove dependencies
+                        PMODULES_ROOT="$2" update_deps 1 "$(set_difference "${selected[$sel]}" "$oldsel")"  # add dependencies
                         level=1
                         ;;
                     1|255)  #ESC/Cancel
@@ -344,7 +344,7 @@ function module_picker() {
 # if DIALOG_LIB is NOT set, call module picker
 [[ ${DIALOG_LIB:+"is_lib"} == "is_lib" ]] || {
     if [[ -x ${PMODULES_HOME}/bin/modulecmd ]]; then
-        module_picker "${1:-$PSI_PREFIX}" "${2:-/afs/psi.ch/sys/psi.x86_64_slp6}"
+        module_picker "${1:-$PMODULES_ROOT}" "${2:-/afs/psi.ch/sys/psi.x86_64_slp6}"
         exit $?
     else
         echo "ERROR: module environment configuration: ${PMODULES_HOME}/bin/modulecmd is not an executable!"

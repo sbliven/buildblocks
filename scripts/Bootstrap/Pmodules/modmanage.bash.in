@@ -98,7 +98,7 @@ get_module_prefix() {
 	local -a comp=( ${1//\// } )    # split rel.path into components
 	local path="${comp[0]}"		# result path
 	local -i i
-	for ((i=1; i<${#comp[@]}; i+=2)); do
+	for ((i=1; i<${#comp[@]}-1; i+=2)); do
 		path+="/${comp[$((-i-1))]}/${comp[$((-i))]}"
 	done
 	echo "${path}"
@@ -120,6 +120,10 @@ get_releasefile_name() {
 # - sync modulefile
 # - sync release file
 #
+# Note:
+#   We do not take care of files in $PMODULES_ROOT/$PMODULES_TEMPLATES_DIR. If
+#   the modulefile is a sym-link it is expected that the target exists.
+#
 # $1: relative modulefile path (something like: Tools/gnuplot/5.0.0)
 # $2: source prefix of Pmodule environment
 # $3: target prefix of Pmodule environment
@@ -139,10 +143,10 @@ sync_module() {
 		      "${src_prefix}/${rel_module_prefix}/" \
 		      "${target_prefix}/${rel_module_prefix}/" || return $?
 	fi
-	local -r src_modulefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
-	local -r src_releasefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
-	local -r target_modulefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
-	local -r target_releasefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
+	local -r src_modulefile="${src_prefix}/${rel_modulefile}"
+	local -r src_releasefile="${src_prefix}/${rel_releasefile}"
+	local -r target_modulefile="${target_prefix}/${rel_modulefile}"
+	local -r target_releasefile="${target_prefix}/${rel_releasefile}"
 
 	# create target directory for module- and release-file
 	if [[ -e "${src_modulefile}" ]] || [[ -e "${src_releasefile}" ]]; then
@@ -161,17 +165,6 @@ sync_module() {
 	        $DRY rsync --links --perms --recursive \
 		     "${src_releasefile}" "${target_releasefile}" || return $?
 	fi
-
-	# if modulefile is a sym-link, sync link target file
-	#if [[ -L "${src_modulefile}" ]]; then
-	#	local canonical_fname=$(readlink -f "${src_modulefile}")
-	#	local src_template=$(dirname "${canonical_fname}")
-	#	local modulename=$(basename "${src_template}")
-	#	local target_template="${target_prefix}/${PSI_TEMPLATES_DIR}/${modulename}"
-	#	$DRY rsync  --links --perms --recursive --delete \
-	#	     "${src_template}/" \
-	#	     "${target_template}"
-	#fi
 }
 
 #
@@ -181,15 +174,15 @@ sync_module() {
 # $2: target prefix of Pmodule environment
 #
 sync_config() {
-	src="$1/${PSI_CONFIG_DIR}/"
-	dst="$2/${PSI_CONFIG_DIR}/"
+	src="$1/${PMODULES_CONFIG_DIR}/"
+	dst="$2/${PMODULES_CONFIG_DIR}/"
 	$DRY rsync --recursive --links --perms --delete \
 		"${src}" "${dst}" || die 1 "Error: synch operation failed!"
 	sed -i.bak "s/PMODULES_VERSION=\(.*\)/PMODULES_VERSION=${PMODULES_VERSION}/" "${dst}/environment.bash"
 	echo
 
-	src="$1/${PSI_TEMPLATES_DIR}/"
-	dst="$2/${PSI_TEMPLATES_DIR}/"
+	src="$1/${PMODULES_TEMPLATES_DIR}/"
+	dst="$2/${PMODULES_TEMPLATES_DIR}/"
 	$DRY rsync --recursive --links --perms --delete \
 		"${src}" "${dst}" || die 1 "Error: synch operation failed!"
 	echo
@@ -271,11 +264,11 @@ subcommand_init() {
 
 	echo "
 Attempting to create a minimal module environment from the
-environment at '${PSI_PREFIX}'
+environment at '${PMODULES_ROOT}'
 "
 
 	init_pmodules_environment() {
-		local -r src_prefix="${PSI_PREFIX}"
+		local -r src_prefix="${PMODULES_ROOT}"
 		local -r target_prefix=$1
 		local src=''
 		local dst=''
@@ -292,13 +285,8 @@ environment at '${PSI_PREFIX}'
 		echo
 
 		echo "Syncing configuration ..."
-		sync_config "${PSI_PREFIX}" \
+		sync_config "${PMODULES_ROOT}" \
 		            "${target_prefix}" || die 1 "Error: configuration synchronization failed!"
-
-		dst="${target_prefix}/${PSI_MODULES_ROOT}/"
-		echo "Creating root directory '${dst}' for module hierarchy ..."
-		$DRY mkdir -p "${dst}"
-		echo
 
 		echo "Syncing Pmodules ${PMODULES_VERSION} from '${src_prefix}' to '${target_prefix}'..."
 		sync_module "Tools/Pmodules/${PMODULES_VERSION}" \
@@ -306,7 +294,7 @@ environment at '${PSI_PREFIX}'
 			    "${target_prefix}" || die 1 "Error: sync Pmodules failed!"
 		echo
 
-		dst="${target_prefix}/${PSI_CONFIG_DIR}/environment.bash"
+		dst="${target_prefix}/${PMODULES_CONFIG_DIR}/environment.bash"
 		echo "Adding installation source '${src_prefix}' to '${dst}'..."
 		sed -i.bak '/PMODULES_INSTALL_SOURCE/d' "${dst}"
 		echo "declare -x PMODULES_INSTALL_SOURCE=\"${src_prefix}\"" >> "${dst}"
@@ -320,7 +308,7 @@ environment at '${PSI_PREFIX}'
 		echo "New minimal module environment created at '${target_prefix}'."
 		echo "To use this environment, execute"
 		echo "   sudo ln -fs ${target_prefix} /opt/psi"
-		echo "   source /opt/psi/${PSI_CONFIG_DIR}/profile.bash"
+		echo "   source /opt/psi/${PMODULES_CONFIG_DIR}/profile.bash"
 	}
 
 	umask 022
@@ -336,7 +324,7 @@ subcommand_install() {
 	local -a releases=()
 	local -a module_pattern=()
 	local -r src_prefix="${PMODULES_INSTALL_SOURCE}"
-	local -r target_prefix="${PSI_PREFIX}"
+	local -r target_prefix="${PMODULES_ROOT}"
 
 	opts=$(get_options -o hf -l dry-run -l force -l with: -l release: -l help -l src: -- "$@")
 	if [[ $? != 0 ]]; then
@@ -396,7 +384,7 @@ subcommand_install() {
 	(( n == 0 )) && die 0 "Nothing to install..."
 	echo -e "The following modules will be installed/updated:\n" 1>&2
 	for key in "${!modules_to_install[@]}"; do
-		echo "    ${key}" 1>&2
+		echo "    ${key/\/${PMODULES_MODULEFILES_DIR}\//: }" 1>&2
 	done
 	echo 1>&2
 	get_YN_answer "Do you want to continue? [n] " || die 1 "Aborting..."
@@ -415,7 +403,7 @@ subcommand_install() {
 }
 
 subcommand_sync() {
-        [[ -z "${PSI_PREFIX}" ]] && die 1 "Error: No current module environment is configured!"
+        [[ -z "${PMODULES_ROOT}" ]] && die 1 "Error: No current module environment is configured!"
 
 	local delete=false
 	local opts=''
@@ -456,10 +444,10 @@ subcommand_sync() {
 	unset -v opts
 
 	if [[ -z "${dst_prefix}" ]]; then
-		dst_prefix="${PSI_PREFIX}"
+		dst_prefix="${PMODULES_ROOT}"
 	fi
 	(
-		PSI_PREFIX="${dst_prefix}" check_pmodules_env || \
+		PMODULES_ROOT="${dst_prefix}" check_pmodules_env || \
 		    die 1 "Error: invalid destination modules environment!"
 	) || die 1 "Giving up..."
 	
@@ -468,12 +456,12 @@ subcommand_sync() {
             die 1 "Error: no source module environment was specified!"
         fi
 	(
-		PSI_PREFIX="${src_prefix}" check_pmodules_env || \
+		PMODULES_ROOT="${src_prefix}" check_pmodules_env || \
 		    die 1 "Error: invalid source modules environment!"
 	) || die 1 "Giving up..."
 	[[ "$( cd "$src_prefix"; pwd -P )" == "$( cd "$dst_prefix"; pwd -P )" ]] && \
 	    die 1 "Error: source and destination are equal!"
-	local modbin=${PMODULES_HOME#"${PSI_PREFIX}/"}/bin/modulecmd.tcl
+	local modbin=${PMODULES_HOME#"${PMODULES_ROOT}/"}/bin/modulecmd.tcl
 	local file_type_src=$( file -b "${src_prefix}/${modbin}" 2>&1 || echo err1 )
 	local file_type_dst=$( file -b "${dst_prefix}/${modbin}" 2>&1 || echo err2 )
 	[[ "${file_type_src}" == "${file_type_dst}" ]] || \
@@ -504,7 +492,7 @@ subcommand_sync() {
 		exit 1
 	}
 
-	local -a destination_modules=( $(cd "${dst_prefix}/${PSI_MODULES_ROOT}"; find -L . -type f | while read f; do n=${f##*/}; [[ "${n:0:1}" == "." ]] || echo ${f#./}; done) )
+	local -a destination_modules=( $(cd "${dst_prefix}/${PMODULES_MODULEFILES_DIR}"; find -L . -type f | while read f; do n=${f##*/}; [[ "${n:0:1}" == "." ]] || echo ${f#./}; done) )
 
 	# redefine set difference, the version in dialog.bash only handles integers
 	function set_difference() {  #  $1 \ $2

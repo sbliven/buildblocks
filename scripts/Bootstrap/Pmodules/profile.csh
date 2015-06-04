@@ -15,16 +15,16 @@ unset _init_env_file
 ############################################################################
 # check configuration
 #
-if ( ! $?PSI_PREFIX ) then 
+if ( ! $?PMODULES_PREFIX ) then 
 	echo "Oops: Pmodules prefix not set."
 	return 1
 endif
 
-if ( "$PSI_PREFIX" == "" ) then
+if ( "$PMODULES_PREFIX" == "" ) then
 	echo "Oops: Pmodules prefix set to empty string!"
 endif
-if ( ! -d ${PSI_PREFIX} ) then 
-	echo "Oops: ${PSI_PREFIX}: Set as Pmodules prefix, but this is not a directory!"
+if ( ! -d ${PMODULES_PREFIX} ) then 
+	echo "Oops: ${PMODULES_PREFIX}: Set as Pmodules prefix, but this is not a directory!"
 	return 1
 endif
 

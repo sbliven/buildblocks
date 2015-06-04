@@ -13,7 +13,7 @@ sed_cmd="s:@PMODULES_HOME@:${PMODULES_HOME}:g;"
 sed_cmd+="s:@PMODULES_VERSION@:${PMODULES_VERSION}:g;"
 sed_cmd+="s:@MODULES_VERSION@:${MODULES_VERSION}:g"
 sed "${sed_cmd}" "${SRC_DIR}/modulecmd.in" > "${SRC_DIR}/modulecmd"
-sed "${sed_cmd}" "${SRC_DIR}/modmanage.in" > "${SRC_DIR}/modmanage.bash"
+sed "${sed_cmd}" "${SRC_DIR}/modmanage.bash.in" > "${SRC_DIR}/modmanage.bash"
 sed "${sed_cmd}" "${SRC_DIR}/environment.bash.in" > "${SRC_DIR}/environment.bash"
 
 install -d -m 0755 "${PMODULES_HOME}/bin"
@@ -33,4 +33,9 @@ install -m 0644 "${SRC_DIR}/bash" "${PMODULES_HOME}/init"
 install -m 0644 "${SRC_DIR}/bash_completion" "${PMODULES_HOME}/init"
 
 install -m 0644 "${SRC_DIR}/libpmodules.bash" "${PMODULES_HOME}/lib"
-install -m 0644 "${SRC_DIR}/libmodules.tcl" "${PMODULES_HOME}/lib"
+install -m 0644 "${SRC_DIR}/libmodules.tcl" "${PMODULES_HOME}/lib/tcl8.6"
+
+{
+	cd "${PMODULES_HOME}/lib/tcl8.6"
+	"${BOOTSTRAP_DIR}/mkindex.tcl"
+}
