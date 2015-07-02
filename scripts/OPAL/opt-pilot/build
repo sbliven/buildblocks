@@ -14,7 +14,7 @@ pmodules.configure() {
 
 pmodules.add_to_group 'OPAL'
 pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'boost' 'hdf5' 'H5hut' 'trilinos' 'ippl' 'gsl' 'boost' 'OPAL'
+pmodules.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'boost' 'hdf5' 'H5hut' 'trilinos' 'gsl' 'boost' 'OPAL'
 pmodules.set_supported_compilers 'gcc/4.8'
 pmodules.make_all
 
