@@ -3,6 +3,17 @@
 source "$(dirname $0)/../../../lib/libpmodules.bash"
 
 pmodules.configure() {
+	case ${COMPILER} in
+	gcc )
+		LOADER='mpif90'
+		;;
+	intel )
+		LOADER='mpicc'
+		;;
+	* )
+		die 3 "Oops: unknown compiler: ${COMPILER}"
+		;;
+	esac
 	cat <<EOF > "${MODULE_SRCDIR}/make.inc"
 PLAT		= 
 DSuperLUroot 	= \${PREFIX}
@@ -21,7 +32,7 @@ CFLAGS          = -pipe -O3
 NOOPTS		= 
 FORTRAN         = mpif90
 F90FLAGS	= 
-LOADER	        = mpif90
+LOADER	        = mpicc
 LOADOPTS	= 
 CDEFS        = -DAdd__ 
 EOF
