@@ -25,8 +25,9 @@ pmodules.configure() {
 	cmake \
            --prefix=$PREFIX \
            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
-           -DCMAKE_CXX_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC -fpermissive" \
+           -DCMAKE_CXX_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC" \
            -DCMAKE_C_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC" \
+	   -D CMAKE_CXX_STANDARD:STRING="11" \
            -DCMAKE_Fortran_FLAGS:STRING="-fPIC" \
            -D CMAKE_BUILD_TYPE:STRING=DEBUG \
            -D TPL_ENABLE_QT:BOOL=OFF \
