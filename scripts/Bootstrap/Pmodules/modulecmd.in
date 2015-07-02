@@ -942,7 +942,8 @@ get_groups () {
 	local -r root="$1"
 	{
 		cd "${root}" 
-		for f in [A-Z]*; do
+		# for some unknown reason [A-Z]* doesn't work on (some?) SL6 systems
+		for f in [ABCDEFGHIJKLMNOPQRSTUVWXYZ]*; do
 			Groups+=( $f )
 		done
 	};
