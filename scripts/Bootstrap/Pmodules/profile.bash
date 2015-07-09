@@ -15,12 +15,12 @@ unset _init_env_file
 ############################################################################
 # check configuration
 #
-if [[ -z ${PMODULES_PREFIX} ]]; then 
-	echo "Oops: Pmodules prefix not set." 1>&2
+if [[ -z ${PMODULES_ROOT} ]]; then 
+	echo "Oops: Pmodules root not set." 1>&2
 	return 1
 fi
-if [[ ! -d ${PMODULES_PREFIX} ]]; then 
-	echo "Oops: ${PMODULES_PREFIX}: Set as Pmodules prefix, but this is not a directory." 1>&2
+if [[ ! -d ${PMODULES_ROOT} ]]; then 
+	echo "Oops: ${PMODULES_ROOT}: Set as Pmodules root, but this is not a directory." 1>&2
 	return 1
 fi
 if [[ -z ${PMODULES_VERSION} ]]; then
