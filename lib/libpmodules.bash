@@ -719,20 +719,43 @@ pmodules.make_all() {
  		echo "Building $P/$V ..."
 		[[ ${dry_run} == yes ]] && die 0 ""
 		check_compiler
-		prep
-		cd "${MODULE_SRCDIR}"
-		pmodules.pre_configure
-		cd "${MODULE_BUILDDIR}"
-		pmodules.configure
-		pmodules.build
-		pmodules.install
-		pmodules.post_install
-		pmodules.install_doc
-		post_install
-		if [[ ${bootstrap} == 'no' ]]; then
-			write_runtime_dependencies
-			write_build_dependencies
+
+		if [[ ! -e "${MODULE_BUILDDIR}/.prep" ]]; then
+			prep
+			touch "${MODULE_BUILDDIR}/.prep"
 		fi
+		[[ "${target}" == "prep" ]] && return 0
+
+		if [[ ! -e "${MODULE_BUILDDIR}/.configure" ]]; then
+			cd "${MODULE_SRCDIR}"
+			pmodules.pre_configure
+			cd "${MODULE_BUILDDIR}"
+			pmodules.configure
+			touch "${MODULE_BUILDDIR}/.configure"
+		fi
+		[[ "${target}" == "configure" ]] && return 0
+
+		if [[ ! -e "${MODULE_BUILDDIR}/.compile" ]]; then
+			cd "${MODULE_BUILDDIR}"
+			pmodules.build
+			touch "${MODULE_BUILDDIR}/.compile"
+		fi
+		[[ "${target}" == "compile" ]] && return 0
+
+		if [[ ! -e "${MODULE_BUILDDIR}/.install" ]]; then
+			cd "${MODULE_BUILDDIR}"
+			pmodules.install
+			pmodules.post_install
+			pmodules.install_doc
+			post_install
+			if [[ ${bootstrap} == 'no' ]]; then
+				write_runtime_dependencies
+				write_build_dependencies
+			fi
+			touch "${MODULE_BUILDDIR}/.install"
+		fi
+		[[ "${target}" == "install" ]] && return 0
+		
 		[[ ${enable_cleanup_build} == yes ]] && pmodules.cleanup_build
 		[[ ${enable_cleanup_src} == yes ]] && pmodules.cleanup_src
 		
@@ -758,14 +781,12 @@ bootstrap='no'
 enable_cleanup_build='yes'
 enable_cleanup_src='no'
 
+target='all'
+
 pmodules.cleanup_env
 
 # array collecting all modules specified on the command line via '--with=module'
 with_modules=()
-
-if [[ -r "${BUILDSCRIPT_DIR}/with_modules" ]]; then
-	with_modules+=( $(cat "${BUILDSCRIPT_DIR}/with_modules") )
-fi
 
 while (( $# > 0 )); do
 	case $1 in
@@ -818,8 +839,14 @@ while (( $# > 0 )); do
 		eval $1
 		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
 		;;
-	* )
+	prep | configure | compile | install | all )
+		target=$1
+		;;
+	[0-9]* )
 		V=$1
+		;;
+	* )
+		usage
 		;;
 	esac
 	shift
@@ -831,11 +858,19 @@ fi
 
 # while bootstraping the module command is not yet available
 if [[ ${bootstrap} == no ]]; then
+	if [[ -r "${BUILDSCRIPT_DIR}/with_modules-$V" ]]; then
+		with_modules+=( $(cat "${BUILDSCRIPT_DIR}/with_modules-$V") )
+	elif [[ -r "${BUILDSCRIPT_DIR}/with_modules" ]]; then
+		with_modules+=( $(cat "${BUILDSCRIPT_DIR}/with_modules") )
+	fi
+
         source	"${PMODULES_ROOT}/${PMODULES_CONFIG_DIR}/profile.bash"
 	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
 	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
-	module use unstable
 	module purge
+	module use unstable
+	# :FIXME: this is a hack!!!
+	module use Libraries
 	for m in "${with_modules[@]}"; do
 		if module_is_available "$m"; then
 			echo "Loading module: ${m}"
@@ -845,8 +880,9 @@ if [[ ${bootstrap} == no ]]; then
 		fi
 	done
 else
-	read_versions "${BUILD_BASEDIR}/scripts/Bootstrap/Pmodules_version.conf"
 	unset PMODULES_HOME
+	unset PMODULES_VERSION
+	read_versions "${BUILD_BASEDIR}/scripts/Bootstrap/Pmodules_version.conf"
 	source "/opt/psi/config/environment.bash"
 fi
 
