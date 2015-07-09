@@ -18,8 +18,7 @@ ${BOOTSTRAP_DIR}/getopt/build    --bootstrap --disable-cleanup        || { echo 
 ${BOOTSTRAP_DIR}/dialog/build    --bootstrap --disable-cleanup        || { echo "compiling 'dialog' failed!"; exit 1; }
 ${BOOTSTRAP_DIR}/bash/build      --bootstrap --disable-cleanup 4.3.30 || { echo "compiling 'bash' failed!"; exit 1; }
 ${BOOTSTRAP_DIR}/Tcl/build       --bootstrap --disable-cleanup        || { echo "compiling 'Tcl' failed!"; exit 1; }
-
-# we have to remove the init directory - otherwise the next build will fail...
-rm -rf "${PMODULES_HOME}/init"
 ${BOOTSTRAP_DIR}/Modules/build --bootstrap || { echo "compiling 'Modules' failed!"; exit 1; }
+
 mv -v "${PMODULES_HOME}/bin/modulecmd" "${PMODULES_HOME}/bin/modulecmd.tcl"
+echo "Done..."
