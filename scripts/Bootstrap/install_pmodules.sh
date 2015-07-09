@@ -6,9 +6,10 @@ declare -r SRC_DIR="${BOOTSTRAP_DIR}/Pmodules"
 
 source "${BASE_DIR}/lib/lib.bash"
 
-read_versions "${BOOTSTRAP_DIR}/Pmodules_version.conf"
-
 unset PMODULES_HOME
+unset PMODULES_VERSION
+
+read_versions "${BOOTSTRAP_DIR}/Pmodules_version.conf"
 source "/opt/psi/config/environment.bash"
 
 echo "Installing to ${PMODULES_HOME} ..."

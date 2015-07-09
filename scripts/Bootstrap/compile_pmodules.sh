@@ -5,9 +5,10 @@ declare -r BOOTSTRAP_DIR="${BASE_DIR}/scripts/Bootstrap"
 
 source "${BASE_DIR}/lib/lib.bash"
 
-read_versions "${BOOTSTRAP_DIR}/Pmodules_version.conf"
-
 unset PMODULES_HOME
+unset PMODULES_VERSION
+
+read_versions "${BOOTSTRAP_DIR}/Pmodules_version.conf"
 source "/opt/psi/config/environment.bash"
 
 #if [[ -n ${PMODULES_DIR} ]] && [[ "${PMODULES_DIR}" != "/" ]] && [[ -d "${PMODULES_DIR}" ]]; then
