@@ -49,6 +49,6 @@ fi
 
 if [[ ! -e "${PMODULES_HOME}/bin/modulecmd.tcl" ]]; then
 	build Modules "${MODULES_VERSION}"
-	mv -v "${PMODULES_HOME}/bin/modulecmd" "${PMODULES_HOME}/bin/modulecmd.tcl"
+	mv -v "${PMODULES_HOME}/bin/modulecmd" "${PMODULES_HOME}/libexec/modulecmd.tcl"
 fi
 echo "Done..."
