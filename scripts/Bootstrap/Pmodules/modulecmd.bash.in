@@ -5,7 +5,7 @@
 # we have to unset CDPATH, otherwise 'cd' prints the directoy!
 unset CDPATH
 
-# used inside output text only
+# used for some output only
 declare -r  CMD='module'
 
 declare -r  mydir=$(cd $(dirname "$0") && pwd)
@@ -15,6 +15,8 @@ declare -r  libdir="${prefix}/lib"
 declare -r  libexecdir="${prefix}/libexec"
 
 source "${libdir}/libpmodules.bash"
+
+PATH="${bindir}:${PATH}"
 
 declare -r  version='@PMODULES_VERSION@'
 declare -r  modulecmd="${libexecdir}/modulecmd.tcl"
@@ -1586,7 +1588,6 @@ case $1 in
 esac
 shift
 
-declare -a sargs=()
 declare -a opts=()
 while (( $# > 0 )); do
 	case $1 in
@@ -1597,63 +1598,51 @@ while (( $# > 0 )); do
 			print_version
 			die 1
 			;;
-		-f | --force | -s | --silent | -v | --verbose | -w | --warn )
-			opts+=( "$1" )
-			;;
-		-t | --terse | -l | --long | -h | --human )
-			opts+=( $1 )
-			;;
-		-a | --appent | -p | --prepend )
-			opts+=( "$1" )
-			;;
-		--debug )
-			set -x
-			;;
 		-* )
-			die 1 "$1: unknown switch."
+			opts+=( "$1" )
 			;;
 		add|load )
 			subcommand='subcommand_load'
 			shift
-			sargs=( "$@" )
+			opts+=( "$@" )
 			shift $#
 			;;
 		rm|unload )
 			subcommand='subcommand_unload'
 			shift
-			sargs=( "$@" )
+			opts+=( "$@" )
 			shift $#
 			;;
 		switch|swap )
 			subcommand='subcommand_swap'
 			shift
-			sargs=( "$@" )
+			opts+=( "$@" )
 			shift $#
 			;;
 		display|show )
 			subcommand='subcommand_show'
 			shift
-			sargs=( "$@" )
+			opts+=( "$@" )
 			shift $#
 			;;
 		apropos|keyword )
 			subcommand='subcommand_apropos'
 			shift
-			sargs=( "$@" )
+			opts+=( "$@" )
 			shift $#
 			;;
 		avail|search|use|unuse|update|refresh|purge|list|clear|whatis|help )
 			subcommand=subcommand_$1
 			shift
 			if (( $# > 0 )); then
-			    sargs=( "$@" )
+			    opts+=( "$@" )
 			    shift $#
 			fi
 			;;
 		initadd|initprepend|initrm|initswitch|initlist|initclear )
 			subcommand=subcommand_$1
 			shift
-			sargs=( "$@" )
+			opts=( "$@" )
 			shift $#
 			;;
 		* )
@@ -1668,7 +1657,7 @@ if (( ${#Groups[@]} == 0 )); then
 	get_hierarchy_depth "${PMODULES_ROOT}"
 fi
 
-$subcommand "${sargs[@]}" "${opts[@]}"
+$subcommand "${opts[@]}"
 
 # Local Variables:
 # mode: sh
