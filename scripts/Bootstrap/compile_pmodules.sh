@@ -20,7 +20,7 @@ build () {
 	local -r version="$2"
 
 	"${BOOTSTRAP_DIR}/${name}/build" --bootstrap --disable-cleanup "${version}" || \
-		die 3 "Compiling '${name}' failed!"
+		std::die 3 "Compiling '${name}' failed!"
 }
 
 if [[ ! -f "${PMODULES_HOME}/bin/base64" ]]; then
