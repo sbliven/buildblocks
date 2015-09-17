@@ -7,14 +7,12 @@ shopt -s expand_aliases
 declare -rx ARGS="$@"
 
 
-
 declare -r  BUILDSCRIPT_DIR=$( cd $(dirname "$0") && pwd )
 declare -r  BUILDSCRIPT="${BUILDSCRIPT_DIR}"/$(basename "$0")
 declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
 source "${SHLIBDIR}/lib.bash"
 
-declare -rx BUILD_BASEDIR=$(abspath $SHLIBDIR/..)
-
+declare -rx BUILD_BASEDIR=$(std::abspath "${SHLIBDIR}/..")
 
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
