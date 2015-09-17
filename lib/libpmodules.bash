@@ -121,7 +121,7 @@ pmodules.supported_os() {
 	for os in "$@"; do
 		[[ ${os} == ${OS} ]] && return 0
 	done
-	die 0 "${P}: Not available for ${OS}."
+	std::die 0 "${P}: Not available for ${OS}."
 }
 
 ##############################################################################
@@ -132,10 +132,10 @@ pmodules.supported_os() {
 #
 pmodules.add_to_group() {
 	if [[ -z ${1} ]]; then
-		die 42 "${FUNCNAME}: Missing group argument."
+		std::die 42 "${FUNCNAME}: Missing group argument."
 	fi
 	if [[ ! -d ${PMODULES_ROOT}/${PMODULES_TEMPLATES_DIR}/${1} ]]; then
-		die 43 "${1}: group does not exist."
+		std::die 43 "${1}: group does not exist."
 	fi
 	MODULE_GROUP=$1
 }
@@ -208,17 +208,17 @@ load_build_dependencies() {
 		fi
 		is_loaded "$m" && continue
 		if ! module_is_available "$m"; then
-		        debug "${m}: module not available"
+		        std::debug "${m}: module not available"
 			local rels=( ${releases//:/ } )
 			for rel in "${rels[@]}"; do
-				debug "${m}: check release \"${rel}\""
+				std::debug "${m}: check release \"${rel}\""
 				eval $("${MODULECMD}" bash use ${rel})
 				if module_is_available "${m}"; then
-					die 1 "${m}: module available with release \"${rel}\", add this release with \"module use ${rel}\" and re-run build script."
+					std::die 1 "${m}: module available with release \"${rel}\", add this release with \"module use ${rel}\" and re-run build script."
 				fi
 			done
 			[[ ${dry_run} == yes ]] && {
-				die 1 "${m}: module does not exist, cannot continue with dry run..."
+				std::die 1 "${m}: module does not exist, cannot continue with dry run..."
 				}
 
 			echo "$m: module does not exist, trying to build it..."
@@ -250,7 +250,7 @@ load_build_dependencies() {
 			done
 			"${BUILD_SCRIPTSDIR}"/*/"${m/\/*}/build" ${args[@]}
 			if [[ -z $(module avail "$m" 2>&1) ]]; then
-				die 1 "$m: oops: build failed..."
+				std::die 1 "$m: oops: build failed..."
 			fi
 		fi
 		# :FIXME: this doesn't work any more!
@@ -283,7 +283,7 @@ fi
 
 write_runtime_dependencies() {
 	local -r fname="${PREFIX}/.dependencies"
-	info "Writing run-time dependencies to ${fname}"
+	std::info "Writing run-time dependencies to ${fname}"
 	local dep
 	echo -n "" > "${fname}"
 	for dep in "${MODULE_DEPENDENCIES[@]}"; do
@@ -298,7 +298,7 @@ write_runtime_dependencies() {
 
 write_build_dependencies() {
 	local -r fname="${PREFIX}/.build_dependencies"
-	info "Writing build dependencies to ${fname}"
+	std::info "Writing build dependencies to ${fname}"
 	local dep
 	echo -n "" > "${fname}"
 	for dep in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
@@ -376,7 +376,7 @@ find_tarball() {
 		fi
 	done
 	if [[ -z ${TARBALL} ]]; then
-		error "tar-ball for $P/$V not found."
+		std::error "tar-ball for $P/$V not found."
 		exit 43
 	fi
 }
@@ -384,7 +384,7 @@ find_tarball() {
 #setup module specific environment
 setup_env2() {
 	if [[ -z ${MODULE_GROUP} ]]; then
-		die 1 "$P: group not set."
+		std::die 1 "$P: group not set."
 	fi
 
 	# overwrite environment variables with values we got on the cmd line
@@ -398,7 +398,7 @@ setup_env2() {
 
 	# oops, we need a version
 	if [[ -z $V ]]; then
-		die 1 "$P: Missing version."
+		std::die 1 "$P: Missing version."
 	fi
 	MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
 	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
@@ -471,7 +471,7 @@ setup_env2() {
 			MODULE_NAME+="${P}/${V}"
 			;;
 		* )
-			die 1 "$P: oops: unknown group: ${MODULE_GROUP}"
+			std::die 1 "$P: oops: unknown group: ${MODULE_GROUP}"
 			;;
 	esac
 
@@ -488,7 +488,7 @@ setup_env2() {
 		eval $("${MODULECMD}" bash use ${rel})
 		if module_is_available "${P}/${V}"; then
 			cur_module_release=${rel}
-			info "${P}/${V}: already available and released as \"${rel}\""
+			std::info "${P}/${V}: already available and released as \"${rel}\""
 			break
 		fi
 	done
@@ -503,7 +503,7 @@ setup_env2() {
 		[[ "${cur_module_release}" == 'deprecated' ]] \
 		|| [[ "${MODULE_RELEASE}" == 'deprecated' ]]; then
 		MODULE_RELEASE='deprecated'
-		info "${P}/${V}: will be released as \"deprecated\""
+		std::info "${P}/${V}: will be released as \"deprecated\""
 	#
 	# release is stable
 	#   - if all build-dependency are stable or
@@ -514,7 +514,7 @@ setup_env2() {
 		|| [[ "${cur_module_release}" == 'stable' ]] \
 		|| [[ "${MODULE_RELEASE}" == 'stable' ]]; then
 		MODULE_RELEASE='stable'
-		info "${P}/${V}: will be released as \"stable\""
+		std::info "${P}/${V}: will be released as \"stable\""
 	#
 	# release is unstable
 	#   - if a build-dependency is unstable or 
@@ -523,7 +523,7 @@ setup_env2() {
 	#   - and all the cases I didn't think of
 	else
 		MODULE_RELEASE='unstable'
-		info "${P}/${V}: will be released as \"unstable\""
+		std::info "${P}/${V}: will be released as \"unstable\""
 	fi
 
 	# directory for README's, license files etc
@@ -537,7 +537,7 @@ setup_env2() {
 # redefine function for bootstrapping
 setup_env2_bootstrap() {
 	if [[ -z ${MODULE_GROUP} ]]; then
-		die 1 "$P: group not set."
+		std::die 1 "$P: group not set."
 	fi
 
         if [[ -z $V ]]; then
@@ -546,7 +546,7 @@ setup_env2_bootstrap() {
 
 	# oops, we need a version
 	if [[ -z $V ]]; then
-		die 1 "$P: Missing version."
+		std::die 1 "$P: Missing version."
 	fi
 	MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
 	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
@@ -556,7 +556,7 @@ setup_env2_bootstrap() {
 	PREFIX="${PMODULES_ROOT}/${MODULE_GROUP}/${MODULE_NAME}"
 	
 	MODULE_RELEASE='unstable'
-	info "${MODULE_NAME}: will be released as \"${MODULE_RELEASE}\""
+	std::info "${MODULE_NAME}: will be released as \"${MODULE_RELEASE}\""
 
 	# directory for README's, license files etc
 	DOCDIR="${PREFIX}/share/doc/$P"
@@ -609,7 +609,7 @@ pmodules.post_install() {
 }
 
 pmodules.install_doc() {
-	info "Installing documentation to ${DOCDIR}"
+	std::info "Installing documentation to ${DOCDIR}"
 	install -m 0755 -d "${DOCDIR}"
 	install -m0444 "${MODULE_DOCFILES[@]/#/${MODULE_SRCDIR}/}" "${BUILDSCRIPT}" "${DOCDIR}"
 }
@@ -620,7 +620,7 @@ set_legacy_link() {
 	local -r release_file="${dir_name}/.release-${MODULE_NAME##*/}"
 	if [[ ! -e "${_path}" ]]; then
 	    (
-		    info "Setting new sym-link \"${link_name}\" ..."
+		    std::info "Setting new sym-link \"${link_name}\" ..."
 		    mkdir -p "${dir_name}"
 		    cd "${dir_name}"
 		    local x
@@ -630,7 +630,7 @@ set_legacy_link() {
 		    ln -fs "${_target}" "${MODULE_NAME##*/}"
 	    )
 	fi
-	info "${MODULE_NAME}: set release to '${MODULE_RELEASE}'"
+	std::info "${MODULE_NAME}: set release to '${MODULE_RELEASE}'"
 	echo "${MODULE_RELEASE}" > "${release_file}"
 }
 
@@ -640,7 +640,7 @@ set_link() {
 	local -r release_file="${dir_name}/.release-${MODULE_NAME##*/}"
 	if [[ ! -e "${_path}" ]]; then
 	    (
-		    info "Setting new sym-link \"${link_name}\" ..."
+		    std::info "Setting new sym-link \"${link_name}\" ..."
 		    mkdir -p "${dir_name}"
 		    cd "${dir_name}"
 		    local x
@@ -650,17 +650,17 @@ set_link() {
 		    ln -fs "${_target}" "${MODULE_NAME##*/}"
 	    )
 	fi
-	info "${MODULE_NAME}: set release to '${MODULE_RELEASE}'"
+	std::info "${MODULE_NAME}: set release to '${MODULE_RELEASE}'"
 	echo "${MODULE_RELEASE}" > "${release_file}"
 }
 
 pmodules.cleanup_build() {
 	[[ -n "${MODULE_BUILDDIR}" ]]     \
-		|| die 1 "Oops: internal error: MODULE_BUILDDIR is set to empty string..."
+		|| std::die 1 "Oops: internal error: MODULE_BUILDDIR is set to empty string..."
 	[[ "${MODULE_BUILDDIR}" == "/" ]] \
-		&& die 1 "Oops: internal error: MODULE_BUILDDIR is set to '/'..."
+		&& std::die 1 "Oops: internal error: MODULE_BUILDDIR is set to '/'..."
 	[[ -d "/${MODULE_BUILDDIR}" ]]    \
-		|| die 1 "Oops: internal error: MODULE_BUILDDIR=${MODULE_BUILDDIR} is not a directory..."
+		|| std::die 1 "Oops: internal error: MODULE_BUILDDIR=${MODULE_BUILDDIR} is not a directory..."
 	echo "Cleaning up '/${MODULE_BUILDDIR}'..."
 	rm -rf  "/${MODULE_BUILDDIR}"
 }
@@ -684,7 +684,7 @@ check_compiler() {
 			return 0
 		fi
 	done
-	die 0 "Package cannot be build with ${COMPILER}/${COMPILER_VERSION}."
+	std::die 0 "Package cannot be build with ${COMPILER}/${COMPILER_VERSION}."
 }
 
 # unfortunatelly we need sometime an OS depended post-install
@@ -696,9 +696,9 @@ post_install_linux() {
 }
 
 post_install() {
-	info "Run post-installation for ${OS} ..."
+	std::info "Run post-installation for ${OS} ..."
 	[[ "${OS}" == "Linux" ]] && post_install_linux
-	info "Post-installation done ..."
+	std::info "Post-installation done ..."
 	return 0
 }
 
@@ -717,7 +717,7 @@ pmodules.make_all() {
 	if [[ ! -d "${PREFIX}" ]] || [[ ${force_rebuild} == 'yes' ]]; then
 		building='yes'
  		echo "Building $P/$V ..."
-		[[ ${dry_run} == yes ]] && die 0 ""
+		[[ ${dry_run} == yes ]] && std::die 0 ""
 		check_compiler
 
 		if [[ ! -e "${MODULE_BUILDDIR}/.prep" ]]; then
@@ -866,7 +866,7 @@ if [[ ${bootstrap} == no ]]; then
 
         source	"${PMODULES_ROOT}/${PMODULES_CONFIG_DIR}/profile.bash"
 	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
-	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
+	[[ -x ${MODULECMD} ]] || std::die 1 "${MODULECMD}: no such executable"
 	module purge
 	module use unstable
 	# :FIXME: this is a hack!!!
@@ -876,7 +876,7 @@ if [[ ${bootstrap} == no ]]; then
 			echo "Loading module: ${m}"
 			module load "${m}"
 		else
-			die 44 "$m: module not available!"
+			std::die 44 "$m: module not available!"
 		fi
 	done
 else

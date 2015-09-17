@@ -1,3 +1,10 @@
+#!/bin/bash
+
+#
+# We need GNU versions of the following utilities. This code works
+# well on Linux and Mac OS X with MacPorts.
+# :FIXME: implement a smarter, portable solution.
+#
 shopt -s expand_aliases
 unalias -a
 
@@ -29,38 +36,47 @@ else
 	alias sed=$(which sed 2>/dev/null)
 fi
 
-
+#
+# set an error handler. If a function _exit() exists, it will be called
+# with the passed exit code.
+#
+# $1	exit code
+#
 set -o errexit
 
-trap "error_handler" ERR
+trap "std::error_handler" ERR
 
-error_handler() {
+std::error_handler() {
 	local -i ec=$?
 
+	[[ typeset -F _exit >/dev/null 2>&1 ]] && _exit "${ec}"
 	exit ${ec}
 }
 
-log() {
+#
+# logging/message functions
+#
+std::log() {
 	local -ri fd=$1
 	local -r fmt="$2\n"
 	shift 2
 	printf -- "$fmt" "$@" >> /dev/fd/$fd
 }
 
-info() {
-	log 2 "$1\n" "${@:2}"
+std::info() {
+	std::log 2 "$1\n" "${@:2}"
 }
 
-error() {
-	log 2 "$1\n" "${@:2}"
+std::error() {
+	std::log 2 "$1\n" "${@:2}"
 }
 
-debug() {
+std::debug() {
 	[[ ${PMODULES_DEBUG} ]] || return 0
-	log 2 "$@"
+	std::log 2 "$@"
 }
 
-die() {
+std::die() {
 	local -ri ec=$1
 	shift
 	local cout
@@ -72,28 +88,37 @@ die() {
 	if [[ -n $@ ]]; then
 		local -r fmt=$1
 		shift
-		log $cout "$fmt" "$@"
+		std::log $cout "$fmt" "$@"
 	fi
 	exit $ec
 }
 
-#abspath () {
-#	(cd "$1" && pwd)
-#}
-
-abspath () {
+std::abspath () {
 	readlink -f "$1"
 }
 
-append_path () {
+std::append_path () {
 	local -r P=$1
 	local -r d=$2
 
-        if ! echo ${!P} | egrep -q "(^|:)${d}($|:)" ; then
+        if ! egrep -q "(^|:)${d}($|:)" <<<${!P} ; then
 		if [[ -z ${!P} ]]; then
 			eval $P=${d}
 		else
 			eval $P=${!P}:${d}
+        	fi
+	fi
+}
+
+std::prepend_path () {
+	local -r P=$1
+	local -r d=$2
+
+	if ! egrep -q "(^|:)${d}($|:)" <<<${!P} ; then
+		if [[ -z ${!P} ]]; then
+			eval $P=${d}
+		else
+			eval $P="${d}:${!P}"
         	fi
 	fi
 }
