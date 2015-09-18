@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	CC=$MPICC
 	CXX=$MPICXX
 	F77=$MPIF77
@@ -22,13 +20,13 @@ pmodules.configure() {
 }
 
 
-pmodules.add_to_group 'MPI'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_build_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_docfiles \
+pbuild::add_to_group 'MPI'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_docfiles \
 		ACKNOWLEDGMENTS \
 		COPYING \
 		MANIFEST \
 		README.txt
-pmodules.make_all
+pbuild::make_all
 

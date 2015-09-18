@@ -1,6 +1,10 @@
-#!/usr/bin/env pbuild
+#!/usr/bin/env modbuild
 
-export NO_APPLE_COMMON_CRYPTO=1
+case ${OS} in
+Darwin )
+	export NO_APPLE_COMMON_CRYPTO=1
+	;;
+esac
 
 pbuild::configure() {
 	cd "${MODULE_SRCDIR}"

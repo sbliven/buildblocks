@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-mpi-cxx \
@@ -14,9 +12,8 @@ pmodules.configure() {
 		|| exit 1
 }
 
-
-pmodules.add_to_group 'Compiler'
-pmodules.set_runtime_dependencies "${COMPILER}"
-pmodules.set_build_dependencies "${COMPILER}"
-pmodules.set_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
-pmodules.make_all
+pbuild::add_to_group 'Compiler'
+pbuild::set_runtime_dependencies "${COMPILER}"
+pbuild::set_build_dependencies "${COMPILER}"
+pbuild::set_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
+pbuild::make_all
