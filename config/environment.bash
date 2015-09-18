@@ -1,1 +1,0 @@
-/opt/psi/config/environment.bash

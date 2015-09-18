@@ -12,10 +12,6 @@ if [[ -z ${BUILD_BLOCK} ]]; then
 	declare -r  BUILD_BLOCK="${BUILD_BLOCK_DIR}"/$(basename "$0")
 fi
 
-declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
-source "${SHLIBDIR}/lib.bash"
-
-declare -rx BUILD_BASEDIR=$(std::abspath "${SHLIBDIR}/..")
 
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
@@ -27,11 +23,8 @@ if [[ "${OS}" == "Darwin" ]]; then
 fi
 
 
-
 # number of parallel make jobs
 declare -i  JOBS=3
-
-source "$(readlink ${BUILD_BASEDIR}/config/environment.bash)"
 
 declare -xr BUILD_CONFIGDIR="${BUILD_BASEDIR}/config"
 declare -xr BUILD_SCRIPTSDIR="${BUILD_BASEDIR}/scripts"
@@ -39,7 +32,7 @@ declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
 declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
 declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
-source "${BUILD_CONFIGDIR}/Pmodules.conf"
+#source "${BUILD_CONFIGDIR}/Pmodules.conf"
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
@@ -688,7 +681,8 @@ check_compiler() {
 	std::die 0 "Package cannot be build with ${COMPILER}/${COMPILER_VERSION}."
 }
 
-# unfortunatelly we need sometime an OS depended post-install
+
+# unfortunatelly sometime we need an OS depended post-install
 post_install_linux() {
 	cd "${PREFIX}"
 	# solve multilib problem with LIBRARY_PATH on 64bit Linux
@@ -715,7 +709,7 @@ pbuild::make_all() {
 		setup_env2_bootstrap
 	fi
 
-	if [[ ! -d "${PREFIX}" ]] || [[ ${force_rebuild} == 'yes' ]]; then
+	if [[ ! -d "${PREFIX}" ]] || [[ ${force_rebuild} == 'yes' ]] || [[ ${bootstrap} == 'yes' ]]; then
 		building='yes'
  		echo "Building $P/$V ..."
 		[[ ${dry_run} == yes ]] && std::die 0 ""
@@ -747,6 +741,9 @@ pbuild::make_all() {
 			cd "${MODULE_BUILDDIR}"
 			pbuild::install
 			pbuild::post_install
+			if typeset -F pbuild::post_install_${OS} 1>/dev/null 2>&1; then
+			        pbuild::post_install_${OS} "$@"
+			fi
 			pbuild::install_doc
 			post_install
 			if [[ ${bootstrap} == 'no' ]]; then
@@ -772,81 +769,12 @@ pbuild::make_all() {
 	return 0
 }
 
-#
-# legacy functions, should be removed asap
-#
-pmodules.supported_os() {
-	pbuild::supported_os "$@"
-}
-
-pmodules.add_to_group() {
-	pbuild::add_to_group "@"
-}
-
-pmodules.set_build_dependencies() {
-	pbuild::set_build_dependencies "$@"
-}
-
-pmodules.set_runtime_dependencies() {
-	pbuild::set_runtime_dependencies "$@"
-}
-
-pmodules.set_docfiles() {
-	pbuild::set_docfiles "$@"
-}
-
-pmodules.set_supported_compilers() {
-	pbuild::set_supported_compilers "$@"
-}
-
-pmodules.cleanup_env() {
-	pbuild::cleanup_env "$@"
-}
-
-pmodules.pre_configure() {
-	pbuild::pre_configure "$@"
-}
-
-pmodules.configure() {
-	pbuild::configure "$@"
-}
-
-pmodules.build() {
-	pbuild::build "$@"
-}
-
-pmodules.install() {
-	pbuild::install "$@"
-}
-
-pmodules.post_install() {
-	pbuild::post_install "$@"
-}
-
-pmodules.install_doc() {
-	pbuild::install_doc "$@"
-}
-
-pmodules.cleanup_build() {
-	pbuild::cleanup_build "$@"
-}
-		
-pmodules.cleanup_src() {
-	pbuild::cleanup_src "$@"
-}
-
-
-pmodules.make_all() {
-	pbuild::make_all "$@"
-}
-
 ##############################################################################
 #
 debug_on='no'
 force_rebuild='no'
 ENVIRONMENT_ARGS=''
 dry_run='no'
-bootstrap='no'
 enable_cleanup_build='yes'
 enable_cleanup_src='no'
 
@@ -951,8 +879,7 @@ if [[ ${bootstrap} == no ]]; then
 else
 	unset PMODULES_HOME
 	unset PMODULES_VERSION
-	read_versions "${BUILD_BASEDIR}/Bootstrap/Pmodules_version.conf"
-	source "/opt/psi/config/environment.bash"
+	std::read_versions "${BUILD_BASEDIR}/config/versions.conf"
 fi
 
 P=$(basename $(dirname "${BUILD_BLOCK}"))
