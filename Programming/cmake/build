@@ -1,11 +1,17 @@
 #!/usr/bin/env modbuild
 
+declare bootstrap_flags=''
+
+case $OS in
+Darwin )
+	bootstrap_flags+='--system-curl'
+	;;
+esac
 
 pbuild::configure() {
-	"${MODULE_SRCDIR}/bootstrap" --prefix="${PREFIX}" --system-curl --verbose
+	"${MODULE_SRCDIR}/bootstrap" --prefix="${PREFIX}" ${bootstrap_flags} --verbose
 }
 
 pbuild::add_to_group 'Programming'
-#pbuild::set_build_dependencies "${COMPILER}"
 pbuild::make_all
 
