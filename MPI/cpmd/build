@@ -1,17 +1,32 @@
 #!/usr/bin/env modbuild
 
+#pbuild::supported_os 'Linux'
+
+case $OS in 
+	Linux )
+		target='LINUX-X86_64-FEDORA-MPI-FFTW'
+		;;
+	Darwin )
+		target='MACOSX-GFORTRAN-INTEL-MPI'
+		;;
+esac
+
 pbuild::configure() {
-	cp "${BUILDSCRIPT_DIR}/Makefile" "${MODULE_BUILDDIR}"		|| exit 1
-	cp "${MODULE_SRCDIR}/irat.inc" "${MODULE_BUILDDIR}"	|| exit 1
+	./configure.sh "${target}" || exit 1
+}
+
+pbuild::build() {
+	make
 }
 
 pbuild::install() {
 	mkdir -p "${PREFIX}/bin"
-	cp "${MODULE_BUILDDIR}/cpmd.x" "${PREFIX}/bin"
+	cp "${MODULE_SRCDIR}/bin/cpmd.x" "${PREFIX}/bin"
 }
 
 pbuild::add_to_group 'MPI'
 pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
 pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
+pbuild::compile_in_sourcetree
 pbuild::make_all
 
