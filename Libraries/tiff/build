@@ -3,6 +3,9 @@
 pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
+		--with-pic=yes \
+		--disable-shared \
+		--disable-jpeg \
 		|| exit 1
 }
 

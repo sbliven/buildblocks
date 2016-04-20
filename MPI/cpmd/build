@@ -4,7 +4,7 @@
 
 case $OS in 
 	Linux )
-		target='LINUX-X86_64-FEDORA-MPI-FFTW'
+		target='LINUX-X86_64-PMODULE'
 		;;
 	Darwin )
 		target='MACOSX-GFORTRAN-INTEL-MPI'
@@ -12,6 +12,7 @@ case $OS in
 esac
 
 pbuild::configure() {
+	cp -v "${BUILD_BLOCK_DIR}/${target}" "${MODULE_BUILDDIR}/configure"
 	./configure.sh "${target}" || exit 1
 }
 

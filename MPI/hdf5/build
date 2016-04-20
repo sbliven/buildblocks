@@ -15,6 +15,7 @@ pbuild::configure() {
 		--enable-cxx \
 		--enable-fortran \
 		--enable-unsupported \
+		--enable-threadsafe \
 		--with-pic \
 		|| exit 1
 }
