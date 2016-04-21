@@ -14,6 +14,5 @@ declare -rx CC=gcc
 
 module use 'Libraries'
 pbuild::add_to_group 'Libraries'
-pbuild::set_build_dependencies 'gmp' 'mpfr'
 pbuild::make_all
 
