@@ -6,4 +6,5 @@
 1.10.2	Linux,Darwin	unstable	gcc/4.9.3
 1.10.2	Linux,Darwin	unstable	gcc/5.2.0
 1.10.2	Linux,Darwin	unstable	gcc/5.3.0
+1.10.2	Linux,Darwin	unstable	gcc/6.1.0
 1.10.2	Linux		unstable	intel/15.3
