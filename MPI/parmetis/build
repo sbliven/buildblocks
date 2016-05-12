@@ -1,5 +1,16 @@
 #!/usr/bin/env modbuild
 
+declare -ri MAJOR_VERSION=${V%%.*}
+
+case ${MAJOR_VERSION} in
+3 )
+	declare -r docfiles="CHANGES INSTALL LICENSE.txt README VERSION"
+	;;
+4 )
+	declare -r docfiles="LICENSE.txt"
+	;;
+esac
+
 pbuild::configure() {
 	CC=$MPICC
 	CXX=$MPICXX
@@ -10,7 +21,6 @@ pbuild::configure() {
 }
 
 pbuild::build() {
-	local -ri MAJOR_VERSION=${V%%.*}
 	if (( MAJOR_VERSION == 3 )) ; then
 		cd "${MODULE_SRCDIR}"
 		make -e -j3 || exit 1
@@ -44,8 +54,7 @@ pbuild::install() {
 
 pbuild::add_to_group 'MPI'
 pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
-pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
-pbuild::set_docfiles 'CHANGES' 'INSTALL' 'LICENSE.txt' 'README' 'VERSION' 
+pbuild::set_docfiles ${docfiles} 
 pbuild::make_all
 pbuild::cleanup_src
 
