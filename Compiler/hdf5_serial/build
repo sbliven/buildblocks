@@ -6,6 +6,7 @@ pbuild::configure() {
 		--enable-shared \
 		--enable-cxx \
 		--enable-unsupported \
+		--enable-threadsafe \
 		--with-pic \
 		|| exit 1
 }
