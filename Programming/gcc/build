@@ -20,7 +20,7 @@ declare -rx CXX=g++
 
 module use 'Libraries'
 pbuild::add_to_group 'Programming'
-pbuild::set_build_dependencies 'gmp' 'mpfr' 'mpc'
+#pbuild::set_build_dependencies 'gmp' 'mpfr' 'mpc'
 pbuild::set_docfiles 'COPYING' 'COPYING.LIB' 'COPYING.RUNTIME' 'COPYING3' 'COPYING3.LIB' 'NEWS' 'README'
 pbuild::make_all
 
