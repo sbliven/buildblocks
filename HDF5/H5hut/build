@@ -5,19 +5,19 @@ pbuild::pre_configure() {
 }
 
 pbuild::configure() {
-	CC=$MPICC
-	CXX=$MPICXX
-	F77=$MPIF77
-	F90=$MPIF90
-	FC=$MPIFC
-	FORTRAN=$MPIFORTRAN
-	#( cd "${MODULE_SRCDIR}" && ./autogen.sh )
+	if (( V_MAJOR >= 2 )); then
+		config_args+=" --enable-python"
+	fi
+
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-parallel \
 		--enable-debug \
+		--enable-fortran \
+		--enable-shared \
 		--with-hdf5=$HDF5_PREFIX \
 		--with-pic \
+		${config_args} \
 		|| exit 1
 }
 
@@ -33,8 +33,6 @@ pbuild::install() {
 
 
 pbuild::add_to_group 'HDF5'
-pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}" 'hdf5'
-pbuild::set_build_dependencies   "autoconf" "automake" "libtool" "${COMPILER}" "${MPI}" "hdf5"
 pbuild::set_docfiles 'AUTHORS' 'COPYING'
 pbuild::make_all
 
