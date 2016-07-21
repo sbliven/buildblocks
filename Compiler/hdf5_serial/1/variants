@@ -7,3 +7,5 @@ hdf5_serial/1.8.14   stable     gcc/4.8.3
 hdf5_serial/1.8.14   stable     gcc/4.8.4 
 hdf5_serial/1.8.14   stable     gcc/4.9.2 
 hdf5_serial/1.8.15-patch1 unstable   gcc/5.2.0 
+hdf5_serial/1.10.0   unstable   gcc/6.1.0
+hdf5_serial/1.10.0   unstable   intel/16.3
