@@ -16,6 +16,7 @@ pbuild::configure() {
 		--with-mpc="${MPC_PREFIX}" \
 		--enable-lto \
 		--disable-multilib \
+		--with-build-config=bootstrap-debug \
 		--with-pkgversion="PSI Environment Module" \
 		--with-build-config=bootstrap-debug \
 		|| exit 1

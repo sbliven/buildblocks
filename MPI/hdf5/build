@@ -8,15 +8,18 @@ pbuild::configure() {
 	FC=$MPIFC
 	FORTRAN=$MPIFORTRAN
 
+	local conf=''
+	conf+=' --enable-shared'
+	conf+=' --enable-parallel'
+	conf+=' --enable-cxx'
+	conf+=' --enable-fortran'
+	conf+=' --enable-unsupported'
+	#conf+=' --enable-threadsafe'
+	conf+=' --with-pic'
+
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
-		--enable-shared \
-		--enable-parallel \
-		--enable-cxx \
-		--enable-fortran \
-		--enable-unsupported \
-		--enable-threadsafe \
-		--with-pic \
+		${conf} \
 		|| exit 1
 }
 
