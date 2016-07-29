@@ -1,12 +1,10 @@
 #%Module1.0
 
-source		$env(PSI_LIBMODULES)
-
-set whatis	"efficient BLAS and partial LAPACK implementation"
-set url		"http://math-atlas.sourceforge.net/"
-set license	"BSD-style license"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
-set help	"
+module-whatis		"efficient BLAS and partial LAPACK implementation"
+module-url		"http://math-atlas.sourceforge.net/"
+module-license		"BSD-style license"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+mdoule-help		"
 The ATLAS (Automatically Tuned Linear Algebra Software) project is an
 ongoing research effort focusing on applying empirical techniques in
 order to provide portable performance. At present, it provides C and
