@@ -53,7 +53,6 @@ pbuild::install() {
 
 
 pbuild::add_to_group 'MPI'
-pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
 pbuild::set_docfiles ${docfiles} 
 pbuild::make_all
 pbuild::cleanup_src
