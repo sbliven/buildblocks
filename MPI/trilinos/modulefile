@@ -1,12 +1,12 @@
 #%Module1.0
 
-set whatis	"Object-Oriented Solver Framework"
-set url		"http://trilinos.sandia.gov/"
-set license	"BSD-like"
-set licensefile "Copyright.txt"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"Object-Oriented Solver Framework"
+module-url		"http://trilinos.sandia.gov/"
+module-license		"BSD-like"
+module-licensefile	"Copyright.txt"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Trilinos is a collection of open source software libraries, called packages,
 intended to be used as building blocks for the development of scientific
 applications. The word \"Trilinos\" is Greek and conveys the idea of \"a string
@@ -16,5 +16,3 @@ from a core group of existing algorithms, and utilizes the functionality of
 software interfaces such as the BLAS, LAPACK, and MPI.
 (Wikipedia)
 "
-
-source		$env(PSI_LIBMODULES)
