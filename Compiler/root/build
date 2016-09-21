@@ -2,30 +2,34 @@
 
 module use Libraries
 
-INSTANTCLIENT_INCLUDE_DIR='/usr/include/oracle/12.1/client64'
-INSTANTCLIENT_LIBRARY_DIR='/usr/lib/oracle/12.1/client64/lib'
 
 declare -a EXTRA_LIBS=()
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntshcore.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntshcore.so.12.1" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntsh.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntsh.so.12.1" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libipc1.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libmql1.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libnnz12.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocci.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocci.so.12.1" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libociei.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocijdbc12.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libons.so" )
-EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/liboramysql12.so" )
-
+config_args=''
 
 case ${OS} in
 Darwin )
 	# cocoa doesn't work with GCC!?
 	#config_args='--enable-cocoa --disable-x11'
-	config_args='--with-finkdir=/opt/X11 --disable-cocoa'
+	config_args+=' --with-finkdir=/opt/X11 --disable-cocoa'
+	;;
+Linux )
+	INSTANTCLIENT_INCLUDE_DIR='/usr/include/oracle/12.1/client64'
+	INSTANTCLIENT_LIBRARY_DIR='/usr/lib/oracle/12.1/client64/lib'
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntshcore.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntshcore.so.12.1" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntsh.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntsh.so.12.1" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libipc1.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libmql1.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libnnz12.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocci.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocci.so.12.1" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libociei.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocijdbc12.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libons.so" )
+	EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/liboramysql12.so" )
+	config_args+=" --with-oracle-incdir=${INSTANTCLIENT_INCLUDE_DIR}"
+	config_args+=" --with-oracle-libdir=${INSTANTCLIENT_LIBRARY_DIR}"
 	;;
 *)
 	;;
@@ -48,8 +52,6 @@ pbuild::configure() {
 		--with-cxx=${CXX} \
 		--with-f77=${F77} \
 		--with-ld=${CXX} \
-		--with-oracle-incdir=${INSTANTCLIENT_INCLUDE_DIR} \
-		--with-oracle-libdir=${INSTANTCLIENT_LIBRARY_DIR} \
 		${config_args} \
 		|| exit 1
 }
@@ -64,9 +66,9 @@ pbuild::install() {
 	mkdir -p "${PREFIX}"
 	cp -rv * "${PREFIX}"
 	mkdir -p "${PREFIX}/${_DOCDIR}"
-	rsync --archive --verbose	 "${PREFIX}/LICENSE"	"${PREFIX}${_DOCDIR}/LICENSE"
+	rsync --archive --verbose	 "${PREFIX}/LICENSE"	"${PREFIX}/${_DOCDIR}/LICENSE"
 	rsync --archive --verbose	 "${PREFIX}/man/"	"${PREFIX}/share/man/"
-	rsync --archive --verbose	 "${PREFIX}/README/"	"${PREFIX}/{_DOCDIR}/README/" 
+	rsync --archive --verbose	 "${PREFIX}/README/"	"${PREFIX}/${_DOCDIR}/README/" 
 
 	rm -rf	 "${PREFIX}/LICENSE"
 	rm -rf	 "${PREFIX}/man/"
