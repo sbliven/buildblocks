@@ -1,0 +1,20 @@
+#%Module1.0
+
+module-whatis		"PCRE - Perl Compatible Regular Expressions"
+module-url		"http://www.pcre.org"
+module-license		"BSD"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+The PCRE library is a set of functions that implement regular expression
+pattern matching using the same syntax and semantics as Perl 5. PCRE has
+its own native API, as well as a set of wrapper functions that correspond
+to the POSIX regular expression API. The PCRE library is free, even for
+building proprietary software.
+
+PCRE was originally written for the Exim MTA, but is now used by many
+high-profile open source projects, including Apache, PHP, KDE, Postfix,
+Analog, and Nmap. PCRE has also found its way into some well known
+commercial products, like Apple Safari. Some other interesting projects 
+using PCRE include Chicken, Ferite, Onyx, Hypermail, Leafnode, Askemos,
+Wenlin, and 8th."

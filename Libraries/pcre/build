@@ -1,0 +1,17 @@
+#!/usr/bin/env modbuild
+
+pbuild::configure() {
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		|| exit 1
+}
+
+pbuild::add_to_group 'Tools'
+#pbuild::set_docfiles 'Copyright' 'ChangeLog' 'NEWS' 'README'
+pbuild::make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
