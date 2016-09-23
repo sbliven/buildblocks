@@ -10,9 +10,8 @@ Linux )
 esac
 
 pbuild::configure() {
-	"${MODULE_SRCDIR}"/configure \
-		--prefix="${PREFIX}" \
-		${target} \
+	export CFLAGS=-fPIC
+	"${MODULE_SRCDIR}"/config shared --prefix="${PREFIX}" \
 		|| exit 1
 }
 
