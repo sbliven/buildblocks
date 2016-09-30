@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"extensible, customizable text editor—and more"
-set url		"http://www.gnu.org/software/emacs/"
-set license	"GNU GPL v3"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"extensible, customizable text editor—and more"
+module-url		"http://www.gnu.org/software/emacs/"
+module-license		"GNU GPL v3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help	"
 GNU Emacs is an extensible, customizable text editor—and more. At its
 core is an interpreter for Emacs Lisp, a dialect of the Lisp programming
 language with extensions to support text editing. The features of GNU
@@ -25,6 +25,4 @@ Emacs include:
     and more. Many of these extensions are distributed with GNU Emacs;
     others are available separately.
 "
-
-source		$env(PSI_LIBMODULES)
 
