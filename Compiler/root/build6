@@ -1,0 +1,52 @@
+#!/usr/bin/env modbuild
+
+SOURCE_URL="https://root.cern.ch/download/root_v${V_MAJOR}.${V_MINOR}.${V_PATCHLVL}.source.tar.gz"
+
+declare -a EXTRA_LIBS=()
+config_args=''
+
+case ${OS} in
+Darwin )
+	# cocoa doesn't work with GCC!?
+	#config_args='--enable-cocoa --disable-x11'
+	#config_args+=' --with-finkdir=/opt/X11 --disable-cocoa'
+	;;
+Linux )
+	INSTANTCLIENT_INCLUDE_DIR='/usr/lib/oracle/12.1/client64/include'
+	INSTANTCLIENT_LIBRARY_DIR='/usr/lib/oracle/12.1/client64/lib'
+	C_INCLUDE_PATH+=":${INSTANTCLIENT_INCLUDE_DIR}"
+	CXX_INCLUDE_PATH+=":${INSTANTCLIENT_INCLUDE_DIR}"
+	CPLUS_INCLUDE_PATH+=":${INSTANTCLIENT_INCLUDE_DIR}"
+	LIBRARY_DIR+=":${INSTANTCLIENT_LIBRARY_DIR}"
+	config_args+=" -Doracle=ON"
+	config_args+=" -DORACLE_PATH_INCLUDES=${INSTANTCLIENT_INCLUDE_DIR}"
+	config_args+=" -DORACLE_PATH_LIB=${INSTANTCLIENT_LIBRARY_DIR}"
+	config_args+=" -DORACLE_OCI_VERSION=10G_R2"
+	;;
+*)
+	std:die 1 "${OS} is not supported"
+	;;
+esac
+
+pbuild::configure() {
+	cmake "${MODULE_SRCDIR}" \
+		${config_args} \
+		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+		|| exit 1
+}
+
+pbuild::build() {
+	cmake --build . -- -j3
+}
+
+pbuild::install() {
+	cmake --build . --target install
+}
+
+pbuild::post_install_Linux() {
+	cp -av "${INSTANTCLIENT_LIBRARY_DIR}"/*  "${PREFIX}"/lib
+	cp -av "${INSTANTCLIENT_INCLUDE_DIR}"/*  "${PREFIX}"/include
+}
+
+pbuild::add_to_group 'Compiler'
+pbuild::make_all
