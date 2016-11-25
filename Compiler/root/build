@@ -1,7 +1,6 @@
 #!/usr/bin/env modbuild
 
-module use Libraries
-
+SOURCE_URL="https://root.cern.ch/download/root_v${V_MAJOR}.${V_MINOR}.${V_PATCHLVL}.source.tar.gz"
 
 declare -a EXTRA_LIBS=()
 config_args=''
