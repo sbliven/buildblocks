@@ -6,6 +6,8 @@
 #   and remove these strings.
 #
 
+SOURCE_URL="http://www.vtk.org/files/release/${V_MAJOR}.${V_MINOR}/VTK-$V.tar.gz"
+
 case ${OS} in
 Darwin )
 	pbuild::pre_configure() {
@@ -25,7 +27,5 @@ pbuild::configure() {
 }
 
 pbuild::add_to_group 'Compiler'
-pbuild::set_runtime_dependencies "${COMPILER}"
-pbuild::set_build_dependencies 'cmake' "${COMPILER}"
 pbuild::make_all
 
