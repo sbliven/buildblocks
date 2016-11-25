@@ -1,0 +1,15 @@
+#%Module1.0
+
+module-whatis		"GPU programming"
+module-url		'https://www.nvidia.com/object/cuda_home_new.html'
+module-license	 	"see: http://docs.nvidia.com/cuda/eula/index.html"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+CUDA® is a parallel computing platform and programming model invented
+by NVIDIA. It enables dramatic increases in computing performance by
+harnessing the power of the graphics processing unit (GPU).
+"
+
+prepend-path	LIBRARY_PATH	"$PREFIX/lib/stubs"
+prepend-path	LD_LIBRARY_PATH	"$PREFIX/lib/stubs"
