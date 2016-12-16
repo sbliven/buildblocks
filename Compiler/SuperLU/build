@@ -1,5 +1,8 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="http://crd-legacy.lbl.gov/~xiaoye/SuperLU/superlu_$V.tar.gz"
+
+if (( V_MAJOR < 5 )); then
 pbuild::configure() {
 	cat <<EOF > "${MODULE_SRCDIR}/make.inc"
 PLAT		= 
@@ -25,10 +28,20 @@ LOADOPTS	= -fopenmp
 CDEFS        = -DAdd_ 
 EOF
 }
+else
+pbuild::configure() {
+	cmake "${MODULE_SRCDIR}" \
+		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+		|| exit 1 
+
+}
+fi
 
 pbuild::build() {
-	cd "${MODULE_SRCDIR}"
-	mkdir -p "${PREFIX}/lib"
+	if (( V_MAJOR < 5 )); then
+		cd "${MODULE_SRCDIR}"
+		mkdir -p "${PREFIX}/lib"
+	fi
 	make
 }
 
