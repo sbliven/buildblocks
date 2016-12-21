@@ -30,6 +30,7 @@ pbuild::configure() {
 	   -D CMAKE_CXX_STANDARD:STRING="11" \
            -DCMAKE_Fortran_FLAGS:STRING="-fPIC" \
            -D CMAKE_BUILD_TYPE:STRING=DEBUG \
+           -D TPL_ENABLE_DLlib:BOOL=OFF \
            -D TPL_ENABLE_QT:BOOL=OFF \
            -D TPL_ENABLE_MPI:BOOL=ON \
            -D TPL_ENABLE_BLAS:BOOL=ON \
