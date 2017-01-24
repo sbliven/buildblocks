@@ -8,7 +8,8 @@ config_args=''
 case ${OS} in
 Darwin )
 	# cocoa doesn't work with GCC!?
-	config_args='-Dcocoa=OFF'
+	config_args+='-Dcocoa=OFF'
+	config_args+='-Dx11=ON'
 	;;
 Linux )
 	INSTANTCLIENT_INCLUDE_DIR='/usr/lib/oracle/12.1/client64/include'
@@ -32,6 +33,7 @@ pbuild::configure() {
 		${config_args} \
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		|| exit 1
+	sed -i.bak "s:${MODULE_SRCDIR//\/\///}/root.exe:${MODULE_BUILDDIR//\/\///}/bin/root.exe:" CMakeFiles/hsimple.dir/build.make 
 }
 
 pbuild::build() {
