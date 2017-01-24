@@ -1,0 +1,394 @@
+diff --git a/gcc/config/i386/i386.c b/gcc/config/i386/i386.c
+index 9e9fe02..a60bc69 100644
+--- a/gcc/config/i386/i386.c
++++ b/gcc/config/i386/i386.c
+@@ -11866,6 +11866,9 @@ ix86_code_end (void)
+       current_function_decl = decl;
+       allocate_struct_function (decl, false);
+       init_function_start (decl);
++      /* We're about to hide the function body from callees of final_* by
++	 emitting it directly; tell them we're a thunk, if they care.  */
++      cfun->is_thunk = true;
+       first_function_block_is_cold = false;
+       /* Make sure unwind info is emitted for the thunk if needed.  */
+       final_start_function (emit_barrier (), asm_out_file, 1);
+@@ -14562,36 +14565,65 @@ ix86_output_function_epilogue (FILE *file ATTRIBUTE_UNUSED, HOST_WIDE_INT)
+   if (pic_offset_table_rtx
+       && !ix86_use_pseudo_pic_reg ())
+     SET_REGNO (pic_offset_table_rtx, REAL_PIC_OFFSET_TABLE_REGNUM);
+-#if TARGET_MACHO
+-  /* Mach-O doesn't support labels at the end of objects, so if
+-     it looks like we might want one, insert a NOP.  */
+-  {
+-    rtx_insn *insn = get_last_insn ();
+-    rtx_insn *deleted_debug_label = NULL;
+-    while (insn
+-	   && NOTE_P (insn)
+-	   && NOTE_KIND (insn) != NOTE_INSN_DELETED_LABEL)
+-      {
+-	/* Don't insert a nop for NOTE_INSN_DELETED_DEBUG_LABEL
+-	   notes only, instead set their CODE_LABEL_NUMBER to -1,
+-	   otherwise there would be code generation differences
+-	   in between -g and -g0.  */
+-	if (NOTE_P (insn) && NOTE_KIND (insn) == NOTE_INSN_DELETED_DEBUG_LABEL)
+-	  deleted_debug_label = insn;
++
++  if (TARGET_MACHO)
++    {
++      rtx_insn *insn = get_last_insn ();
++      rtx_insn *deleted_debug_label = NULL;
++
++      /* Mach-O doesn't support labels at the end of objects, so if
++         it looks like we might want one, take special action.
++        First, Collect any sequence deleted debug labels.  */
++      while (insn
++	     && NOTE_P (insn)
++	     && NOTE_KIND (insn) != NOTE_INSN_DELETED_LABEL)
++	{
++	  /* Don't insert a nop for NOTE_INSN_DELETED_DEBUG_LABEL
++	     notes only, instead set their CODE_LABEL_NUMBER to -1,
++	     otherwise there would be code generation differences
++	     in between -g and -g0.  */
++	  if (NOTE_P (insn) && NOTE_KIND (insn)
++	      == NOTE_INSN_DELETED_DEBUG_LABEL)
++	    deleted_debug_label = insn;
++	  insn = PREV_INSN (insn);
++	}
++
++      /* If we have
++	 label:
++	    barrier
++	 That need to be guarded.  */
++
++      if (insn && BARRIER_P (insn))
+ 	insn = PREV_INSN (insn);
+-      }
+-    if (insn
+-	&& (LABEL_P (insn)
+-	    || (NOTE_P (insn)
+-		&& NOTE_KIND (insn) == NOTE_INSN_DELETED_LABEL)))
+-      fputs ("\tnop\n", file);
+-    else if (deleted_debug_label)
+-      for (insn = deleted_debug_label; insn; insn = NEXT_INSN (insn))
+-	if (NOTE_KIND (insn) == NOTE_INSN_DELETED_DEBUG_LABEL)
+-	  CODE_LABEL_NUMBER (insn) = -1;
+-  }
+-#endif
+ 
++      /* Up to now we've only seen notes or barriers.  */
++      if (insn)
++	{
++	  if (LABEL_P (insn)
++	      || (NOTE_P (insn)
++		  && NOTE_KIND (insn) == NOTE_INSN_DELETED_LABEL))
++	    /* Trailing label.  */
++	    fputs ("\tnop\n", file);
++	  else if (cfun && ! cfun->is_thunk)
++	    {
++	      /* See if have a completely empty function body, skipping
++	         the special case of the picbase thunk emitted as asm.  */
++	      while (insn && ! INSN_P (insn))
++		insn = PREV_INSN (insn);
++	      /* If we don't find any, we've got an empty function body; i.e.
++	         completely empty - without a return or branch.  GCC declares
++	         that reaching __builtin_unreachable() means UB (but we want
++	         finite-sized function bodies; to help the user out, let's
++	         trap the case.  */
++	      if (insn == NULL)
++		fputs ("\tud2\n", file);
++	    }
++	}
++      else if (deleted_debug_label)
++	for (insn = deleted_debug_label; insn; insn = NEXT_INSN (insn))
++	  if (NOTE_KIND (insn) == NOTE_INSN_DELETED_DEBUG_LABEL)
++	    CODE_LABEL_NUMBER (insn) = -1;
++    }
+ }
+ 
+ /* Return a scratch register to use in the split stack prologue.  The
+diff --git a/gcc/config/rs6000/rs6000.c b/gcc/config/rs6000/rs6000.c
+index b0d2b64..326e2e9 100644
+--- a/gcc/config/rs6000/rs6000.c
++++ b/gcc/config/rs6000/rs6000.c
+@@ -30148,11 +30148,16 @@ rs6000_output_function_epilogue (FILE *file,
+ {
+ #if TARGET_MACHO
+   macho_branch_islands ();
+-  /* Mach-O doesn't support labels at the end of objects, so if
+-     it looks like we might want one, insert a NOP.  */
++
++  if (TARGET_MACHO)
+   {
+     rtx_insn *insn = get_last_insn ();
+     rtx_insn *deleted_debug_label = NULL;
++
++    /* Mach-O doesn't support labels at the end of objects, so if
++       it looks like we might want one, take special action.
++
++       First, collect any sequence deleted debug labels.  */
+     while (insn
+ 	   && NOTE_P (insn)
+ 	   && NOTE_KIND (insn) != NOTE_INSN_DELETED_LABEL)
+@@ -30165,11 +30170,37 @@ rs6000_output_function_epilogue (FILE *file,
+ 	  deleted_debug_label = insn;
+ 	insn = PREV_INSN (insn);
+       }
+-    if (insn
+-	&& (LABEL_P (insn)
++
++    /* If we have:
++       label:
++          barrier
++       That need to be guarded.  */
++
++    if (insn && BARRIER_P (insn))
++      insn = PREV_INSN (insn);
++
++    /* up to now we've only seen notes or barriers.  */
++    if (insn)
++      {
++	if (LABEL_P (insn)
+ 	    || (NOTE_P (insn)
+-		&& NOTE_KIND (insn) == NOTE_INSN_DELETED_LABEL)))
+-      fputs ("\tnop\n", file);
++		&& NOTE_KIND (insn) == NOTE_INSN_DELETED_LABEL))
++	  /* Trailing label: <barrier>.  */
++	  fputs ("\tnop\n", file);
++	else
++	  {
++	    /* See if have a completely empty function body.  */
++	    while (insn && ! INSN_P (insn))
++	      insn = PREV_INSN (insn);
++	    /* If we don't find any, we've got an empty function body; i.e.
++	       completely empty - without a return or branch.  GCC declares
++	       that reaching __builtin_unreachable() means UB (but we want
++	       finite-sized function bodies; to help the user out, let's trap
++	       the case.  */
++	    if (insn == NULL)
++	      fputs ("\ttrap\n", file);
++	  }
++      }
+     else if (deleted_debug_label)
+       for (insn = deleted_debug_label; insn; insn = NEXT_INSN (insn))
+ 	if (NOTE_KIND (insn) == NOTE_INSN_DELETED_DEBUG_LABEL)
+diff --git a/gcc/testsuite/gcc.dg/pr57438-1.c b/gcc/testsuite/gcc.dg/pr57438-1.c
+new file mode 100644
+index 0000000..809c96d
+--- /dev/null
++++ b/gcc/testsuite/gcc.dg/pr57438-1.c
+@@ -0,0 +1,15 @@
++/* { dg-do compile { target *-*-darwin* } } */
++/* { dg-options "-m32 -O1" } */
++
++/* This is testing that a completely empty function body results in the
++   insertion of a ud2/trap instruction to prevent a zero-sized FDE, and/or
++   the function label apparently pointing to following code.  */
++
++__attribute__((noinline))
++void foo (void)
++{
++  __builtin_unreachable();
++}
++
++/* { dg-final { scan-assembler "ud2" { target  { i?86-*-darwin*  x86_64-*-darwin* } } } } */
++/* { dg-final { scan-assembler "trap" { target { powerpc*-*-darwin* } } } } */
+diff --git a/gcc/testsuite/gcc.dg/pr57438-2.c b/gcc/testsuite/gcc.dg/pr57438-2.c
+new file mode 100644
+index 0000000..6d67dad
+--- /dev/null
++++ b/gcc/testsuite/gcc.dg/pr57438-2.c
+@@ -0,0 +1,194 @@
++/* { dg-do compile { target *-*-darwin* } } */
++/* { dg-options "-m32 -O1" } */
++
++/* This is testing that a trailing local label is followed by a
++   nop where required.  */
++
++extern int Error(void *, const char *);
++
++typedef enum {
++   Match_MissingFeature,
++   Match_InvalidOperand,
++   Match_InvalidSuffix,
++   Match_InvalidCondCode,
++   Match_AddSubRegExtendSmall,
++   Match_AddSubRegExtendLarge,
++   Match_AddSubSecondSource,
++   Match_LogicalSecondSource,
++   Match_InvalidMovImm32Shift,
++   Match_InvalidMovImm64Shift,
++   Match_AddSubRegShift32,
++   Match_AddSubRegShift64,
++   Match_InvalidFPImm,
++   Match_InvalidMemoryIndexedSImm9,
++   Match_InvalidMemoryIndexed4SImm7,
++   Match_InvalidMemoryIndexed8SImm7,
++   Match_InvalidMemoryIndexed16SImm7,
++   Match_InvalidMemoryWExtend8,
++   Match_InvalidMemoryWExtend16,
++   Match_InvalidMemoryWExtend32,
++   Match_InvalidMemoryWExtend64,
++   Match_InvalidMemoryWExtend128,
++   Match_InvalidMemoryXExtend8,
++   Match_InvalidMemoryXExtend16,
++   Match_InvalidMemoryXExtend32,
++   Match_InvalidMemoryXExtend64,
++   Match_InvalidMemoryXExtend128,
++   Match_InvalidMemoryIndexed1,
++   Match_InvalidMemoryIndexed2,
++   Match_InvalidMemoryIndexed4,
++   Match_InvalidMemoryIndexed8,
++   Match_InvalidMemoryIndexed16,
++   Match_InvalidImm0_1,
++   Match_InvalidImm0_7,
++   Match_InvalidImm0_15,
++   Match_InvalidImm0_31,
++   Match_InvalidImm0_63,
++   Match_InvalidImm0_127,
++   Match_InvalidImm0_65535,
++   Match_InvalidImm1_8,
++   Match_InvalidImm1_16,
++   Match_InvalidImm1_32,
++   Match_InvalidImm1_64,
++   Match_InvalidIndex1,
++   Match_InvalidIndexB,
++   Match_InvalidIndexH,
++   Match_InvalidIndexS,
++   Match_InvalidIndexD,
++   Match_InvalidLabel,
++   Match_MRS,
++   Match_MSR,
++   Match_MnemonicFail
++} ErrCode;
++
++//bool showMatchError(void *, unsigned ) __attribute__((__weak__));
++
++int showMatchError(void *Loc, unsigned ErrCode) {
++  switch (ErrCode) {
++  case Match_MissingFeature:
++    return Error(Loc,
++                 "instruction requires a CPU feature not currently enabled");
++  case Match_InvalidOperand:
++    return Error(Loc, "invalid operand for instruction");
++  case Match_InvalidSuffix:
++    return Error(Loc, "invalid type suffix for instruction");
++  case Match_InvalidCondCode:
++    return Error(Loc, "expected AArch64 condition code");
++  case Match_AddSubRegExtendSmall:
++    return Error(Loc,
++      "expected '[su]xt[bhw]' or 'lsl' with optional integer in range [0, 4]");
++  case Match_AddSubRegExtendLarge:
++    return Error(Loc,
++      "expected 'sxtx' 'uxtx' or 'lsl' with optional integer in range [0, 4]");
++  case Match_AddSubSecondSource:
++    return Error(Loc,
++      "expected compatible register, symbol or integer in range [0, 4095]");
++  case Match_LogicalSecondSource:
++    return Error(Loc, "expected compatible register or logical immediate");
++  case Match_InvalidMovImm32Shift:
++    return Error(Loc, "expected 'lsl' with optional integer 0 or 16");
++  case Match_InvalidMovImm64Shift:
++    return Error(Loc, "expected 'lsl' with optional integer 0, 16, 32 or 48");
++  case Match_AddSubRegShift32:
++    return Error(Loc,
++       "expected 'lsl', 'lsr' or 'asr' with optional integer in range [0, 31]");
++  case Match_AddSubRegShift64:
++    return Error(Loc,
++       "expected 'lsl', 'lsr' or 'asr' with optional integer in range [0, 63]");
++  case Match_InvalidFPImm:
++    return Error(Loc,
++                 "expected compatible register or floating-point constant");
++  case Match_InvalidMemoryIndexedSImm9:
++    return Error(Loc, "index must be an integer in range [-256, 255].");
++  case Match_InvalidMemoryIndexed4SImm7:
++    return Error(Loc, "index must be a multiple of 4 in range [-256, 252].");
++  case Match_InvalidMemoryIndexed8SImm7:
++    return Error(Loc, "index must be a multiple of 8 in range [-512, 504].");
++  case Match_InvalidMemoryIndexed16SImm7:
++    return Error(Loc, "index must be a multiple of 16 in range [-1024, 1008].");
++  case Match_InvalidMemoryWExtend8:
++    return Error(Loc,
++                 "expected 'uxtw' or 'sxtw' with optional shift of #0");
++  case Match_InvalidMemoryWExtend16:
++    return Error(Loc,
++                 "expected 'uxtw' or 'sxtw' with optional shift of #0 or #1");
++  case Match_InvalidMemoryWExtend32:
++    return Error(Loc,
++                 "expected 'uxtw' or 'sxtw' with optional shift of #0 or #2");
++  case Match_InvalidMemoryWExtend64:
++    return Error(Loc,
++                 "expected 'uxtw' or 'sxtw' with optional shift of #0 or #3");
++  case Match_InvalidMemoryWExtend128:
++    return Error(Loc,
++                 "expected 'uxtw' or 'sxtw' with optional shift of #0 or #4");
++  case Match_InvalidMemoryXExtend8:
++    return Error(Loc,
++                 "expected 'lsl' or 'sxtx' with optional shift of #0");
++  case Match_InvalidMemoryXExtend16:
++    return Error(Loc,
++                 "expected 'lsl' or 'sxtx' with optional shift of #0 or #1");
++  case Match_InvalidMemoryXExtend32:
++    return Error(Loc,
++                 "expected 'lsl' or 'sxtx' with optional shift of #0 or #2");
++  case Match_InvalidMemoryXExtend64:
++    return Error(Loc,
++                 "expected 'lsl' or 'sxtx' with optional shift of #0 or #3");
++  case Match_InvalidMemoryXExtend128:
++    return Error(Loc,
++                 "expected 'lsl' or 'sxtx' with optional shift of #0 or #4");
++  case Match_InvalidMemoryIndexed1:
++    return Error(Loc, "index must be an integer in range [0, 4095].");
++  case Match_InvalidMemoryIndexed2:
++    return Error(Loc, "index must be a multiple of 2 in range [0, 8190].");
++  case Match_InvalidMemoryIndexed4:
++    return Error(Loc, "index must be a multiple of 4 in range [0, 16380].");
++  case Match_InvalidMemoryIndexed8:
++    return Error(Loc, "index must be a multiple of 8 in range [0, 32760].");
++  case Match_InvalidMemoryIndexed16:
++    return Error(Loc, "index must be a multiple of 16 in range [0, 65520].");
++  case Match_InvalidImm0_1:
++    return Error(Loc, "immediate must be an integer in range [0, 1].");
++  case Match_InvalidImm0_7:
++    return Error(Loc, "immediate must be an integer in range [0, 7].");
++  case Match_InvalidImm0_15:
++    return Error(Loc, "immediate must be an integer in range [0, 15].");
++  case Match_InvalidImm0_31:
++    return Error(Loc, "immediate must be an integer in range [0, 31].");
++  case Match_InvalidImm0_63:
++    return Error(Loc, "immediate must be an integer in range [0, 63].");
++  case Match_InvalidImm0_127:
++    return Error(Loc, "immediate must be an integer in range [0, 127].");
++  case Match_InvalidImm0_65535:
++    return Error(Loc, "immediate must be an integer in range [0, 65535].");
++  case Match_InvalidImm1_8:
++    return Error(Loc, "immediate must be an integer in range [1, 8].");
++  case Match_InvalidImm1_16:
++    return Error(Loc, "immediate must be an integer in range [1, 16].");
++  case Match_InvalidImm1_32:
++    return Error(Loc, "immediate must be an integer in range [1, 32].");
++  case Match_InvalidImm1_64:
++    return Error(Loc, "immediate must be an integer in range [1, 64].");
++  case Match_InvalidIndex1:
++    return Error(Loc, "expected lane specifier '[1]'");
++  case Match_InvalidIndexB:
++    return Error(Loc, "vector lane must be an integer in range [0, 15].");
++  case Match_InvalidIndexH:
++    return Error(Loc, "vector lane must be an integer in range [0, 7].");
++  case Match_InvalidIndexS:
++    return Error(Loc, "vector lane must be an integer in range [0, 3].");
++  case Match_InvalidIndexD:
++    return Error(Loc, "vector lane must be an integer in range [0, 1].");
++  case Match_InvalidLabel:
++    return Error(Loc, "expected label or encodable integer pc offset");
++  case Match_MRS:
++    return Error(Loc, "expected readable system register");
++  case Match_MSR:
++    return Error(Loc, "expected writable system register or pstate");
++  case Match_MnemonicFail:
++    return Error(Loc, "unrecognized instruction mnemonic");
++  default:
++    __builtin_unreachable();
++  }
++}
++
++/* { dg-final { scan-assembler "nop\\nLFE.*" { target  { *-*-darwin* } } } } */

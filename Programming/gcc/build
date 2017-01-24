@@ -6,6 +6,9 @@ pbuild::patch_sources_Darwin() {
 		patch -p1 < "${BUILD_BLOCK_DIR}/${V_MAJOR}/non-dead-strip.patch"
 		patch -p1 < "${BUILD_BLOCK_DIR}/${V_MAJOR}/configure-as.patch"
 	fi
+	if (( V_MAJOR == 5 )); then
+		patch -p1 < "${BUILD_BLOCK_DIR}/${V_MAJOR}/PR57438_avoiding_empty_function_bodies_and_trailing_labels.patch"
+	fi
 }
 
 pbuild::configure() {
