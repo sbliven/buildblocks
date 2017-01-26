@@ -8,8 +8,8 @@ config_args=''
 case ${OS} in
 Darwin )
 	# cocoa doesn't work with GCC!?
-	config_args+='-Dcocoa=OFF'
-	config_args+='-Dx11=ON'
+	config_args+=' -Dcocoa=OFF'
+	config_args+=' -Dx11=ON'
 	;;
 Linux )
 	INSTANTCLIENT_INCLUDE_DIR='/usr/lib/oracle/12.1/client64/include'
@@ -37,7 +37,7 @@ pbuild::configure() {
 }
 
 pbuild::build() {
-	cmake --build . -- -j3 VERBOSE=1
+	cmake --build . -- -j6 VERBOSE=1
 }
 
 pbuild::install() {
