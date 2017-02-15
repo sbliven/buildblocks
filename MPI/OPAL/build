@@ -1,5 +1,15 @@
 #!/usr/bin/env modbuild
 
+config_args=()
+
+case ${OS} in
+Darwin )
+	:
+	;;
+Linux )
+	: #config_args+=( '-DENABLE_DKS=ON' )
+	;;
+esac
 
 # add -fopenmp to CC and CXX, if you want to compile with OpenMP
 pbuild::configure() {
@@ -7,7 +17,7 @@ pbuild::configure() {
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		-DCMAKE_BUILD_TYPE=RELEASE \
 		-DENABLE_SAAMG_SOLVER=TRUE \
-		-DENABLE_DKS=ON \
+		"${config_args[@]}" \
 		"${MODULE_SRCDIR}"
 }
 
