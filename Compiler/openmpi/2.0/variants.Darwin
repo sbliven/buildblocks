@@ -1,3 +1,7 @@
-2.0.0	unstable	gcc/6.1.0
-2.0.0	unstable	intel/16.3
-2.0.1   unstable        gcc/6.2.0
+openmpi/2.0.0	stable		gcc/6.1.0
+
+openmpi/2.0.1   unstable	gcc/4.8.5
+openmpi/2.0.1   unstable	gcc/4.9.4
+openmpi/2.0.1   unstable	gcc/5.4.0
+openmpi/2.0.1   unstable	gcc/6.2.0
+openmpi/2.0.1   unstable	gcc/6.3.0
