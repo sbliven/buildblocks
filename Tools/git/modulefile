@@ -2,12 +2,12 @@
 
 set dont-setenv { GIT_DIR }
 
-set whatis	"distributed version control system"
-set url		"http://git-scm.com/"
-set license	"GNU GPL v2"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"distributed version control system"
+module-url		"http://git-scm.com/"
+module-license		"GNU GPL v2"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help	"
 Git is a free and open source distributed version control system
 designed to handle everything from small to very large projects
 with speed and efficiency.
@@ -17,5 +17,3 @@ performance. It outclasses SCM tools like Subversion, CVS, Perforce,
 and ClearCase with features like cheap local branching, convenient
 staging areas, and multiple workflows. 
 "
-
-source		$env(PSI_LIBMODULES)
