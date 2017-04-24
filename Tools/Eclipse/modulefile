@@ -1,20 +1,18 @@
 #%Module1.0
 
-set whatis	"C/C++ IDE"
-set url		"http://eclipse.org/home/index.php"
-set license	"Eclipse license"
-set licensefile	"notice.html"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"C/C++ IDE"
+module-url		"http://eclipse.org/home/index.php"
+module-license		"Eclipse license"
+module-licensefile	"notice.html"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Eclipse is famous for its Java Integrated Development Environment (IDE), but
 its C/C++ IDE and PHP IDE are pretty cool too. You can easily combine
 language support and other features into any of our default packages, and
 the Eclipse Marketplace allows for virtually unlimited customization and
 extension.
 "
-
-source		$env(PSI_LIBMODULES)
 
 if { [uname sysname] == "Darwin" } {
 	set-alias Eclipse "open -n \"$PREFIX/Eclipse.app\""

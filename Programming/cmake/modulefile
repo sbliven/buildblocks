@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"cross-platform, open-source build system."
-set url		"http://www.cmake.org/"
-set license	"Kitware, Inc., Insight Software Consortium (BSD-like)"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"cross-platform, open-source build system."
+module-url		"http://www.cmake.org/"
+module-license		"Kitware, Inc., Insight Software Consortium (BSD-like)"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 CMake is a family of tools designed to build, test and package software.
 CMake is used to control the software compilation process using simple
 platform and compiler independent configuration files. CMake generates
@@ -13,4 +13,3 @@ native makefiles and workspaces that can be used in the compiler
 environment of your choice. 
 "
 
-source		$env(PSI_LIBMODULES)

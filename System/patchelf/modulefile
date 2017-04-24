@@ -1,13 +1,12 @@
 #%Module1.0
 
-set whatis	"modify dynamic linker and RPATH of ELF executables."
-set url		"http://nixos.org/patchelf.html"
-set license	"GNU GPL v3"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"modify dynamic linker and RPATH of ELF executables."
+module-url		"http://nixos.org/patchelf.html"
+module-license		"GNU GPL v3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 PatchELF is a small utility to modify the dynamic linker and RPATH of
 ELF executables.
 "
 
-source		$env(PSI_LIBMODULES)

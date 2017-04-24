@@ -1,15 +1,13 @@
 #%Module1.0
 
-set whatis	"Visualization ToolKit"
-set url		"http://www.vtk.org"
-set license	"Kitware, Inc., Insight Software Consortium (BSD-like)"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"Visualization ToolKit"
+module-url		"http://www.vtk.org"
+module-license		"Kitware, Inc., Insight Software Consortium (BSD-like)"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 The Visualization Toolkit (VTK) is an open-source, freely available
 software system for 3D computer graphics, image processing and
 visualization. VTK consists of a C++ class library and several
 interpreted interface layers including Tcl/Tk, Java, and Python.
 "
-
-source		$env(PSI_LIBMODULES)

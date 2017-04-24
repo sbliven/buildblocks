@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"routines for solving unsymmetric sparse linear systems using the Unsymmetric MultiFrontal method."
-set url		"https://www.cise.ufl.edu/research/sparse/umfpack/"
-set license	"GNU GPL"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"routines for solving unsymmetric sparse linear systems using the Unsymmetric MultiFrontal method."
+module-url		"https://www.cise.ufl.edu/research/sparse/umfpack/"
+module-license		"GNU GPL"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 UMFPACK is a set of routines for solving unsymmetric sparse linear systems,
 Ax=b, using the Unsymmetric MultiFrontal method. Written in ANSI/ISO C, with
 a MATLAB (Version 6.0 and later) interface. Appears as a built-in routine
@@ -14,5 +14,3 @@ interface, a C-callable interface, and a Fortran-callable interface. Note
 that "UMFPACK" is pronounced in two syllables, "Umph Pack". It is not "You
 Em Ef Pack". 
 "
-
-source		$env(PSI_LIBMODULES)

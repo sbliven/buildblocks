@@ -1,10 +1,10 @@
 #%Module1.0
 
-set whatis	"GNU Scientific Library"
-set url		"http://www.gnu.org/software/gsl/"
-set license	"GNU GPL"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
-set help	"
+module-whatis		"GNU Scientific Library"
+module-url		"http://www.gnu.org/software/gsl/"
+module-license		"GNU GPL"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help 		"
 The GNU Scientific Library (GSL) is a numerical library for C and C++
 programmers.
 
@@ -12,5 +12,3 @@ The library provides a wide range of mathematical routines such as random
 number generators, special functions and least-squares fitting. There are
 over 1000 functions in total with an extensive test suite.
 "
-
-source		$env(PSI_LIBMODULES)

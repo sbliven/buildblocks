@@ -1,14 +1,13 @@
 #%Module1.0
 
-set whatis	"filesystem metadata benchmark"
-set url		"http://mdtest.sourceforge.net/"
-set license	"GNU GPL v2"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"filesystem metadata benchmark"
+module-url		"http://mdtest.sourceforge.net/"
+module-license		"GNU GPL v2"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 mdtest is an MPI-coordinated metadata benchmark test that performs
 open/stat/close operations on files and directories and then reports
 the performance.
 "
 
-source		$env(PSI_LIBMODULES)

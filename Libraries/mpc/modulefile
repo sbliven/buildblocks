@@ -1,13 +1,12 @@
 #%Module1.0
 
-set whatis	"GNU Mpc"
-set url		"http://www.multiprecision.org"
-set license	"GNU LGPL v3"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"GNU Mpc"
+module-url		"http://www.multiprecision.org"
+module-license		"GNU LGPL v3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Gnu Mpc is a C library for the arithmetic of complex numbers with
 arbitrarily high precision and correct rounding of the result.
 "
 
-source		$env(PSI_LIBMODULES)

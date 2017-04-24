@@ -1,18 +1,18 @@
 #%Module1.0
 
-set whatis	"Anaconda Python Distribution - Python scripting language."
-set url		"https://store.continuum.io/cshop/anaconda/"
-set license	"http://docs.continuum.io/anaconda/eula.html"
-set maintainer	"Derek Feichtinger <derek.feichtinger@psi.ch>"
+module-whatis		"Anaconda Python Distribution - Python scripting language."
+module-url		"https://store.continuum.io/cshop/anaconda/"
+module-license		"http://docs.continuum.io/anaconda/eula.html"
+module-maintainer	"Derek Feichtinger <derek.feichtinger@psi.ch>"
 
-set help "Anaconda is a completely free Python distribution
-(including for commercial use and redistribution). It includes over
-195 of the most popular Python packages for science, math,
-engineering, data analysis.
+module-help 		"
+Anaconda is a completely free Python distribution (including for
+commercial use and redistribution). It includes over 195 of the most
+popular Python packages for science, math, engineering, data analysis.
 
 The distribution is enriched by PSI specific packages.
 "
 
 set dont-setenv { LD_LIBRARY_PATH }
-source		$env(PSI_LIBMODULES)
+
 

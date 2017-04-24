@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"part of the GNU autotools"
-set url		"http://www.gnu.org/software/autoconf/"
-set license	"GNU GPL v2/v3"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"part of the GNU autotools"
+module-url		"http://www.gnu.org/software/autoconf/"
+module-license		"GNU GPL v2/v3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Autoconf is an extensible package of M4 macros that produce shell scripts
 to automatically configure software source code packages. These scripts
 can adapt the packages to many kinds of UNIX-like systems without manual
@@ -14,4 +14,3 @@ from a template file that lists the operating system features that the
 package can use, in the form of M4 macro calls. 
 "
 
-source		$env(PSI_LIBMODULES)

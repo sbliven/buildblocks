@@ -1,12 +1,12 @@
 #%Module1.0
 
-set whatis	"fsstress"
-set url		"http://www.cs.duke.edu/ari/fstress/"
-set license	"BSD-like"
-set licensefile	"COPYRIGHT"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"fsstress"
+module-url		"http://www.cs.duke.edu/ari/fstress/"
+module-license		"BSD-like"
+module-licensefile	"COPYRIGHT"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Fstress is a synthetic, flexible, self-scaling NFS file service benchmark
 whose primary goal is flexibility. Fstress exports control over several
 dimensions in both data set and workload, enabling a wide range of tests
@@ -15,4 +15,3 @@ configuration, and other factors. Fstress includes several important
 canned workloads.
 "
 
-source		$env(PSI_LIBMODULES)

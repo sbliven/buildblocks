@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"GNU Multiple Precision Arithmetic Library"
-set url		"http://gmplib.org/"
-set license	"GNU GPL v3 / GNU LGPL v3"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"GNU Multiple Precision Arithmetic Library"
+module-url		"http://gmplib.org/"
+module-license		"GNU GPL v3 / GNU LGPL v3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 GMP is a free library for arbitrary precision arithmetic, operating on
 signed integers, rational numbers, and floating-point numbers. There is
 no practical limit to the precision except the ones implied by the available
@@ -13,4 +13,3 @@ memory in the machine GMP runs on. GMP has a rich set of functions, and the
 functions have a regular interface. 
 "
 
-source		$env(PSI_LIBMODULES)

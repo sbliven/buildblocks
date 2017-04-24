@@ -1,14 +1,13 @@
 #%Module1.0
 
-set whatis	"File system and storage benchmark"
-set url		"http://sourceforge.net/projects/filebench/"
-set license	"Common Development and Distribution License"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"File system and storage benchmark"
+module-url		"http://sourceforge.net/projects/filebench/"
+module-license		"Common Development and Distribution License"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Filebench is a file system and storage benchmark that can generate a variety
 of workloads. It employs extensive Workload Model Language (WML) for detailed
 workload specification.
 "
 
-source		$env(PSI_LIBMODULES)

@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"portable command-line driven graphing utility"
-set url		"http://www.gnuplot.info/"
-set license	"See \$GNUPLOT_DIR/share/doc/gnuplot/Copyright"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"portable command-line driven graphing utility"
+module-url		"http://www.gnuplot.info/"
+module-license		"See \$GNUPLOT_DIR/share/doc/gnuplot/Copyright"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Gnuplot is a portable command-line driven graphing utility for Linux,
 OS/2, MS Windows, OSX, VMS, and many other platforms. The source code
 is copyrighted but freely distributed (i.e., you don't have to pay for
@@ -16,4 +16,3 @@ used as a plotting engine by third-party applications like Octave.
 Gnuplot has been supported and under active development since 1986. 
 "
 
-source		$env(PSI_LIBMODULES)

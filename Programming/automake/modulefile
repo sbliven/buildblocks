@@ -1,14 +1,13 @@
 #%Module1.0
 
-set whatis	"tool for automatically generating Makefile.in files"
-set url		"http://www.gnu.org/software/automake/"
-set license	"GNU GPL v2"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"tool for automatically generating Makefile.in files"
+module-url		"http://www.gnu.org/software/automake/"
+module-license		"GNU GPL v2"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Automake is a tool for automatically generating Makefile.in files
 compliant with the GNU Coding Standards. Automake requires the use
 of Autoconf. 
 "
 
-source		$env(PSI_LIBMODULES)

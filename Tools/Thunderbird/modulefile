@@ -1,18 +1,16 @@
 #%Module1.0
 
-set whatis	"free, open source, cross-platform email, news, and chat client."
-set url		"http://www.mozilla.org/en-US/thunderbird/"
-set license	" Mozilla Public License 2.0 and other"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"free, open source, cross-platform email, news, and chat client."
+module-url		"http://www.mozilla.org/en-US/thunderbird/"
+module-license		"Mozilla Public License 2.0 and other"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Thunderbird is an email, newsgroup, news feed, and chat (XMPP, IRC, Twitter)
 client. The vanilla version is not a personal information manager, although
 the Mozilla Lightning extension adds PIM functionality. Additional features,
 if needed, are often available via other extensions.
 "
-
-source		$env(PSI_LIBMODULES)
 
 if { [uname sysname] == "Darwin" } {
 	set-alias Thunderbird "open -n \"$PREFIX/Thunderbird.app\""

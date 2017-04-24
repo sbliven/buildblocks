@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"programming language"
-set url		"http://www.java.com"
-set license	"See http://java.com/license"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"programming language"
+module-url		"http://www.java.com"
+module-license		"See http://java.com/license"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Java is a programming language and computing platform first released by Sun
 Microsystems in 1995. There are lots of applications and websites that will
 not work unless you have Java installed, and more are created every day.
@@ -14,4 +14,3 @@ consoles to scientific supercomputers, cell phones to the Internet, Java is
 everywhere! 
 "
 
-source		$env(PSI_LIBMODULES)

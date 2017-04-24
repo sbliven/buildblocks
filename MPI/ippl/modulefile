@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"the Independent Parallel Particle Layer"
-set url		"http://amas.psi.ch/IPPL"
-set license	"PSI"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"the Independent Parallel Particle Layer"
+module-url		"http://amas.psi.ch/IPPL"
+module-license		"PSI"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 IPPL is an object-oriented framework for particle based applications in
 computational science requiring high-performance parallel computers. It
 is a library of C++ classes designed to represent common abstractions in
@@ -14,4 +14,3 @@ highest abstraction layer. Codes developed on serial workstations port
 to all supported architectures, including parallel processors.
 "
 
-source		$env(PSI_LIBMODULES)

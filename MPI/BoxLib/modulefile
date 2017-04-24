@@ -1,12 +1,12 @@
 #%Module1.0
 
-set whatis	"block-structured AMR framework"
-set url		"https://ccse.lbl.gov/BoxLib/index.html"
-set license	"BSD"
-set licensefile "license.txt"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"block-structured AMR framework"
+module-url		"https://ccse.lbl.gov/BoxLib/index.html"
+module-license		"BSD"
+module-licensefile 	"license.txt"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 BoxLib contains all the functionality needed to write a parallel,
 block-structured AMR application. The fundamental parallel abstraction is
 the MultiFab, which holds the data on the union of grids at a level. A
@@ -32,4 +32,3 @@ of computing with fewer, larger grids in the hybrid OpenMP--MPI approach
 is that the size of the meta-data is substantially reduced.
 "
 
-source		$env(PSI_LIBMODULES)

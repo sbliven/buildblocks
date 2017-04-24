@@ -1,14 +1,13 @@
 #%Module1.0
 
-set whatis	"library and utilities for processing GIFs"
-set url		"http://sourceforge.net/projects/giflib/"
-set license	"X Consortium-like open-source license"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"library and utilities for processing GIFs"
+module-url		"http://sourceforge.net/projects/giflib/"
+module-license		"X Consortium-like open-source license"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 giflib is a library for reading and writing gif images. It is API and ABI
 compatible with libungif which was in wide use while the LZW compression
 algorithm was patented.
 "
 
-source		$env(PSI_LIBMODULES)

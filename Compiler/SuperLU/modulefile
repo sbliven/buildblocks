@@ -1,11 +1,11 @@
 #%Module1.0
 
-set whatis	"library for direct solution of large, sparse, nonsymmetric systems of linear equations."
-set url		"http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
-set license	"BSD, see \$SUPERLU_DIR/share/doc/SuperLU/README"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"library for direct solution of large, sparse, nonsymmetric systems of linear equations."
+module-url		"http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+module-license		"BSD, see \$SUPERLU_DIR/share/doc/SuperLU/README"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 SuperLU is a general purpose library for the direct solution of large,
 sparse, nonsymmetric systems of linear equations on high performance
 machines. The library is written in C and is callable from either C or
@@ -22,4 +22,3 @@ system, estimate the condition number, calculate the relative backward
 error, and estimate error bounds for the refined solutions. 
 "
 
-source		$env(PSI_LIBMODULES)

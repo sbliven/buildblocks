@@ -1,19 +1,17 @@
 #%Module1.0
 
-set whatis	"open source web browser"
-set url		"https://www.mozilla.org/en-US/firefox/desktop/"
-set license	" Mozilla Public License 2.0 and other"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"open source web browser"
+module-url		"https://www.mozilla.org/en-US/firefox/desktop/"
+module-license		" Mozilla Public License 2.0 and other"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 Mozilla Firefox (known simply as Firefox) is a free and open-source web
 browser developed for Windows, OS X, and Linux, with a mobile version for
 Android, by the Mozilla Foundation and its subsidiary, the Mozilla
 Corporation. Firefox uses the Gecko layout engine to render web pages, which
 implements current and anticipated web standards.
 "
-
-source		$env(PSI_LIBMODULES)
 
 if { [uname sysname] == "Darwin" } {
 	set-alias Firefox "open -n \"$PREFIX/Firefox.app\""

@@ -1,10 +1,8 @@
 #%Module1.0
 
-set whatis	"visualization tool for H5hut files"
-set url		"http://amas.psi.ch/"
-set license	"PSI"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
-set help	"
+module-whatis		"visualization tool for H5hut files"
+module-url		"http://amas.psi.ch/"
+module-license		"PSI"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help		"
 "
-
-source		$env(PSI_LIBMODULES)

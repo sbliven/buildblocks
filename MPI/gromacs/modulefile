@@ -1,12 +1,10 @@
 #%Module1.0
 
-source		$env(PSI_LIBMODULES)
-
-set whatis	"GROMACS is a versatile package to perform molecular dynamics"
-set url		"http://www.gromacs.org/"
-set license	"See PREFIX/share/doc/COPYING"
-set maintainer	"Antonio Benedetto <antonio.benedetto@psi.ch>"
-set help	"
+module-whatis		"GROMACS is a versatile package to perform molecular dynamics"
+module-url		"http://www.gromacs.org/"
+module-license		"See PREFIX/share/doc/COPYING"
+module-maintainer	"Antonio Benedetto <antonio.benedetto@psi.ch>"
+module-help		"
 GROMACS is a versatile package to perform molecular dynamics, i.e. simulate
 the Newtonian equations of motion for systems with hundreds to millions of
 particles.
@@ -18,4 +16,3 @@ usually dominate simulations) many groups are also using it for research on
 non-biological systems, e.g. polymers.
 "
 
-set-family	MPI

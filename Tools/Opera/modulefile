@@ -1,15 +1,13 @@
 #%Module1.0
 
-set whatis	"long term support version"
-set url		"http://www.opera.com/"
-set license	"Opera EULA"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"long term support version"
+module-url		"http://www.opera.com/"
+module-license		"Opera EULA"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
-Firefox web browser.
+module-help		"
+Opera web browser.
 "
-
-source		$env(PSI_LIBMODULES)
 
 if { [uname sysname] == "Darwin" } {
 	set-alias Opera "open -n \"$PREFIX/Opera.app\""

@@ -1,12 +1,11 @@
 #%Module1.0
 
-set whatis	"opt-pilot"
-set url		"http://amas.psi.ch/OPAL"
-set license	"PSI"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-whatis		"opt-pilot"
+module-url		"http://amas.psi.ch/OPAL"
+module-license		"PSI"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
-set help	"
+module-help		"
 "
 
-source		$env(PSI_LIBMODULES)
 
