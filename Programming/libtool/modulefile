@@ -2,7 +2,7 @@
 
 module-whatis		"generic library support script"
 module-url		"http://www.gnu.org/software/libtool/"
-module-libtool		"GNU GPL v2"
+module-license		"GNU GPL v2"
 module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
 module-help		"
