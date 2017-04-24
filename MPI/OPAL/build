@@ -7,7 +7,7 @@ Darwin )
 	:
 	;;
 Linux )
-	: #config_args+=( '-DENABLE_DKS=ON' )
+	config_args+=( '-DENABLE_DKS=ON' )
 	;;
 esac
 
