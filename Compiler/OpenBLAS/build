@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-#SOURCE_URL="http://github.com/xianyi/$P/archive/v$V.tar.gz"
+SOURCE_URL="http://github.com/xianyi/$P/archive/v$V.tar.gz"
 
 pbuild::configure() {
 	case ${COMPILER} in
@@ -21,6 +21,8 @@ DRVOPTS  = \$(NOOPT)
 ARCHFLAGS= -ru
 EOF
 	echo "USE_SIMPLE_THREADED_LEVEL3 = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
+	echo "NO_AVX = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
+	echo "NO_AVX2 = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
 	sed -i.bak "s/MACOSX_DEPLOYMENT_TARGET=.*/MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET/" "${MODULE_SRCDIR}/Makefile.system"
 }
 
