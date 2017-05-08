@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="ftp://ftp.gnu.org/gnu/$P/$P-$V_MAJOR.$V_MINOR.$V_PATCHLVL.tar.gz"
+
 pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
