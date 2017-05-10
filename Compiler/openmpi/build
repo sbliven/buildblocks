@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://www.open-mpi.org/software/ompi/v${V_MAJOR}.${V_MINOR}/downloads/openmpi-$V.tar.gz"
+SOURCE_URL="http://www.open-mpi.org/software/ompi/v${V_MAJOR}.${V_MINOR}/downloads/openmpi-$V.tar.bz2"
 
 pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
