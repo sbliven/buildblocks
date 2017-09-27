@@ -1,0 +1,12 @@
+#%Module1.0
+
+module-whatis		"Matlab"
+module-url		"http://ch.mathworks.com/"
+module-license		"MathWorks"
+module-maintainer	"Ivan Usov <ivan.usov@psi.ch>"
+module-help "
+Matlab
+"
+
+setenv          MATLAB             $PREFIX
+prepend-path    LM_LICENSE_FILE    $PREFIX/licenses/license.dat
