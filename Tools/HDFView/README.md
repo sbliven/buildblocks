@@ -4,14 +4,16 @@
 
 Please read [this document](https://gitlab.psi.ch/Pmodules/documentation/wikis/Development/Notations) for commonly used notations and environment variables.
 
+## Setup environment
+
 Set
 1. `GRP='Tools'`
 2. `P=HDFView`
 3. `V` to the HDFView version to install
 4. `PREFIX=$PMODULES_ROOT/$GRP/$P/$V`
-5. `$BUILDBLOCK_DIR` to the directory of this file.
+5. `BUILDBLOCK_DIR` to the directory of this file.
 6. `MODULEFILES_DIR=$PMODULES_ROOT/$GRP/modulefiles`.
-7. `RELEASE` to the release of the module (either `unstable`, `stable`  or `deprecated`)
+7. `RELEASE` to the release of the module 
 
 ## Download
 
