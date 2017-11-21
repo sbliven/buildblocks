@@ -2,7 +2,7 @@
 
 ## Notations
 
-Please read [https://gitlab.psi.ch/Pmodules/documentation/wikis/Development/Notations](this document) for commonly used notations and environment variables.
+Please read [this document](https://gitlab.psi.ch/Pmodules/documentation/wikis/Development/Notations) for commonly used notations and environment variables.
 
 Set
 1. `GRP='Tools'`
