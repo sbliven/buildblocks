@@ -2,23 +2,16 @@
 
 ## Notations
 
-See https://gitlab.psi.ch/Pmodules/documentation/wikis/Development/Notations
+Please read [https://gitlab.psi.ch/Pmodules/documentation/wikis/Development/Notations](this document) for commonly used notations and environment variables.
 
-`$PMODULES_ROOT`: root of Pmodules environment. At PSI this is `/opt/psi`.
-
-`$GRP`: group the module is installed in, here 'Tools'
-
-`$P`: package name, here HDFView.
-
-`$V`: package version.
-
-`$PREFIX`: prefix of module, this is `$PMODULES_ROOT/$GRP/$P/$V` which is at PSI `/opt/psi/Tools/HDFView/$V`.
-
-`$BUILDBLOCK_DIR`: the directory of this file.
-
-`MODULEFILES_DIR`: top-level directory where the modulefiles are installed relative to the group: `$PMODULES_ROOT/$GRP/modulefiles`.
-
-`$RELEASE`: release of module, the value is either '`unstable`', '`stable`'   or '`deprecated`'
+Set
+1. `GRP='Tools'`
+2. `P=HDFView`
+3. `V` to the HDFView version to install
+4. `PREFIX=$PMODULES_ROOT/$GRP/$P/$V`
+5. `$BUILDBLOCK_DIR` to the directory of this file.
+6. `MODULEFILES_DIR=$PMODULES_ROOT/$GRP/modulefiles`.
+7. `RELEASE` to the release of the module (either `unstable`, `stable`  or `deprecated`)
 
 ## Download
 
