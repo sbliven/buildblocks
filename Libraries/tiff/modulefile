@@ -1,7 +1,7 @@
 #%Module1.0
 
 module-whatis		"set of C functions that support the manipulation of TIFF image files."
-module-url		"http://www.remotesensing.org/libtiff/"
+module-url		"http://www.simplesystems.org/libtiff/"
 module-license		"BSD-like, see: http://libtiff.org/misc.html"
 module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 

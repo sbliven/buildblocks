@@ -1,1 +1,2 @@
-emacs/25.1 unstable b:libungif/4.1.4 b:tiff/4.0.6
+emacs/25.1 stable b:libungif/4.1.4 b:tiff/4.0.3
+emacs/25.3 unstable b:libungif/4.1.4 b:tiff/4.0.9
