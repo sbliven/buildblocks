@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="http://amas.web.psi.ch/Downloads/$P/$P-$V.tar.gz"
+
 if [[ ${V_MAJOR} == 1 ]]; then
 	pbuild::compile_in_sourcetree
 fi
