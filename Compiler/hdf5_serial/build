@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="https://support.hdfgroup.org/ftp/HDF5/current${V_MAJOR}${V_MINOR}/src/hdf5-$V.tar.bz2"
+
 pbuild::configure() {
 	test "$(basename "$CPP")" = "pgprepro" && {
 		CPP=cpp
