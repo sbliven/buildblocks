@@ -10,6 +10,9 @@ pbuild::configure() {
 	intel )
 		CC='icc'
 		;;
+	clang-macos )
+		CC='gcc'
+		;;
 	* )
 		die 3 "Oops: unknown compiler: ${COMPILER}"
 		;;
@@ -23,6 +26,7 @@ EOF
 	echo "USE_SIMPLE_THREADED_LEVEL3 = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
 	echo "NO_AVX = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
 	echo "NO_AVX2 = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
+	echo "USE_THREAD = 0" >> "${MODULE_SRCDIR}/Makefile.rule"
 	sed -i.bak "s/MACOSX_DEPLOYMENT_TARGET=.*/MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET/" "${MODULE_SRCDIR}/Makefile.system"
 }
 
@@ -43,6 +47,6 @@ pbuild::install() {
 pbuild::add_to_group 'Compiler'
 pbuild::compile_in_sourcetree
 pbuild::set_docfiles 'LICENSE' 'README.md'
-pbuild::set_supported_compilers 'gcc' 'intel'
+pbuild::set_supported_compilers 'gcc' 'intel' 'clang-macos'
 pbuild::make_all
 pbuild::cleanup_src
