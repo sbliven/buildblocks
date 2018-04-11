@@ -3,3 +3,5 @@ cmake/3.3.2          stable
 cmake/3.4.1          stable
 cmake/3.6.3          stable
 cmake/3.8.1          stable
+cmake/3.9.6          stable
+cmake/3.10.3         stable b:gcc/7.3.0
