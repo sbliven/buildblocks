@@ -5,12 +5,9 @@
 >
 Go down for PSI build instructions!
 
-Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`:
+Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`. The instructions to build from source are almost at the end of the page:
 
 https://www.aps.anl.gov/Accelerator-Operations-Physics/Software/installationGuide_Linux
-
-> 
-Instructions to compile from source are almost at the end of the page!
 
 Instructions to build `Pelegant`:
 
