@@ -61,6 +61,9 @@ export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
 
 ```
 ARGS=()
+ARGS+=( "GNU_BIN=$GCC_DIR/bin" )
+ARGS+=( "LD=/usr/bin/ld" )
+ARGS+=( "AR=/usr/bin/ar" )
 ARGS+=( "EPICS_BASE=${PREFIX}" )
 ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
 ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
@@ -80,7 +83,7 @@ cp "${DOWNLOAD_DIR}/defns.rpn" "${RPN_DEFNS}"
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
 cd epics/base
-make
+make -e "${ARGS[@]}"
 ```
 
 ## Unpack EPICS extensions and OAG apps configuration
