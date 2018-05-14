@@ -57,13 +57,15 @@ export EPICS_BASE="${PREFIX}/epics/base"
 export HOST_ARCH=linux-x86_64
 export EPICS_HOST_ARCH=linux-x86_64
 export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
+export PERLLIB="${PREFIX}/lib/perl"
 ```
 
 ```
 ARGS=()
 ARGS+=( "GNU_BIN=$GCC_DIR/bin" )
 ARGS+=( "LD=/usr/bin/ld" )
-ARGS+=( "AR=/usr/bin/ar" )
+ARGS+=( "AR=/usr/bin/ar -rc" )
+ARGS+=( "RANLIB=/usr/bin/ranlib" )
 ARGS+=( "EPICS_BASE=${PREFIX}" )
 ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
 ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
@@ -89,11 +91,13 @@ make -e "${ARGS[@]}"
 ## Unpack EPICS extensions and OAG apps configuration
 
 ```
+ARGS+=( "TOOLS=${PREFIX}/bin")
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
 tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
 cd "${PREFIX}/oag/apps/configure"
-make -e
+sed -i "s/clean::/clean:/" RULES_PYTHON
+make -e "${ARGS[@]}"
 ```
 
 >
@@ -104,17 +108,17 @@ You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RUL
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
 cd "${PREFIX}/epics/extensions/src/SDDS/"
-make -e "${ARGS[@]}" -C fftpack
-make -e "${ARGS[@]}" -C lzma
-make -e "${ARGS[@]}" -C matlib
-make -e "${ARGS[@]}" -C mdblib
-make -e "${ARGS[@]}" -C mdbcommon
-make -e "${ARGS[@]}" -C mdbmth
-make -e "${ARGS[@]}" -C meschach
-make -e "${ARGS[@]}" -C namelist
-make -e "${ARGS[@]}" -C pgapack
-make -e "${ARGS[@]}" -C rpns/code
-make -e "${ARGS[@]}" -C SDDSlib
+make -e "${ARGS[@]}" -C fftpack   && \
+make -e "${ARGS[@]}" -C lzma      && \
+make -e "${ARGS[@]}" -C matlib    && \
+make -e "${ARGS[@]}" -C mdbcommon && \
+make -e "${ARGS[@]}" -C mdblib    && \
+make -e "${ARGS[@]}" -C mdbmth    && \
+make -e "${ARGS[@]}" -C meschach  && \
+make -e "${ARGS[@]}" -C namelist  && \
+make -e "${ARGS[@]}" -C pgapack   && \
+make -e "${ARGS[@]}" -C rpns/code && \
+make -e "${ARGS[@]}" -C SDDSlib   && \
 make -e "${ARGS[@]}" -C SDDSlib clean
 make    "${ARGS[@]}" MPI=1 -C SDDSlib
 ```
