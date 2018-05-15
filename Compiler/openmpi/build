@@ -16,11 +16,18 @@ pbuild::configure() {
 		--enable-mpi-profile \
 		--enable-orterun-prefix-by-default \
 		--enable-shared \
+		--enable-static \
 		--enable-smp-locks \
 		--with-sge=yes \
 		--with-slurm=yes \
 		"${config_args[@]}" \
 		|| exit 1
+}
+
+pbuild::post_install() {
+	if [[ -r /usr/lib64/libnuma.a ]]; then
+		:
+	fi
 }
 
 pbuild::add_to_group 'Compiler'

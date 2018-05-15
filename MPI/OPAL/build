@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL='http://amas.web.psi.ch/Downloads/$P/$P-$V.tar.bz2'
+SOURCE_URL="http://amas.web.psi.ch/Downloads/$P/src/$P-$V.tar.bz2"
 
 config_args=()
 
@@ -9,7 +9,9 @@ Darwin )
 	:
 	;;
 Linux )
-	config_args+=( '-DENABLE_DKS=ON' )
+	if (( V_MAJOR < 2)); then
+		config_args+=( '-DENABLE_DKS=ON' )
+	fi
 	;;
 esac
 
@@ -24,6 +26,6 @@ pbuild::configure() {
 }
 
 pbuild::add_to_group 'MPI'
-pbuild::set_supported_compilers 'gcc/4.7' 'gcc/4.8' 'gcc/4.9' 'gcc/5.4'
+pbuild::set_supported_compilers 'gcc/5.4.0' 'gcc/5.5.0' 'gcc/6.4.0' 'gcc/7.3.0'
 pbuild::make_all
 
