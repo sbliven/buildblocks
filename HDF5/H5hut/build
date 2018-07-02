@@ -14,12 +14,19 @@ pbuild::configure() {
 	if (( V_MAJOR >= 2 )); then
 		: config_args+=" --enable-python"
 	fi
+	case "${COMPILER}" in
+		"clang-macos" )
+			:
+			;;
+		* )
+			config_args+='--enable-fortran'
+			;;
+	esac
 
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-parallel \
 		--enable-debug \
-		--enable-fortran \
 		--enable-shared \
 		--with-hdf5=$HDF5_PREFIX \
 		--with-pic \
