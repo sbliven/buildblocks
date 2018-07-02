@@ -1,6 +1,10 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="ftp://ftp.gnu.org/gnu/$P/$P-$V_MAJOR.$V_MINOR.$V_PATCHLVL.tar.gz"
+module use 'Libraries'
+
+pbuild::set_source_url "ftp://ftp.gnu.org/gnu/${P}/${P}-${V_PKG}.tar.gz"
+pbuild::add_to_group 'Libraries'
+pbuild::use_cc '/usr/bin/cc'
 
 pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
@@ -11,10 +15,5 @@ pbuild::configure() {
 		|| exit 1
 }
 
-# use system gcc to compile
-declare -rx CC=gcc
-
-module use 'Libraries'
-pbuild::add_to_group 'Libraries'
 pbuild::make_all
 
