@@ -7,7 +7,7 @@ pbuild::add_to_group 'Libraries'
 pbuild::use_cc '/usr/bin/cc'
 
 pbuild::configure() {
-	"${MODULE_SRCDIR}"/configure \
+	"${SRC_DIR}"/configure \
 		--prefix="${PREFIX}" \
 		--with-gmp=$GMP_PREFIX \
 		--with-mpfr=$MPFR_PREFIX \
