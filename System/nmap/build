@@ -1,26 +1,11 @@
 #!/usr/bin/env modbuild
 
-pbuild::configure() {
-	cd "${SRC_DIR}"
-	./configure \
-		--prefix="${PREFIX}" \
-		--with-libpcap=included \
-		--with-libpcre=included \
-		--with-libdnet=included \
-		--with-liblua=included \
-		--with-liblinear=included
-}
+pbuild::set_download_url "https://nmap.org/dist/$P-$V.tar.bz2"
+pbuild::compile_in_sourcetree
 
-pbuild::compile() {
-	cd "${SRC_DIR}"
-	make -j "${JOBS}"
-}
+pbuild::add_configure_args "--with-libpcap=included"
+pbuild::add_configure_args "--with-libpcre=included"
+pbuild::add_configure_args "--with-libdnet=included"
+pbuild::add_configure_args "--with-liblua=included"
+pbuild::add_configure_args "--with-liblinear=included"
 
-pbuild::install() {
-	cd "${SRC_DIR}"
-	make install
-}
-
-pbuild::add_to_group 'System'
-pbuild::set_build_dependencies "${COMPILER}"
-pbuild::make_all
