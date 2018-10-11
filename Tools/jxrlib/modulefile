@@ -1,0 +1,11 @@
+#%PModule
+
+module-whatis		"open source implementation of jpegxr"
+module-url		"https://archive.codeplex.com/?p=jxrlib"
+module-license		"BSD"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+This is an open source implementation of the jpegxr image format standard.
+"
+

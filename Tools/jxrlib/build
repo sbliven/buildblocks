@@ -1,0 +1,28 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'Tools'
+
+pbuild::set_download_url "https://gitlab.psi.ch/Pmodules/download/raw/master/$P-$V.tar.xz"
+pbuild::compile_in_sourcetree
+pbuild::add_docfiles 'doc/readme.txt'
+
+pbuild::configure() {
+	:
+}
+
+pbuild::install() {
+	mkdir -p "${PREFIX}/bin"
+	mkdir -p "${PREFIX}/lib"
+	install -m 0755 "${SRC_DIR}/build/JxrDecApp" "${PREFIX}/bin"
+	install -m 0755 "${SRC_DIR}/build/JxrEncApp" "${PREFIX}/bin"
+	install -m 0644 "${SRC_DIR}/build/libjpegxr.a" "${PREFIX}/lib"
+	install -m 0644 "${SRC_DIR}/build/libjxrglue.a" "${PREFIX}/lib"
+}
+
+pbuild::make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
