@@ -1,44 +1,63 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="https://support.hdfgroup.org/ftp/HDF5/current${V_MAJOR}${V_MINOR}/src/hdf5-$V.tar.bz2"
+pbuild::set_download_url "https://support.hdfgroup.org/ftp/HDF5/releases/$P-${V_MAJOR}.${V_MINOR}/$P-$V/src/hdf5-$V.tar.bz2"
+#                         https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.bz2
+#			  https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-110/hdf5-1.10.3/src/hdf5-1.10.3.tar.bz2
+pbuild::add_to_group 'MPI'
 
-pbuild::configure() {
-	declare -a config_args=()
-	export CC=$MPICC
-	export CXX=$MPICXX
+pbuild::add_docfiles ACKNOWLEDGMENTS
+pbuild::add_docfiles COPYING
+pbuild::add_docfiles MANIFEST
+pbuild::add_docfiles README.txt
+
+pbuild::pre_configure() {
+	pbuild::add_configure_args "CC=${MPICC}"
+	pbuild::add_configure_args "CXX=${MPICXX}"
+
+	pbuild::add_configure_args "--enable-shared"
+	pbuild::add_configure_args "--enable-parallel"
+	pbuild::add_configure_args "--enable-cxx"
+	pbuild::add_configure_args "--enable-unsupported"
+	#pbuild::add_configure_args "--enable-threadsafe"
+	pbuild::add_configure_args "--with-pic"
+
+	local enable_fortran='yes'
 
 	case "${COMPILER}" in
 		clang-macos )
+			enable_fortran='no'
 			# we do not have Fortran in Xcode
 			;;
-		* )
-			F77=$MPIF77
-			F90=$MPIF90
-			FC=$MPIFC
-			FORTRAN=$MPIFORTRAN
-			config_args+=( "--enable-fortran" )
+		pgi )
+			# PGI uses GCC's include files, some object files and
+			# the STL implementation!
+			# The PGI C pre-processor is broken and doesn't work 
+			# for HDF5. We use the pre-processor of the underlying
+			# GCC...
+			# This is a bit hackish!
+			#
+			# The following eval sets GCCDIR! Which is something 
+			# like:
+			# /opt/psi/Programming/gcc/7.3.0/bin/../lib/gcc/x86_64-pc-linux-gnu/7.3.0
+			#
+			eval $(pgcc -show 2>/dev/null | \
+				awk '/^GCCDIR[[:space:]]*=/{gsub(/[[:space:]]/,""); print $0}')
+			pbuild::add_configure_args "CPP=${GCCDIR%%/..*}/cpp"
+			pbuild::add_configure_args "CFLAGS=-fPIC"
+			pbuild::add_configure_args "CXXFLAGS=-fPIC"
+			pbuild::add_configure_args "FCFLAGS=-fPIC"
 			;;
 	esac
 
-	config_args+=( "--enable-shared" )
-	config_args+=( "--enable-parallel" )
-	config_args+=( "--enable-cxx" )
-	config_args+=( "--enable-unsupported" )
-	#config_args+=( "--enable-threadsafe" )
-	config_args+=( "--with-pic" )
+	if [[ "${enable_fortran}" == 'yes' ]]; then
+		pbuild::add_configure_args "F77=${MPIF77}"
+		pbuild::add_configure_args "F90=${MPIF90}"
+		pbuild::add_configure_args "FC=${MPIFC}"
+		pbuild::add_configure_args "FORTRAN=${MPIFORTRAN}"
+		pbuild::add_configure_args "--enable-fortran"
+	fi
 
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		"${config_args[@]}" \
-		|| exit 1
 }
 
-
-pbuild::add_to_group 'MPI'
-pbuild::set_docfiles \
-		ACKNOWLEDGMENTS \
-		COPYING \
-		MANIFEST \
-		README.txt
 pbuild::make_all
 
