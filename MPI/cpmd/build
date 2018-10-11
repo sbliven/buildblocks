@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+# :FIXME: download url must be added and script must be reviewed!
+
 #pbuild::supported_os 'Linux'
 
 case $OS in 

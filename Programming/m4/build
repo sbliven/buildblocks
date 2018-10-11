@@ -1,15 +1,8 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="https://ftp.gnu.org/gnu/$P/$P-$V.tar.bz2"
-
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		|| exit 1
-}
+pbuild::set_download_url "https://ftp.gnu.org/gnu/$P/$P-$V.tar.bz2"
 
 # use system gcc to compile
 declare -rx CC=gcc
 
 pbuild::add_to_group 'Programming'
-pbuild::make_all

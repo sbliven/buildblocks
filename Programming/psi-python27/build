@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+# :FIXME: to be removed or reviewed!
+
 pbuild::configure() {
 	:
 }

@@ -1,12 +1,5 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://ftp.gnu.org/gnu/binutils/$P-$V.tar.gz"
-
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		|| exit 1
-}
+pbuild::set_download_url "http://ftp.gnu.org/gnu/binutils/$P-${V_PKG}.tar.gz"
 
 pbuild::add_to_group 'Programming'
-pbuild::make_all

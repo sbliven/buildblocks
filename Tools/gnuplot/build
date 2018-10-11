@@ -7,8 +7,6 @@ pbuild::set_download_url \
 pbuild::set_sha256sum 'gnuplot-5.2.4.tar.gz:1515f000bd373aaa53b16183f274189d4f5e0ae47d22f434857933d16a4770cb'
 pbuild::install_docfiles 'Copyright' 'ChangeLog' 'NEWS' 'README'
 
-pbuild::make_all
-
 # Local Variables:
 # mode: sh
 # sh-basic-offset: 8

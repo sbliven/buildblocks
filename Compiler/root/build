@@ -1,6 +1,8 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="https://root.cern.ch/download/root_v${V_MAJOR}.${V_MINOR}.${V_PATCHLVL}.source.tar.gz"
+# :FIXME: must be merged with build6!
+
+pbuild::set_download_url "https://root.cern.ch/download/root_v${V_MAJOR}.${V_MINOR}.${V_PATCHLVL}.source.tar.gz"
 
 declare -a EXTRA_LIBS=()
 config_args=''

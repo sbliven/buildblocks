@@ -1,6 +1,12 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="ftp://ftp.tcl.tk/pub/tcl/tcl8_6/tk$V-src.tar.gz"
+pbuild::set_download_url ftp://ftp.tcl.tk/pub/tcl/tcl8_6/tk$V-src.tar.gz"
+
+# use system's cc
+declare CC=cc
+
+pbuild::add_to_group 'Programming'
+pbuild::install_docfiles 'license.terms' 'README'
 
 pbuild::configure() {
 	case ${OS} in
@@ -25,9 +31,3 @@ pbuild::post_install() {
 	#{ cd "${PREFIX}"/bin && rm -f tclsh && ln -fs tclsh${V%.*} tclsh; };
 }
 
-# use system's cc
-declare CC=cc
-
-pbuild::add_to_group 'Programming'
-pbuild::install_docfiles 'license.terms' 'README'
-pbuild::make_all

@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+# :FIXME: need review!
+
 pbuild::configure() {
 	case ${COMPILER} in
 	gcc )

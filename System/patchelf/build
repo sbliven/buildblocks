@@ -1,3 +1,6 @@
 #!/usr/bin/env modbuild
 
+# :FIXME: needs review
+
 pbuild::set_download_url "https://nixos.org/releases/$P/$P-$V/$P-$V.tar.bz2"
+pbuils::add_to_group 'System'

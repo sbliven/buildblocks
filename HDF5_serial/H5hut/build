@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://amas.web.psi.ch/Downloads/$P/$P-$V.tar.gz"
+pbuild::set_download_url "http://amas.web.psi.ch/Downloads/$P/$P-$V.tar.gz"
 
 #	--enable-vtkconverter \
 

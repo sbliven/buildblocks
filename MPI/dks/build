@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+# :FIXME: script does not work any more!
+
 SOURCE_URL="dks-1.1.2.tar.gz"
 
 declare -ra vers=( ${V//./ } )

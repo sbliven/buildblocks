@@ -1,14 +1,9 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://amas.web.psi.ch/Downloads/$P/$P-$V.tar.bz2"
+pbuild::set_download_url "http://amas.web.psi.ch/Downloads/$P/$P-$V.tar.bz2"
 
 pbuild::post_prep() {
 	./autogen.sh
-}
-
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}"
 }
 
 pbuild::post_install() {

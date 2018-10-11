@@ -1,31 +1,18 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://amas.web.psi.ch/Downloads/$P/src/$P-$V.tar.bz2"
+pbuild::set_download_url "http://amas.web.psi.ch/Downloads/$P/src/$P-$V.tar.bz2"
+pbuild::add_to_group 'MPI'
 
-config_args=()
-
-case ${OS} in
-Darwin )
-	:
-	;;
-Linux )
+pbuild::pre_configure_Linux() {
 	if (( V_MAJOR < 2)); then
-		config_args+=( '-DENABLE_DKS=ON' )
+		pbuild::add_configure_args '-DENABLE_DKS=ON'
 	fi
-	;;
-esac
-
-# add -fopenmp to CC and CXX, if you want to compile with OpenMP
-pbuild::configure() {
-	cmake \
-		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DENABLE_SAAMG_SOLVER=TRUE \
-		"${config_args[@]}" \
-		"${SRC_DIR}"
 }
 
-pbuild::add_to_group 'MPI'
-pbuild::set_supported_compilers 'gcc/5.4.0' 'gcc/5.5.0' 'gcc/6.4.0' 'gcc/7.3.0'
-pbuild::make_all
+# add -fopenmp to CC and CXX, if you want to compile with OpenMP
+pbuild::pre_configure() {
+	pbuild::add_configure_args "-DCMAKE_BUILD_TYPE=Release"
+	pbuild::add_configure_args "-DENABLE_SAAMG_SOLVER=TRUE"
+}
+
 

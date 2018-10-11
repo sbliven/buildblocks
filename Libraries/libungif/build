@@ -1,10 +1,5 @@
 #!/usr/bin/env modbuild
 
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		|| exit 1
-}
-
+pbuild::set_download_url "https://sourceforge.net/projects/giflib/files/$P-${V_MAJOR}.x/$P-${V_PKG}/$P-${V_PKG}.tar.bz2
 pbuild::add_to_group 'Libraries'
-pbuild::make_all
+

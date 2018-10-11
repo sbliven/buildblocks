@@ -1,7 +1,10 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="file://$PMODULES_DISTFILESDIR/$P-V.tar.bz2"
+pbuild::set_download_url "file://$PMODULES_DISTFILESDIR/$P-V.tar.bz2"
 
+pbuild::add_to_group 'Compiler'
+pbuild::compile_in_sourcetree
+	
 pbuild::configure() {
 	cat <<EOF > "${SRC_DIR}/SuiteSparse_config/SuiteSparse_config.mk"
 CF = \$(CFLAGS) \$(CPPFLAGS) \$(TARGET_ARCH) -O3 -fexceptions -fPIC -DNTIMER
@@ -38,7 +41,3 @@ pbuild::install() {
 	make PREFIX="${PREFIX}" install
 }
 
-pbuild::add_to_group 'Compiler'
-pbuild::compile_in_sourcetree
-pbuild::make_all
-pbuild::cleanup_src

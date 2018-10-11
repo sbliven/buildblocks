@@ -1,22 +1,17 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="ftp://ftp.vim.org/pub/vim/unix/$P-$V.tar.bz2"
-
-
-pbuild::configure() {
-	cd "${SRC_DIR}"
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		--enable-pythoninterp=dynamic \
-		--enable-python3interp=dynamic \
-		|| exit 1
-}
-
+pbuild::set_download_url "ftp://ftp.vim.org/pub/vim/unix/$P-$V.tar.bz2"
 
 pbuild::add_to_group 'Tools'
 pbuild::compile_in_sourcetree
+
+# :FIXME: define to be installed doc-files
 #pbuild::install_docfiles 'COPYING' 'README.md'
-pbuild::make_all
+
+pbuild::pre_configure() {
+	pbuild::add_configure_args "--enable-pythoninterp=dynamic"
+	pbuild::add_configure_args "--enable-python3interp=dynamic"
+}
 
 # Local Variables:
 # mode: sh

@@ -18,4 +18,3 @@ pbuild::install() {
 	:
 }
 
-pbuild::make_all

@@ -6,26 +6,19 @@
 #   and remove these strings.
 #
 
-SOURCE_URL="http://www.vtk.org/files/release/${V_MAJOR}.${V_MINOR}/VTK-$V.tar.gz"
+pbuild::set_download_url "http://www.vtk.org/files/release/${V_MAJOR}.${V_MINOR}/VTK-$V.tar.gz"
+pbuild::add_to_group 'Compiler'
 
-case ${OS} in
-Darwin )
-	pbuild::pre_configure() {
-		# for the time being: on Mac OS X we need GL/gl.h from MacPorts:
-		std::append_path C_INLCUDE_PATH '/opt/local/include'
-		std::append_path CPLUS_INCLUDE_PATH '/opt/local/include'
-	}
-	;;
-esac
-
-pbuild::configure() {
-	cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
-		-DVTK_INSTALL_INCLUDE_DIR:PATH=include \
-		-DVTK_INSTALL_LIB_DIR:PATH=lib \
-		-DVTK_USE_COCOA:BOOL=OFF \
-		"${SRC_DIR}"
+pbuild::pre_configure_Darwin() {
+	# for the time being: on Mac OS X we need GL/gl.h from MacPorts:
+	std::append_path C_INLCUDE_PATH '/opt/local/include'
+	std::append_path CPLUS_INCLUDE_PATH '/opt/local/include'
 }
 
-pbuild::add_to_group 'Compiler'
-pbuild::make_all
+pbuild::pre_configure() {
+	pbuild::add_configure_args "-DVTK_INSTALL_INCLUDE_DIR:PATH=include"
+	pbuild::add_configure_args "-DVTK_INSTALL_LIB_DIR:PATH=lib"
+	pbuild::add_configure_args "-DVTK_USE_COCOA:BOOL=OFF"
+}
+
 

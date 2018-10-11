@@ -1,7 +1,7 @@
 #!/usr/bin/env modbuild
 #
 
-SOURCE_URL="http://www.netlib.org/$P/$P-$V-CMAKE.tgz"
+pbuild:set_download_url "http://www.netlib.org/$P/$P-$V-CMAKE.tgz"
 
 pbuild::configure() {
 	cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
