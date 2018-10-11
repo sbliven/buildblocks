@@ -1,8 +1,8 @@
 #%Module1.0
 
 module-whatis		"File system and storage benchmark"
-module-url		"http://sourceforge.net/projects/filebench/"
-module-license		"Common Development and Distribution License"
+module-url		"https://github.com/filebench/filebench/wiki"
+Module-license		"Common Development and Distribution License"
 module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
 
 module-help		"
