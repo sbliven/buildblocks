@@ -18,6 +18,7 @@ trilinos/12.10.1-1	unstable	gcc/6.2.0 openmpi/1.10.4 hdf5/1.8.18 b:cmake/3.6.3 b
 trilinos/12.12.1	unstable	gcc/7.3.0 openmpi/1.10.7 hdf5/1.10.1 b:cmake/3.6.3 b:OpenBLAS/0.2.20 b:parmetis/4.0.3 
 trilinos/12.12.1	unstable	gcc/7.3.0 openmpi/2.1.2  hdf5/1.10.1 b:cmake/3.6.3 b:OpenBLAS/0.2.20 b:parmetis/4.0.3 
 trilinos/12.12.1	unstable	gcc/7.3.0 openmpi/3.0.0  hdf5/1.10.1 b:cmake/3.6.3 b:OpenBLAS/0.2.20 b:parmetis/4.0.3 
+trilinos/12.12.1	unstable	gcc/7.3.0 openmpi/3.1.2  hdf5/1.10.3 b:cmake/3.9.6 b:OpenBLAS/0.2.20 b:parmetis/4.0.3 
 
 trilinos/12.12.1	unstable	intel/17.4 openmpi/1.10.7 hdf5/1.10.1 b:cmake/3.6.3 b:OpenBLAS/0.2.20 b:parmetis/4.0.3 
 trilinos/12.12.1	unstable	intel/17.4 openmpi/2.1.2  hdf5/1.10.1 b:cmake/3.6.3 b:OpenBLAS/0.2.20 b:parmetis/4.0.3 
