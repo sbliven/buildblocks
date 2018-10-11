@@ -1,12 +1,8 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="https://releases.pagure.org/$P/$P-$V.tar.bz2"
+pbuild::set_download_url "https://releases.pagure.org/$P/$P-${V_PKG}.tar.bz2"
 
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		|| exit 1
-}
+module use System
 
 pbuild::compile_in_sourcetree
 pbuild::add_to_group 'Tools'
@@ -17,7 +13,6 @@ pbuild::install_docfiles	\
 	NEWS		\
 	README		\
 	THANKS 
-pbuild::make_all
 
 # Local Variables:
 # mode: sh
