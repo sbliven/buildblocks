@@ -1,0 +1,16 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'System'
+
+pbuild::set_download_url \
+	"https://$P.freedesktop.org/releases/$P-$V.tar.gz" \
+	'6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591'
+pbuild::add_configure_args "--with-internal-glib"
+pbuild::install_docfiles 'AUTHORS' 'COPYING' 'NEWS' 'ChangeLog'
+pbuild::install_docfiles 'README' 'INSTALL' 'README.win32'
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
