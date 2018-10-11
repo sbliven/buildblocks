@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"MellanoX Messaging library (MXM)"
+module-url		"https://www.mellanox.com/"
+module-license		"Proprietary"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+MXM is a communication library implementing high-performance messaging.
+"
+
