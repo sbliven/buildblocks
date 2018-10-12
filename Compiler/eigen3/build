@@ -1,25 +1,19 @@
 #!/usr/bin/env modbuild
 #
 
+pbuild::add_to_group 'Compiler'
+pbuild::set_download_url "http://bitbucket.org/eigen/eigen/get/${V_PKG}.tar.bz2"
 
-pbuild::set_download_url "http://bitbucket.org/eigen/eigen/get/${V_MAJOR}.${V_MINOR}.${V_PATCHLVL}.tar.bz2"
-
-pbuild::configure() {
+pbuild::pre_configure() {
 	export BOOST_ROOT="${BOOST_PREFIX}"
-	config_args=()
-	config_args+=( "-DUMFPACK_INCLUDES=${UMFPACK_INCLUDE_DIR}" )
-	config_args+=( "-DUMFPACK_LIBRARIES=${UMFPACK_LIBRARY_DIR}" )
-	config_args+=( "-DGMP_INCLUDES=${GMP_INCLUDE_DIR}" )
-	config_args+=( "-DGMP_LIBRARIES=${GMP_LIBRARY_DIR}" )
-	config_args+=( "-DMPFR_INCLUDES=${MPFR_INCLUDE_DIR}" )
-	config_args+=( "-DMPFR_LIBRARIES=${MPFR_LIBRARY_DIR}" )
-	config_args+=( "-DSUPERLU_INCLUDES=${SUPERLU_INCLUDE_DIR}" )
-	config_args+=( "-DSUPERLU_LIBRARIES=${SUPERLU_LIBRARY_DIR}" )
-	cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
-		"${config_args[@]}" \
-		"${SRC_DIR}"
+	pbuild::add_configure_args "-DUMFPACK_INCLUDES=${UMFPACK_INCLUDE_DIR}"
+	pbuild::add_configure_args "-DUMFPACK_LIBRARIES=${UMFPACK_LIBRARY_DIR}"
+	pbuild::add_configure_args "-DGMP_INCLUDES=${GMP_INCLUDE_DIR}"
+	pbuild::add_configure_args "-DGMP_LIBRARIES=${GMP_LIBRARY_DIR}"
+	pbuild::add_configure_args "-DMPFR_INCLUDES=${MPFR_INCLUDE_DIR}"
+	pbuild::add_configure_args "-DMPFR_LIBRARIES=${MPFR_LIBRARY_DIR}"
+	pbuild::add_configure_args "-DSUPERLU_INCLUDES=${SUPERLU_INCLUDE_DIR}"
+	pbuild::add_configure_args "-DSUPERLU_LIBRARIES=${SUPERLU_LIBRARY_DIR}"
 }
 
-pbuild::add_to_group 'Compiler'
-pbuild::make_all
 
