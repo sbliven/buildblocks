@@ -17,5 +17,5 @@ For the module we use a RPM distributed by HP.
 1. run the build-script to install the modulefile and to set the release
  
 
-> *Note: *The shared library `libmxm.so`provided by the RPMs for RHEL 6 cannot be used to compile other software.
+> **Note:** The shared library `libmxm.so`provided by the RPMs for RHEL 6 cannot be used to compile other software.
 They requiry GLIBC >= 2.14, but on RHEL 6 only 2.12 is installed!
