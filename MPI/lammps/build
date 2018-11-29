@@ -48,6 +48,7 @@ pbuild::compile() {
   make yes-dipole
   make yes-granular
   make yes-manybody
+  make yes-kspace
   make yes-mc
   make yes-misc
   make yes-molecule
