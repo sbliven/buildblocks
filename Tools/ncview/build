@@ -1,0 +1,32 @@
+#!/usr/bin/env modbuild
+
+module use System
+
+#pbuild::add_to_group 'HDF5_serial'
+pbuild::add_to_group 'Tools'
+
+pbuild::set_download_url \
+	"ftp://cirrus.ucsd.edu/pub/$P/$P-${V_PKG}.tar.gz"
+#pbuild::set_sha256sum 'gnuplot-5.2.4.tar.gz:1515f000bd373aaa53b16183f274189d4f5e0ae47d22f434857933d16a4770cb'
+#pbuild::install_docfiles 'Copyright' 'ChangeLog' 'NEWS' 'README'
+
+pbuild::pre_configure() {
+	pbuild::add_configure_args "--with-udunits2_incdir=${UDUNITS_INCLUDE_DIR}"
+	pbuild::add_configure_args "--with-udunits2_libdir=${UDUNITS_LIBRARY_DIR}"
+}
+
+pbuild::post_install() {
+	cp -av "${HDF5_SERIAL_LIBRARY_DIR}"/libhdf5.so.* "${PREFIX}/bin"
+	cp -av "${HDF5_SERIAL_LIBRARY_DIR}"/libhdf5_hl.so.* "${PREFIX}/bin"
+	cp -av "${NETCDF_LIBRARY_DIR}"/libnetcdf.so.* "${PREFIX}/bin"
+	patchelf --force-rpath --set-rpath '$ORIGIN' "${PREFIX}/bin/ncview"
+	while read f; do
+		patchelf --force-rpath --set-rpath '$ORIGIN' "$f"
+	done < <(ls -1 "${PREFIX}/bin"/lib*.so.*.*)
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

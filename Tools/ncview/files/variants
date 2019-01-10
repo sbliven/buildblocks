@@ -1,0 +1,2 @@
+ncview/2.1.7		unstable	gcc/7.3.0 hdf5_serial/1.10.3 netcdf/4.6.1 b:libexpat/2.2.6 b:udunits/2.2.26 b:patchelf/0.8.1
+ncview/2.1.7_testing	unstable	b:gcc/7.3.0 b:hdf5_serial/1.10.3 b:netcdf/4.6.1 b:libexpat/2.2.6 b:udunits/2.2.26 b:patchelf/0.8.1
