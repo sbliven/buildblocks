@@ -1,0 +1,14 @@
+#%Pmodule
+
+module-whatis		"terminal multiplexer"
+module-url		"https://github.com/tmux/tmux/wiki"
+module-license		"See \$TMUX_DIR/share/doc/tmux/COPYING"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+tmux is a terminal multiplexer. It lets you switch easily between several
+programs in one terminal, detach them (they keep running in the background)
+and reattach them to a different terminal. And do a lot more. See the tmux(1)
+manual page and the README.
+"
+
