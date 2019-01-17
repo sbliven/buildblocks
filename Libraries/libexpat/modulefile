@@ -1,0 +1,14 @@
+#%Module1.0
+
+module-whatis		"stream-oriented XML parser library written in C"
+module-url		"https://libexpat.github.io/"
+module-license		"Open source, see $PREFIX/share/doc/libexpat/COPYING"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+Expat is a stream-oriented XML parser library written in C.
+
+Expat excels with files too large to fit RAM, and where
+performance and flexibility are crucial.
+"
+
