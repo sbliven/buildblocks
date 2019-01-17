@@ -1,2 +1,5 @@
-netcdf/4.6.1	unstable	pgi/18.5  hdf5_serial/1.10.2
-netcdf/4.6.1	unstable	gcc/7.3.0  hdf5_serial/1.10.2
+netcdf/4.6.1	stable		pgi/18.5  hdf5_serial/1.10.2
+netcdf/4.6.1	stable		gcc/7.3.0  hdf5_serial/1.10.2
+
+netcdf/4.6.1	stable		gcc/6.4.0  hdf5_serial/1.10.3
+netcdf/4.6.1	stable		gcc/7.3.0  hdf5_serial/1.10.3
