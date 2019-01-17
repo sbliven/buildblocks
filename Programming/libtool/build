@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "https://ftp.gnu.org/gnu/$P/$P-$V.tar.gz"
+pbuild::set_download_url "https://ftp.gnu.org/gnu/$P/$P-${V_PKG}.tar.gz"
 
 # use system gcc to compile
 declare -rx CC=gcc
