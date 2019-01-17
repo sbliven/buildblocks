@@ -5,7 +5,7 @@ pbuild::add_to_group 'Programming'
 
 declare bootstrap_flags=''
 
-pbuild::pre_configure_Darwin() {
+pbuild::pre_configure() {
 	bootstrap_flags+='--system-curl'
 }
 
