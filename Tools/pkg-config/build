@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-pbuild::add_to_group 'System'
+pbuild::add_to_group 'Tools'
 
 pbuild::set_download_url \
 	"https://$P.freedesktop.org/releases/$P-$V.tar.gz"
