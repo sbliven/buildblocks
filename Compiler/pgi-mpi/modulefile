@@ -1,0 +1,82 @@
+#%Module
+
+module-whatis		"open source MPI-2 implementation"
+module-url		"http://www.open-mpi.org/"
+module-license		"See https://www.open-mpi.org/community/license.php"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-addgroup		"MPI"
+module-help		"
+
+Purpose
+-------
+  This module file defines the system paths and environment variables
+  needed to use Open MPI version 2.1.2 with the PGI Compilers and Tools
+  version 2018.  The available compiler wrappers are mpicc, mpicxx,
+  mpic++, mpiCC, mpif77, and mpif90.
+
+
+Product Description
+-------------------
+  The Open MPI Project is an open source MPI-2 implementation that is
+  developed and maintained by a consortium of academic, research, and
+  industry partners. Open MPI is therefore able to combine the
+  expertise, technologies, and resources from all across the High
+  Performance Computing community in order to build the best MPI library
+  available. Open MPI offers advantages for system and software vendors,
+  application developers and computer science researchers.
+
+
+Product and OS Dependencies
+---------------------------
+  For more information about Open MPI, see the following URL:
+
+    http://www.open-mpi.org/
+
+
+Documentation
+-------------
+  No online documentation provided.
+            
+"
+
+conflict mpich
+conflict mvapich2
+
+set kern [ exec uname -s ]
+if { $kern == "Linux" } {
+	set bits [ exec uname -m ]
+	if { $bits == "x86_64" } {
+		if { [is-loaded pgi-llvm] } {
+			set target linux86-64-llvm
+		} else {
+			set target linux86-64
+		}
+	} elseif { $bits == "ppc64le" } {
+		set target linuxpower
+	} else {
+		puts stderr "This library is currently not supported on this platform."
+		exit 1
+	}
+} elseif { $kern == "Darwin" } {
+	set target osx86-64
+}
+
+set libdir "$::env(PGI_PREFIX)/${target}/2018/mpi/openmpi"
+
+prepend-path PATH $libdir/bin
+prepend-path LD_LIBRARY_PATH $libdir/lib
+prepend-path MANPATH $libdir/share/man
+
+setenv          MPICC                   $libdir/bin/mpicc
+setenv          MPICXX                  $libdir/bin/mpicxx
+setenv          MPIF77                  $libdir/bin/mpif77
+setenv          MPIF90                  $libdir/bin/mpif90
+setenv          MPIFC                   $libdir/bin/mpif90
+setenv          MPIFORTRAN              $libdir/bin/mpif90
+setenv          MPIEXEC                 $libdir/bin/mpiexec
+setenv          MPIRUN                  $libdir/bin/mpirun
+setenv		OPAL_PREFIX		$libdir
+setenv		PGI_MPI_INCLUDE_DIR	$libdir/include
+setenv		PGI_MPI_LIBRARY_DIR	$libdir/lib
+prepend-path	C_INCLUDE_PATH		$libdir/include
+prepend-path	LIBRARY_PATH		$libdir/lib
