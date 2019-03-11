@@ -1,0 +1,33 @@
+#%Module1.0
+# Requires: $PREFIX/pgi_em_help.tcl
+
+set dont-setenv { CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH LD_LIBRARY_PATH LIBRARY_PATH }
+
+module-whatis		"PGI Compilers and Tools"
+module-url		"http://www.pgroup.com"
+module-license		"The Portland Group, Oracle (Java), NVIDIA (CUDA), contains third party software"
+module-maintainer	"Hans-Christian Stadler <hans-christian.stadler@psi.ch>"
+
+set-family	"Compiler"
+
+set 		ARCH_VERSION	linux86-64/$env(PGI_VERSION)
+
+setenv		PGI     	$PREFIX
+setenv          LM_LICENSE_FILE $PREFIX/license.dat
+setenv		CC		$PREFIX/$ARCH_VERSION/bin/pgcc
+setenv		CXX		$PREFIX/$ARCH_VERSION/bin/pgc++
+setenv		CPP		$PREFIX/$ARCH_VERSION/bin/pgprepro
+setenv		F77		$PREFIX/$ARCH_VERSION/bin/pgf77
+setenv		F90		$PREFIX/$ARCH_VERSION/bin/pgf90
+setenv          F95             $PREFIX/$ARCH_VERSION/bin/pgf95
+setenv		FC		$PREFIX/$ARCH_VERSION/bin/pgfortran
+setenv		FORTRAN		$PREFIX/$ARCH_VERSION/bin/pgfortran
+
+prepend-path   	PATH            $PREFIX/$ARCH_VERSION/bin
+prepend-path    MANPATH         $PREFIX/$ARCH_VERSION/man
+prepend-path    LD_LIBRARY_PATH $PREFIX/$ARCH_VERSION/lib
+
+#setenv           CPLUS_INCLUDE_PATH  $PREFIX/$ARCH_VERSION/include
+#setenv           LIBRARY_PATH        $PREFIX/$ARCH_VERSION/lib
+
+source          $PREFIX/pgi_em_help.tcl
