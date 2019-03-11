@@ -7,7 +7,7 @@ pbuild::add_to_group 'Tools'
 module use 'Libraries'
 
 if [[ ${OS} == Darwin ]]; then
-	module use System
+	#module use System
 	pbuild::add_configure_args "CC=clang"
 fi
 pbuild::add_configure_args "--with-included-unistring"
