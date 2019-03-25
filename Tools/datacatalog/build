@@ -1,0 +1,20 @@
+#!/usr/bin/env modbuild
+
+pbuild::prep() {
+	:
+}
+
+pbuild::configure() {
+	:
+}
+
+pbuild::compile() {
+	:
+}
+
+pbuild::install() {
+   mkdir -p "$PREFIX/bin"
+   /usr/bin/curl -o "$PREFIX/bin/datasetIngestor" https://intranet.psi.ch/pub/Daas/WebHome/datasetIngestor
+   chmod +x "$PREFIX/bin/datasetIngestor"
+}
+

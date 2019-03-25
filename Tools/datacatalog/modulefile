@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"SciCat datacatalog related tools"
+module-url		"https://melanie.gitpages.psi.ch/SciCatPages/"
+module-license		"GPL-V3"
+module-maintainer	"Stephan Egli <stephan.egli@psi.ch>"
+
+module-help		"
+Data catalog ingest and retrieve tools.
+"
+
