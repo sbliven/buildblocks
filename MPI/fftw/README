@@ -1,0 +1,7 @@
+FFTW
+====
+
+FFTW is highly optimized, but downgrades if run on an older processor. It
+should be built compiled on a system with SSE2 and AVX2 support (e.g. merlin).
+
+This module requires PMODULE_VERSION > 1.0.0 to compile.
