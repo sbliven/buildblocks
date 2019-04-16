@@ -6,14 +6,13 @@ pbuild::add_to_group 'System'
 
 pbuild::install_docfiles AUTHORS NEWS README_S3
 
-cd ${SRC_DIR}
+export GPFS_VERSION="5.0.2-3"
 
-# pbuild::compile_in_sourcetree
+export C_INCLUDE_PATH+=":$BUILDBLOCK_DIR/files/gpfs/$GPFS_VERSION/include/"
+export LIBRARY_PATH+=":$BUILDBLOCK_DIR/files/gpfs/$GPFS_VERSION/lib/"
+
 pbuild::pre_configure() {
-  pbuild::add_configure_args "LIBS=/tmp/libgpfs.so"
+  
   cd ${SRC_DIR}
   ./bootstrap
-}
-pbuild::configure() {
-  ./configure LIBS=/tmp/libgpfs.so
 }
