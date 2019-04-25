@@ -1,0 +1,10 @@
+#%Module1.0
+
+module-whatis		"HPC IO Benchmark Repository"
+module-url		"https://github.com/hpc/ior"
+module-license		"See COPYRIGHT"
+module-maintainer	"Marc Caubet <marc.caubet@psi.ch>"
+module-help		"
+This repo now contains both IOR and mdtest. This should be
+only for stress tests and usually by an administrator.
+"
