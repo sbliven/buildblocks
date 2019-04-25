@@ -17,7 +17,7 @@ This module includes compilers for
 - Fortran
 "
 
-set-family	"Compiler"
+module-addgroup "Compiler"
 
 setenv		CC			$PREFIX/bin/gcc
 setenv		CXX			$PREFIX/bin/g++
