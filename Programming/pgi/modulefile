@@ -8,7 +8,7 @@ module-url		"http://www.pgroup.com"
 module-license		"The Portland Group, Oracle (Java), NVIDIA (CUDA), contains third party software"
 module-maintainer	"Hans-Christian Stadler <hans-christian.stadler@psi.ch>"
 
-set-family	"Compiler"
+module-addgroup	"Compiler"
 
 set 		ARCH_VERSION	linux86-64/$env(PGI_VERSION)
 
