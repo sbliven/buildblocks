@@ -20,5 +20,9 @@ pbuild::install() {
    /usr/bin/curl -o "$PREFIX/bin/datasetRetriever" https://intranet.psi.ch/pub/Daas/WebHome/datasetRetriever
 
    chmod +x "$PREFIX/bin/datasetIngestor"
+   /usr/bin/curl -o "$PREFIX/bin/datasetRetriever" https://intranet.psi.ch/pub/Daas/WebHome/datasetRetriever
+   chmod +x "$PREFIX/bin/datasetRetriever"
+   /usr/bin/curl -o "$PREFIX/bin/datasetArchiver" https://intranet.psi.ch/pub/Daas/WebHome/datasetArchiver
+   chmod +x "$PREFIX/bin/datasetArchiver"
 }
 
