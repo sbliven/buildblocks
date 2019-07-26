@@ -3,7 +3,7 @@
 module-whatis       "Conda package manager and Anaconda software distribution"
 module-url          "https://www.anaconda.com/"
 module-license      "3-clause BSD License and 3rd party software licenses. https://docs.continuum.io/anaconda/eula/"
-module-maintainer   "Spencer Bliven <spencer.bliven@psi.ch>"
+module-maintainer   "Spencer Bliven <spencer.bliven@psi.ch> / Derek Feichtinger <derek.feichtinger@psi.ch>"
 
 module-help         "
 Anaconda is a package manager, an environment manager, a Python/R data science
@@ -27,7 +27,18 @@ This package provides the conda command (miniconda), as well as releases of the
 Anaconda distribution, built against several python versions.
 "
 
+# this package has conflicts with all older psi python installations which
+# integrated conda into the psi-python
+conflict  psi-python27
+conflict  psi-python34
+conflict  psi-python35
+conflict  psi-python36
+conflict  psi-python37
+
+
+# These paths are managed by the sourced conda file. Pmodules should not touch it
 set dont-setenv { LD_LIBRARY_PATH }
+set dont-setenv { PATH }
 
 # Check for supported shell types
 set shelltype [module-info shelltype]
@@ -42,20 +53,32 @@ switch -- $shelltype {
 switch [module-info mode] {
     "load" {
 	#TODO check whether another conda version is present (conflicts)
+	# pmodules itself seems to prevent loading the same module of a different version
+	# but we need to prevent conflicts with a conda from a different source.
 	
-        puts stderr "Using conda from $P/$V\n"
+        # puts stderr "DEBUG: Using conda from $P/$V\n"
         puts stdout "source \"$PREFIX/conda/etc/profile.d/conda.sh\";\n"
 
-	# Activate base
-	puts stdout "conda activate;\n"
+	# Activate base? No: anaconda should just provide the conda tool
+	# puts stdout "conda activate;\n"
     }
-    "unload" -
+    "unload" -	
     "remove" {
-        # Deactivate
+        # Deactivate all layers of active conda environments
         puts stdout {while [[ "${CONDA_SHLVL:-0}" -gt 0 ]]; do conda deactivate; done;}
 
-        # Unload conda
-        puts stdout {unset $(set|sed -rn 's/^(_?conda[a-z_]*).*$/\1/pI');}
+	remove-path PATH  $PREFIX/conda/condabin
+ 	# remove the conda function definitions
+	unsetenv __conda_activate
+	unsetenv __conda_hashr
+	unsetenv __conda_reactivate
+	unsetenv conda
+
+	unsetenv CONDA_EXE
+	unsetenv CONDA_PYTHON_EXE
+	unsetenv CONDA_SHLVL
+	unsetenv _CE_CONDA
+
     }
 }
 

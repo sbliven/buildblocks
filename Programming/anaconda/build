@@ -2,11 +2,27 @@
 
 pbuild::add_to_group 'Programming'
 
-source "${BUILDBLOCK_DIR}/files/config-${V_PKG}.sh"
+
+source "${BUILDBLOCK_DIR}/${V_PKG}/config.sh"
+if [[ x"$CONDA_VERSION" == x ]]; then
+    echo "ERROR: CONDA_VERSION for this release has not been defined" >&2
+    exit 1
+fi
+
+MINICONDA_EXE="Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh"
+DOWNLOAD_URL="https://repo.anaconda.com/miniconda/$MINICONDA_EXE"
+INSTALLER="$PMODULES_DISTFILESDIR/$MINICONDA_EXE"
 
 pbuild::pre_prep() {
-    curl -fsSLo "$PMODULES_DISTFILESDIR/Miniconda2-${CONDA_VERSION}-Linux-x86_64.sh" \
-	"https://repo.anaconda.com/miniconda/Miniconda2-${CONDA_VERSION}-Linux-x86_64.sh"
+    # Need to implement own downloader since pbuild::set_download_url and pbuild::prep
+    # currently only support tar files
+    std::info "DEBUG: in function %s...\n" "$FUNCNAME: FUNCNAME=${FUNCNAME[*]}" 
+    if [[ -r "$INSTALLER" ]]; then
+	std::info "%s using previously downloaded %s\n"  \
+		  "${module_name}/${module_version}:" "$INSTALLER"
+    else
+	curl -fsSLo "$INSTALLER" "$DOWNLOAD_URL"
+    fi
 }
 
 pbuild::configure() {
@@ -17,8 +33,11 @@ pbuild::compile() {
     :
 }
 
-pbuild::install() {
+pbuild::install() {    
     # Install conda
-    bash "$PMODULES_DISTFILESDIR/Miniconda2-${CONDA_VERSION}-Linux-x86_64.sh" \
-    	-b -p "$PREFIX/conda"
+    bash "$INSTALLER" -b -p "$PREFIX/conda"
+
+    #echo "Installing PSI admintools for maintaining conda"
+    std::info "%s Installing admintools ...\n" "${module_name}/${module_version}:"
+    cp -r  "${BUILDBLOCK_DIR}/files/admintools" "$PREFIX/admintools"
 }
