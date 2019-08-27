@@ -1,7 +1,10 @@
 #!/usr/bin/env modbuild
 
+# get mappings for our version numbers to the published tarfile names
+TARNAME=$(grep -E "^${V_MAJOR}.${V_MINOR}" files/version-to-tarname.txt| awk '{print $2}')
+
 # pbuild::set_download_url "https://gitlab.psi.ch/caubet_m/merlin-software/raw/master/$P/$P-${V_PKG}.tar.gz"
-pbuild::set_download_url "https://github.com/lammps/lammps/archive/patch_15Nov2018.tar.gz"
+pbuild::set_download_url "https://github.com/lammps/lammps/archive/${TARNAME}"
 
 pbuild::add_to_group 'MPI'
 
