@@ -45,6 +45,9 @@ pbuild::post_install() {
 
 	std::info "Building nose\n"
 	pip${V_MAJOR} install nose
+
+	std::info "Building h5py\n"
+	pip${V_MAJOR} install h5py
 }
 
 
