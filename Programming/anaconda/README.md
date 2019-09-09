@@ -3,7 +3,7 @@
 ## Concepts
 
    * The anaconda module just provides the **conda** package management tool together with its directory infrastructure which contains *conda environments* and a cache of downloaded packages
-   * Python and user software is provided in **conda environments**. These environments are located within the directory tree belonging to the anaconda module, e.g. `/afs/psi.ch/sys/psi.merlin/Programming/anaconda/2019.03/conda/envs/`
+   * Python and user software is provided in **conda environments**. These environments are located within the directory tree belonging to the anaconda module, e.g. `/afs/psi.ch/sys/psi.merlin/Programming/anaconda/2019.07/conda/envs/`
    * The software in these environments can be accessed by users through
       1) loading the anaconda module and then using `conda activate somemodule_py36`
 	  1) a seperate pmodule that transparently switches to that installed environment by just setting the correct PATH to the python binary.
@@ -21,14 +21,14 @@
 In the simplest case, the environment can be created by conda alone. First load the anaconda module to get access to the conda package installer and the install environment.
 
 ```
-module load anaconda/2019.03
+module load anaconda/2019.07
 ```
 
 Define your installation in a `conda YAML` file and place it inside the buildblock
 tree
 
 ```
-cd buildblocks/Programming/anaconda/2019.03/conda-env-defs
+cd buildblocks/Programming/anaconda/2019.07/conda-env-defs
 mkdir datascience_36
 vim datascience_36/datascience_36.yml
 ``` 

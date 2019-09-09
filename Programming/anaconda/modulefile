@@ -69,14 +69,22 @@ switch [module-info mode] {
 	if { [dict get $option -code] != 0 } {
 	    puts stderr "Error: cannot cleanly unload anaconda: conda is not in the PATH"
 	} else {
-	    # if the user has invoked this from a subshell, the conda functions may
-	    # not be defined, so we need to reload the environment
-	    puts stdout {if [[ x$(command -v conda) != xconda ]];then source  $(conda info --base)/etc/profile.d/conda.sh; fi;}
+	    # if the user has invoked this from a subshell, the conda
+	    # functions may not be defined even though a conda
+	    # executable is still in the path ! One could try the
+	    # following, but currently we leave it commented.
+	    # puts stdout {if [[ x$(command -v conda) != xconda ]];then source  $(conda info --base)/etc/profile.d/conda.sh; fi;}
 
-	    # Deactivate all layers of active conda environments
-	    puts stdout {while [[ "${CONDA_SHLVL:-0}" -gt 0 ]]; do conda deactivate; done;}
+	    # If the conda env is intact (conda defined as a function), then
+	    # deactivate all layers of active conda environments
+	    puts stdout {if [[ x$(command -v conda) == xconda ]]; then while [[ "${CONDA_SHLVL:-0}" -gt 0 ]]; do  [[ $PMODULES_DEBUG == 1 ]] && echo "unloading conda env $CONDA_DEFAULT_ENV..." >&2; conda deactivate; [[ $PMODULES_DEBUG == 1 ]] && echo $PATH >&2; done; fi;}
 
-	    remove-path PATH  $PREFIX/conda/condabin
+	    # the path cleaning cannot use tcl remove-path, since at this point tcl
+	    # is not aware that the above bash statements will have modified the path
+	    # upon the eval that is done by the outer "module" function.
+
+	    puts stdout {PATH=$(echo $PATH| tr ':' '\n' | grep -v "$mydel" | tr '\n' ':'); export PATH=${PATH%:};}
+
 	    # remove the conda function definitions
 	    unsetenv __conda_activate
 	    unsetenv __conda_hashr
