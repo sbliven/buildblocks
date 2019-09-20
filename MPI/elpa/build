@@ -1,0 +1,72 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "http://elpa.mpcdf.mpg.de/html/Releases/${V_PKG}/$P-${V_PKG}.tar.gz"
+pbuild::add_to_group 'MPI'
+pbuild::use_autotools
+pbuild::install_docfiles 'COPYING/COPYING'
+pbuild::install_docfiles 'COPYING/gpl.txt'
+pbuild::install_docfiles 'COPYING/lgpl.txt'
+
+pbuild::supported_os Linux
+pbuild::supported_compilers Intel
+
+pbuild::pre_configure() {
+        local -r MKL_LIBRARY_DIR=${MKLROOT}/lib/intel64
+        local -r MKL_INCLUDE_DIR=${MKLROOT}/include
+
+	local -a flags=()
+	if pbuild::use_flag "omp"; then
+		flags+=('-qopenmp')
+		pbuild::add_configure_args "--enable-openmp"
+	else
+		flags+=('-qno-openmp')
+	fi
+	flags+=('-O2' '-fPIC' '-g')
+	flags+=('-fp-model precise' '-funroll-loops')
+	flags+=('-traceback' '-xHost')
+
+	local -a cflags=()
+	cflags+=("${flags[@]}")
+	cflags+=('-I${MKL_INCLUDE_DIR}')
+
+	local -a fcflags=()
+	fcflags+=("${flags[@]}")
+	fcflags+=( '-fpp' '-free')
+	fcflags+=("-I${MKL_INCLUDE_DIR}/intel64/lp64")
+
+	local -a ldflags=()
+	ldflags+=("-L${MKL_LIBRARY_DIR}")
+	ldflags+=('-lmkl_scalapack_lp64' '-lmkl_intel_lp64' '-lmkl_sequential')
+	ldflags+=('-lmkl_core' '-lmkl_blacs_intelmpi_lp64' '-lpthread')
+
+	local -a scalapack_fcflags=()
+	scalapack_fcflags+=( "${ldflags[@]}" )
+        scalapack_fcflags+=("-I${MKL_INCLUDE_DIR}/intel64/lp64")
+
+	local -a scalapack_ldflags=()
+	scalapack_ldflags+=( "${ldflags[@]}" )
+        scalapack_ldflags+=("-Wl,-rpath,${MKL_LIBRARY_DIR}")
+
+	pbuild::add_configure_args "CC=${MPICC}"
+	pbuild::add_configure_args "CXX=${MPICXX}"
+	pbuild::add_configure_args "FC=${MPIFC}"
+	pbuild::add_configure_args "CFLAGS=${cflags[*]}"
+	pbuild::add_configure_args "CXXFLAGS=${cflags[*]}"
+	pbuild::add_configure_args "FCFLAGS=${fcflags[*]}"
+	pbuild::add_configure_args "LDFLAGS=${ldflags[*]}"
+	pbuild::add_configure_args "SCALAPACK_FCFLAGS=${scalapack_fcflags[*]}"
+	pbuild::add_configure_args "SCALAPACK_LDLAGS=${scalapack_ldflags[*]}"
+        pbuild::add_configure_args "--disable-shared"
+	pbuild::add_configure_args "--enable-static"
+	pbuild::add_configure_args "--enable-avx512"
+}
+
+pbuild::post_install() {
+	if pbuild::use_flag "omp"; then
+		ln -fs "elpa_openmp-${V_PKG}/elpa" "${PREFIX}/include/elpa"
+		ln -fs "elpa_openmp-${V_PKG}/modules" "${PREFIX}/include/modules"
+	else
+		ln -fs "elpa-${V_PKG}/elpa" "${PREFIX}/include/elpa"
+		ln -fs "elpa-${V_PKG}/modules" "${PREFIX}/include/modules"
+	fi
+}
