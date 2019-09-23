@@ -1,0 +1,36 @@
+#%Module1.0
+
+module-whatis		"Eigenvalue SoLvers for Petaflop-Applications"
+module-url		"https://elpa.mpcdf.mpg.de"
+module-license		"GNU LGPL, version 3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help		"
+The computation of selected or all eigenvalues and eigenvectors of a
+symmetric (Hermitian) matrix has high relevance for various scientific
+disciplines.
+
+For the calculation of a significant part of the eigensystem typically
+direct eigensolvers are used. For large problems, the eigensystem
+calculations with existing solvers can become the computational
+bottleneck.
+
+As a consequence, the ELPA project was initiated with the aim to
+develop and implement an efficient eigenvalue solver for petaflop
+applications, supported by the German Federal Government, through
+BMBF Grant 01IH08007, from Dec 2008 to Nov 2011.
+
+The challenging task has been addressed through a multi-disciplinary
+consortium of partners with complementary skills in different areas.
+
+As project outcome, the highly scalable and efficient direct eigen-
+solvers LPA have been developed. The ELPA library was publicly
+released in May 2011.
+
+Since the end of BMBF Grant 01IH08007 in Nov 2011, the ELPA library
+has been maintained by RZG - renamed to MPCDF in 2015.
+
+Through the BMBF Grant 01IH15001 (Project ELPA-AEO from Feb 2016 to
+Jan 2019) the ELPA library could be further optimized, enhanced and
+ported to new architectures.
+"
+
