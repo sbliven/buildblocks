@@ -1,0 +1,21 @@
+#%Module1.0
+
+module-whatis		"Java Development Kit builds, from Oracle"
+module-url		"http://jdk.java.net/"
+module-license		"See PREFIX/share/doc/COPYING"
+module-maintainer	"Marc Caubet <marc.caubet@psi.ch>"
+module-help		"
+Open Java Development Kit) is a free and open-source 
+implementation of the Java Platform, Standard Edition 
+(Java SE). It is the result of an effort Sun Microsystems 
+began in 2006. 
+
+The implementation is licensed under the GNU General 
+Public License (GNU GPL) version 2 with a linking 
+exception. Were it not for the GPL linking exception, 
+components that linked to the Java class library would be
+subject to the terms of the GPL license. 
+
+OpenJDK is the official reference implementation of Java 
+SE.
+"
