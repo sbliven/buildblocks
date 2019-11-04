@@ -2,13 +2,8 @@
 
 pbuild::set_download_url "https://ftp.gnu.org/gnu/gcc/$P-$V/$P-$V.tar.gz"
 
-# use system gcc to compile
-#declare -rx CC=gcc
-#declare -rx CXX=g++
-
 pbuild::add_to_group 'Programming'
 pbuild::install_docfiles 'COPYING' 'COPYING.LIB' 'COPYING.RUNTIME' 'COPYING3' 'COPYING3.LIB' 'NEWS' 'README'
-pbuild::compile_in_sourcetree
 
 #pbuild::pre_prep_Darwin() {
 #	if (( V_MAJOR == 8 )); then
