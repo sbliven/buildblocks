@@ -1,16 +1,20 @@
-# New module request
+# New build-block
 
-| **Name** | **Version** | **Group** | **Overlay** |
-|----------|-------------|-----------|-------------|
-|          |             |           |             |
+[//]: # (open an issue for each version and System)
+
+| **Name** | **Version** | **Group** | **with**   | **System** | **Overlay** |
+|----------|-------------|-----------|------------|------------|-------------|
+|          |             |           |            |            | default     |  
 
 
-## Operating systems 
+[//]: # (if you do not have hierarchival dependencies use the check-list below
+- [ ] build
+- [ ] tested
+- [ ] released
 
-[//]: # (remove lines you do not need/add missing)
+[//]: # (otherwise use check-lists like the one below for each variant)
+- [ ] version X.Y.Z with WITH1
+   - [ ] build
+   - [ ] tested
+   - [ ] released
 
-- [ ] default (`variants`)
-- [ ] RHEL6/SL6 (`variants.Linux` or `variants.rhel6`)
-- [ ] RHEL8 (`variants.rhel8`)
-- [ ] macOS 10.9 (`variants.Darwin`)
-- [ ] macOS 10.14 (Mojave, `variants.macos10.14`)
