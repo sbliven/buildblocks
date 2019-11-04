@@ -1,21 +1,34 @@
-#!/usr/bin/env modbuild
+#!/usr/bin/env modbuild 
 
 pbuild::set_download_url "http://ftp.gromacs.org/pub/$P/$P-${V_PKG}.tar.gz"
 
 pbuild::add_to_group 'MPI'
 
-pbuild::install_docfiles ACKNOWLEDGMENTS COPYING MANIFEST README.txt
+if (( V_MAJOR <= 2018 )); then
+  pbuild::install_docfiles ACKNOWLEDGMENTS COPYING MANIFEST README.txt
+else
+  pbuild::install_docfiles AUTHORS COPYING README
+fi
 
 pbuild::pre_configure() {
-	pbuild::add_configure_args "-DCMAKE_BUILD_TYPE=RELEASE"
-	pbuild::add_configure_args "-DGMX_MPI=on"
-        
+  # For enabling GPU, set to 'yes'
+  local enable_gpu='yes'
+
+  echo here
+  pbuild::add_configure_args "-DCMAKE_BUILD_TYPE=RELEASE"
+  pbuild::add_configure_args "-DGMX_MPI=on"
+
   if pbuild::use_flag dp ; then
-		pbuild::add_configure_args "-DGFMX_DOUBLE=on"
+    pbuild::add_configure_args "-DGFMX_DOUBLE=on"
   else # pbuild::use_flag sp
-		pbuild::add_configure_args "-DGFMX_DOUBLE=off"
+    pbuild::add_configure_args "-DGFMX_DOUBLE=off"
   fi
+
+  if [[ "${enable_gpu}" == 'yes' ]]; then
+ 	pbuild::add_configure_args "-DGMX_GPU=on"
+  else
  	pbuild::add_configure_args "-DGMX_GPU=off"
-	# To remove: pbuild::add_configure_args "-DGMX_SIMD=SSE2"
-	pbuild::add_configure_args "-DGMX_BUILD_OWN_FFTW=on"
+  fi
+  # To remove: pbuild::add_configure_args "-DGMX_SIMD=SSE2"
+  pbuild::add_configure_args "-DGMX_BUILD_OWN_FFTW=on"
 }
