@@ -13,8 +13,10 @@ Now configure jupyter
 
 ## Package notes
 
-- cudatoolkit version is fixed because it needs to match merlin6's CUDA module
-  (required by the MotionCor2 package).
-- This environment installs packages for gpu support, but these currently don't
-  seem to be working on merlin.
+- cudatoolkit version should ideally match merlin6's CUDA module
+  (required by the MotionCor2 package). However, tensorflow needs cuda 10.0 while
+  no MotionCor2 binary is available. For now, having a different version in
+  conda and modules is working OK, but it could cause problems with future compilation.
+- You can test GPU support by running this command on a GPU machine:
+  `python -c 'import tensorflow as tf; print(tf.test.is_gpu_available())'`
 
