@@ -24,4 +24,25 @@ Scheres(2012) JMB http://www.sciencedirect.com/science/article/pii/S002228361101
 Scheres(2012) JSB http://www.sciencedirect.com/science/article/pii/S1047847712002481
 "
 
+setenv RELION_QUEUE_USE yes
+setenv RELION_QUEUE_NAME gpu
+setenv RELION_QSUB_COMMAND sbatch
+setenv RELION_THREAD_MAX 44
+setenv RELION_QSUB_EXTRA_COUNT 2
+setenv RELION_QSUB_EXTRA1 "Max Time"
+setenv RELION_QSUB_EXTRA1_DEFAULT "1-00:00:00"
+setenv RELION_QSUB_EXTRA1_HELP "Maximum time before the job is killed by slurm. Default: 1-00:00:00"
+setenv RELION_QSUB_EXTRA2 "Extra Slurm Args"
+setenv RELION_QSUB_EXTRA2_DEFAULT ""
+setenv RELION_QSUB_EXTRA2_HELP "Any additional arguments to pass to slurm"
+setenv RELION_SCRATCH_DIR /scratch
+setenv RELION_UNBLUR_EXECUTABLE /opt/psi/EM/Unblur/1.0.2/bin/unblur_openmp_7_17_15.exe
+setenv RELION_SUMMOVIE_EXECUTABLE /opt/psi/EM/Summovie/1.0.2/bin/sum_movie_openmp_7_17_15.exe
+setenv RELION_CTFFIND_EXECUTABLE /opt/psi/EM/ctffind4/4.1.8/bin/ctffind
+setenv RELION_GCTF_EXECUTABLE /opt/psi/EM/Gctf/1.06/bin/Gctf
+setenv RELION_RESMAP_EXECUTABLE /opt/psi/EM/ResMap/1.1.4/bin/ResMap
+
+# Version-specific variables
+setenv RELION_QSUB_TEMPLATE /opt/psi/EM/relion/3.1-beta/scripts/multi_gpu.sh
+setenv RELION_MOTIONCOR2_EXECUTABLE /opt/psi/EM/MotionCor2/1.3.0/bin/MotionCor2_1.3.0-Cuda92
 
