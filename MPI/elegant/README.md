@@ -1,20 +1,22 @@
 # Building a module for (P)elegant
 
-## Official build instructions
+## Home page and official build instructions
 
-Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`. The instructions to build from source are almost at the end of the page:
+Elgant is a software packages produced by the [Accelerator Operations
+and Physics Group](https://www.aps.anl.gov/Accelerator-Operations-Physics/Software).
+It requires the EPICS build-system and SDDS. The EPICS build-system is completely 
+based on Makefiles. This makes it a bit harder to compile and more error prone. 
 
-https://www.aps.anl.gov/Accelerator-Operations-Physics/Software/installationGuide_Linux
+Instructions to setup `epics/base`, `epics/extensions` and to compile `SDDS` as
+well as `elegant` can be found 
+[here](https://www.aps.anl.gov/Accelerator-Operations-Physics/Software/installationGuide_Linux).
+The instructions to build from source are almost at the end of the page.
 
-Instructions to build `Pelegant`:
-
-https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
+Instructions to build [`Pelegant`](https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html)
 
 ## Getting the software and required configuration files
 
-**Main page**
 
-* https://www.aps.anl.gov/Accelerator-Operations-Physics/Software
 
 **Configuration files for EPICS build system (base and extensions)**
 
