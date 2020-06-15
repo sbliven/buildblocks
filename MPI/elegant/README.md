@@ -16,7 +16,9 @@ Instructions to build [`Pelegant`](https://ops.aps.anl.gov/publish/Pelegant_manu
 
 ## Getting the software and required configuration files
 
+**file defining constants and some functions**
 
+https://ops.aps.anl.gov/cgi-bin/oagLog4.cgi?name=defns.rpn
 
 **Configuration files for EPICS build system (base and extensions)**
 
@@ -38,13 +40,17 @@ Instructions to build [`Pelegant`](https://ops.aps.anl.gov/publish/Pelegant_manu
 ## Required Modules
 
 ```
-module load gcc/7.3.0 gsl/2.4 OpenBLAS/0.2.20 mpich/3.2.1
+module load gcc/8.4.0 gsl/2.6 OpenBLAS/0.3.10 mpich/3.2.1
+```
+or
+```
+module load gcc/8.4.0 gsl/2.6 OpenBLAS/0.3.10 openmpi/3.1.6
 ```
 
 ## Set used versions
 ```
-SDDS_VERSION=3.6.1
-ELEGANT_VERSION=34.2.0
+SDDS_VERSION=4.3
+ELEGANT_VERSION=2020.2.0
 ```
 
 ## Setup Environment
@@ -100,8 +106,7 @@ sed -i "s/clean::/clean:/" RULES_PYTHON
 make -e "${ARGS[@]}"
 ```
 
->
-You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RULES`
+> You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RULES`
 
 ## Build required tools and libraries from SDDS
 ```
