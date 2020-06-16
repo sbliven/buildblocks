@@ -14,28 +14,17 @@ The instructions to build from source are almost at the end of the page.
 
 Instructions to build [`Pelegant`](https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html)
 
-## Getting the software and required configuration files
+## Getting required configuration files
 
-**file defining constants and some functions**
+* [file defining constants and some functions](https://ops.aps.anl.gov/cgi-bin/oagLog4.cgi?name=defns.rpn)
+* [EPICS base configuration](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.base.configure.tar.gz)
+* [EPICS extensions configuration](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.extensions.configure.tar.gz)
+* [Configuration files for elegant, spiffe, genesis, and shower](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=oag.apps.configure.tar.gz)
 
-https://ops.aps.anl.gov/cgi-bin/oagLog4.cgi?name=defns.rpn
+## SDDS and Elegant sources
 
-**Configuration files for EPICS build system (base and extensions)**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.base.configure.tar.gz
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.extensions.configure.tar.gz
-
-**Configuration files for elegant, spiffe, genesis, and shower**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=oag.apps.configure.tar.gz
-
-**SDDS source**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=SDDS.3.6.1.tar.gz
-
-**elegant source**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=elegant.34.2.0.tar.gz
+* [SDDS 4.3.1 source](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=SDDS.4.3.0.tar.gz)
+* [Elegant 2020.2.0 source](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=elegant.2020.2.0.tar.gz)
 
 ## Required Modules
 
@@ -44,17 +33,14 @@ module load gcc/8.4.0 gsl/2.6 OpenBLAS/0.3.10 mpich/3.2.1
 ```
 or
 ```
-module load gcc/8.4.0 gsl/2.6 OpenBLAS/0.3.10 openmpi/3.1.6
+module load gcc/8.4.0 gsl/2.6 lapack/3.9.0 openmpi/3.1.6
 ```
 
-## Set used versions
-```
-SDDS_VERSION=4.3
-ELEGANT_VERSION=2020.2.0
-```
 
 ## Setup Environment
 ```
+SDDS_VERSION=4.3
+ELEGANT_VERSION=2020.2.0
 source "${PMODULES_ROOT}/config/modbuild.conf"
 DOWNLOAD_DIR="${PMODULES_DISTFILESDIR}/elegant"
 PREFIX="${PMODULES_ROOT}/MPI/elegant/${ELEGANT_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
@@ -64,15 +50,13 @@ export HOST_ARCH=linux-x86_64
 export EPICS_HOST_ARCH=linux-x86_64
 export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
 export PERLLIB="${PREFIX}/lib/perl"
-```
 
-```
 ARGS=()
 ARGS+=( "GNU_BIN=$GCC_DIR/bin" )
 ARGS+=( "LD=/usr/bin/ld" )
 ARGS+=( "AR=/usr/bin/ar -rc" )
 ARGS+=( "RANLIB=/usr/bin/ranlib" )
-ARGS+=( "EPICS_BASE=${PREFIX}" )
+ARGS+=( "EPICS_BASE=${EPICS_BASE}" )
 ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
 ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
@@ -113,17 +97,31 @@ make -e "${ARGS[@]}"
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
 cd "${PREFIX}/epics/extensions/src/SDDS/"
+sed -i -e  "s/\( sddspseudoinverse_SYS_LIB.*\)/\1 gfortran/" SDDSaps/pseudoInverse/Makefile
+sed -i -e  "s/\( sddsmatrixop_SYS_LIBS.*\)/\1 gfortran/" SDDSaps/pseudoInverse/Makefile
+
+make -e "${ARGS[@]}" -C png   && \
+make -e "${ARGS[@]}"  
+make -e "${ARGS[@]}" -C SDDSlib clean
+make    "${ARGS[@]}" MPI=1 -C SDDSlib
+
+
+make -e "${ARGS[@]}" -C pgapack   && \
+
 make -e "${ARGS[@]}" -C fftpack   && \
 make -e "${ARGS[@]}" -C lzma      && \
 make -e "${ARGS[@]}" -C matlib    && \
 make -e "${ARGS[@]}" -C mdbcommon && \
 make -e "${ARGS[@]}" -C mdblib    && \
 make -e "${ARGS[@]}" -C mdbmth    && \
+make -e "${ARGS[@]}" -C SDDSlib   && \
+make -e "${ARGS[@]}" -C SDDSaps/pseudoInverse OP_SYS_LDLIBS=-lgfortran
+
 make -e "${ARGS[@]}" -C meschach  && \
 make -e "${ARGS[@]}" -C namelist  && \
-make -e "${ARGS[@]}" -C pgapack   && \
 make -e "${ARGS[@]}" -C rpns/code && \
-make -e "${ARGS[@]}" -C SDDSlib   && \
+
+
 make -e "${ARGS[@]}" -C SDDSlib clean
 make    "${ARGS[@]}" MPI=1 -C SDDSlib
 ```
