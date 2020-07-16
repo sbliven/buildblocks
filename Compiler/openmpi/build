@@ -13,6 +13,8 @@ pbuild::install_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
 
 
 pbuild::pre_configure() {
+        INSTALL_LIBPMIX=false
+
 	if [[ -n "${CUDA_VERSION}" ]]; then	
 		pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
 	fi
@@ -40,7 +42,11 @@ pbuild::pre_configure() {
 		pbuild::add_configure_args "--enable-smp-locks"
 	elif (( V_MAJOR >= 4 )); then
 		pbuild::add_configure_args "--enable-mpi-fortran"
-		pbuild::add_configure_args "--without-verbs"                                                                                                                          
+		pbuild::add_configure_args "--without-verbs"
+		if ${INSTALL_LIBPMIX}  ; then
+                  echo "Enabling Install libpmix"
+                  pbuild::add_configure_args "--enable-install-libpmix"
+                fi
 	fi
 }
 
@@ -48,6 +54,7 @@ pbuild::post_install() {
 	mkdir -p "${PREFIX}/lib/fallback"
 	local -r binary=$(ls "${PREFIX}"/lib/libmpi.so.*.*.*)
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libuc[mpst].so'
+	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libuct_ib.so.0'
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libnuma.so'
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libibverbs.so'
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/librdmacm.so'
