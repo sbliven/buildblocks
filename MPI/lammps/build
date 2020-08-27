@@ -11,41 +11,37 @@ pbuild::add_to_group 'MPI'
 
 pbuild::install_docfiles README LICENSE
 
-pbuild::pre_configure() {
-  pbuild::add_configure_args "-D CMAKE_BUILD_TYPE=RELEASE"
-
-  pbuild::add_configure_args "-D BUILD_MPI=yes"
-  pbuild::add_configure_args "-D BUILD_OMP=yes"
-  pbuild::add_configure_args "-D BUILD_TOOLS=yes"
-  pbuild::add_configure_args "-D BUILD_DOC=yes"
-
-  pbuild::add_configure_args "-D LAMMPS_MACHINE=mpi"
-  pbuild::add_configure_args "-D PKG_USER-OMP=yes"
-  pbuild::add_configure_args "-D PKG_ASPHERE=yes"
-  pbuild::add_configure_args "-D PKG_BODY=yes"
-  pbuild::add_configure_args "-D PKG_COMPRESS=yes"
-  pbuild::add_configure_args "-D PKG_CORESHELL=yes"
-  pbuild::add_configure_args "-D PKG_DIPOLE=yes"
-  pbuild::add_configure_args "-D PKG_GRANULAR=yes"
-  pbuild::add_configure_args "-D PKG_MANYBODY=yes"
-  pbuild::add_configure_args "-D PKG_KSPACE=yes"
-  pbuild::add_configure_args "-D PKG_MC=yes"
-  pbuild::add_configure_args "-D PKG_MISC=yes"
-  pbuild::add_configure_args "-D PKG_MOLECULE=yes"
-  pbuild::add_configure_args "-D PKG_MPIIO=yes"
-  pbuild::add_configure_args "-D PKG_OPT=yes"
-  pbuild::add_configure_args "-D PKG_PYTHON=yes"
-  pbuild::add_configure_args "-D PKG_REPLICA=yes"
-  pbuild::add_configure_args "-D PKG_RIGID=yes"
-  pbuild::add_configure_args "-D PKG_SNAP=yes"
-  pbuild::add_configure_args "-D PKG_USER-EFF=yes"
-  pbuild::add_configure_args "-D PKG_USER-DRUDE=yes"
-  pbuild::add_configure_args "-D PKG_USER-REAXC=yes"
-  # (( ${OPENMPI_VERSION%%.*}  >= 4 )) && pbuild::add_configure_args "-D LAMMPS_OMP_COMPAT=4"
-}
-
 pbuild::configure() {
-	cmake ${BUILD_DIR}/../src/cmake -D CMAKE_INSTALL_PREFIX="${PREFIX}"
+	cmake -D CMAKE_INSTALL_PREFIX="${PREFIX}" \
+              -D CMAKE_BUILD_TYPE=RELEASE \
+              -D BUILD_MPI=yes \
+              -D BUILD_OMP=yes \
+              -D BUILD_TOOLS=yes \
+              -D BUILD_DOC=yes \
+              -D LAMMPS_MACHINE=mpi \
+              -D PKG_USER-OMP=yes \
+              -D PKG_ASPHERE=yes \
+              -D PKG_BODY=yes \
+              -D PKG_COMPRESS=yes \
+              -D PKG_CORESHELL=yes \
+              -D PKG_DIPOLE=yes \
+              -D PKG_GRANULAR=yes \
+              -D PKG_MANYBODY=yes \
+              -D PKG_KSPACE=yes \
+              -D PKG_MC=yes \
+              -D PKG_MISC=yes \
+              -D PKG_MOLECULE=yes \
+              -D PKG_MPIIO=yes \
+              -D PKG_OPT=yes \
+              -D PKG_PYTHON=yes \
+              -D PKG_REPLICA=yes \
+              -D PKG_RIGID=yes \
+              -D PKG_SNAP=yes \
+              -D PKG_USER-EFF=yes \
+              -D PKG_USER-DRUDE=yes \
+              -D PKG_USER-REAXC=yes \
+              -D BUILD_SHARED_LIBS=on \
+	      ${BUILD_DIR}/../src/cmake
 }
 
 pbuild::compile() {
