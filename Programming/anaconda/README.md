@@ -75,3 +75,35 @@ This works if the python package has a correct setup.py build
      cd /opt/psi/Programming/anaconda/2019.07/xxxx/mypackage
      pip install .
      ```
+## Building for use with jupyter
+
+   Jupyter can discover conda environments if the environment contains the **nb_conda_kernels** package.
+   
+Regrettably the environment activation by this package does not run through the full process as compared to the command line functions. The activation scripts that can be placed in an environment do not get executed (q.v. my bug report https://github.com/Anaconda-Platform/nb_conda_kernels/issues/145).
+   
+In order to fix this, we must use a workaround which involves modifying the kernel spec configuration file of the environment to wrap the call to the python kernel like in this example for `.../envs/mpi-test/share/jupyter/kernels/python3/kernel.json`:
+     ```
+     {
+         "argv": [
+      	"/opt/psi/Programming/anaconda/2019.07/admintools/kernelwrapper.sh",
+      	"mpi-test",
+      	"/opt/psi/Programming/anaconda/2019.07/conda/envs/mpi-test/bin/python",
+      	"-m",
+      	"ipykernel_launcher",
+      	"-f",
+      	"{connection_file}"
+      ],
+      "display_name": "Python 3",
+      "language": "python"
+     }
+     ```
+
+In order to modify an environment easily I wrote a tool found in the `admintools` of this buildblock which you can use as follows:
+
+     ```
+	 files/admintools/install-kernelwrapper.py -v /opt/psi/Programming/anaconda/2019.07/conda/envs/hep_root
+     ```
+
+
+
+
