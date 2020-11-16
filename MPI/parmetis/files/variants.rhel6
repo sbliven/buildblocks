@@ -22,4 +22,4 @@ parmetis/4.0.3	stable		intel/17.4 openmpi/{1.10.7,2.1.2,3.0.0} b:cmake/3.6.3
 
 parmetis/4.0.3	stable		gcc/7.3.0 mpich/3.3  b:cmake/3.9.6
 
-parmetis/4.0.3	unstable	gcc/{7.5.0,8.4.0,9.3.0,10.1.0} openmpi/3.1.6 b:cmake/3.9.6
+parmetis/4.0.3	stable		gcc/{7.5.0,8.4.0,9.3.0,10.1.0} openmpi/3.1.6 b:cmake/3.9.6
