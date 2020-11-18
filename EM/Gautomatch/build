@@ -17,6 +17,6 @@ pbuild::compile() {
 }
 
 pbuild::install() {
-    cp $BUILDBLOCK_DIR/files/LICENSE $PREFIX/
+    :
 }
 

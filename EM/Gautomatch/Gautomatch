@@ -1,0 +1,6 @@
+#!/bin/sh
+# Wrapper for Gautomatch on merlin
+module purge
+module use EM
+module load cuda/8.0.44 Gautomatch/0.56
+exec Gautomatch_v0.56_sm61_cu8.0 "$@"

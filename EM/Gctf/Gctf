@@ -1,0 +1,6 @@
+#!/bin/sh
+# Wrapper for Gctf on merlin
+module purge
+module use EM
+module load cuda/8.0.44 Gctf/1.06
+exec Gctf-v1.06_sm_30_cu8.0_x86_64 "$@"

@@ -1,0 +1,10 @@
+# GCTF
+
+## Installation
+
+1. Download binaries from https://www2.mrc-lmb.cam.ac.uk/research/locally-developed-software/zhang-software/
+2. Update files/variants
+3. Run `./build <version>` to create directories
+4. Move all executables to /opt/psi/EM/Gctf/$VERSION/bin
+5. Create wrapper script at /opt/psi/EM/Gctf/$VERSION/bin/Gctf based on ./Gctf
+6. Fix permissions: chmod 755 /opt/psi/EM/Gctf/$VERSION/bin/*

@@ -1,0 +1,14 @@
+#%Module1.0
+
+module-whatis           "Fully automatic accurate, convenient and extremely fast particle picking for EM"
+module-url              "https://www2.mrc-lmb.cam.ac.uk/research/locally-developed-software/zhang-software/"
+module-license          "free"
+module-maintainer       "Spencer Bliven <spencer.bliven@psi.ch>"
+
+module-help     "
+Citation: Kai Zhang. Unpublished
+
+The `Gautomatch` script in this module includes the correct CUDA dependency. Other
+executables need CUDA loaded separately.
+"
+
