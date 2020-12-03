@@ -58,4 +58,9 @@ pbuild::post_install() {
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/librdmacm.so'
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libpmi.so'
 	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libpmi2.so'
+	pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libpmi2.so'
+
+		if [[ -n "${CUDA_VERSION}" ]]; then
+		echo "opal_warn_on_missing_libcuda = 0" >> ${PREFIX}/etc/openmpi-mca-params.conf
+	fi
 }
