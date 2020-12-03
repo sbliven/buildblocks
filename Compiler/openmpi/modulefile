@@ -31,9 +31,16 @@ set librdmacm   [glob -nocomplain /usr/lib{64,}/librdmacm.so.1*]
 set libucx      [glob -nocomplain /usr/lib{64,}/libuc\[mpst\].so.0*]
 set libpmi      [glob -nocomplain /usr/lib{64,}/libpmi.so.0*]
 set libpmi2     [glob -nocomplain /usr/lib{64,}/libpmi2.so.0*]
+set libcuda     [glob -nocomplain /usr/lib{64,}/libcuda.so.1*]
 
 if { $libibverbs eq "" || $libnuma eq "" || $librdmacm eq "" || $libucx eq "" || $libpmi eq "" || $libpmi2 eq "" } {
     if { [file isdirectory $PREFIX/lib/fallback] } {
         prepend-path LD_LIBRARY_PATH      $PREFIX/lib/fallback
+    }
+}
+
+if { $libcuda eq "" } {
+    if { [file isdirectory $PREFIX/lib/fallback/cuda] } {
+        prepend-path LD_LIBRARY_PATH      $PREFIX/lib/fallback/cuda
     }
 }
