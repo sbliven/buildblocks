@@ -59,5 +59,3 @@ pbuild::install() {
 
 pbuild::add_to_group 'HDF5'
 pbuild::install_docfiles 'COPYRIGHT' 'README.md' 'RELEASE_NOTES.md'
-pbuild::make_all
-
