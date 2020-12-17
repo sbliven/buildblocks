@@ -1,0 +1,22 @@
+#!/usr/bin/env modbuild
+
+# Binary distribution with manual installation. See README.md
+
+pbuild::add_to_group 'EM'
+
+pbuild::prep() {
+    :
+}
+
+pbuild::configure() {
+    :
+}
+
+pbuild::compile() {
+    :
+}
+
+pbuild::install() {
+    :
+}
+

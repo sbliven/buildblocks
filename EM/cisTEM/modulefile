@@ -1,0 +1,12 @@
+#%Module1.0
+
+module-whatis           "cisTEM is user-friendly software to process cryo-EM images of macromolecular complexes and obtain high-resolution 3D reconstructions from them."
+module-url              "https://cistem.org"
+module-license          "3-clause BSD <http://license.janelia.org/license/janelia_license_1_2.html>"
+module-maintainer       "Spencer Bliven <spencer.bliven@psi.ch>"
+
+module-help     "
+cisTEM is user-friendly software to process cryo-EM images of macromolecular complexes and obtain high-resolution 3D reconstructions from them. It was developed by Tim Grant, Alexis Rohou and Nikolaus Grigorieff and comprises a number of tools to process image data including movies, micrographs and stacks of single-particle images, implementing a complete “pipeline” of processing steps to obtain high-resolution single-particle reconstructions. 
+"
+
+prepend-path    PATH            $PREFIX/cistem-1.0.0-beta

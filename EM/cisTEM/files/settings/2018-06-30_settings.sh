@@ -1,0 +1,17 @@
+number_of_profiles=2
+profile_0_name="slurm_128"
+profile_0_manager_command="nohup /afs/psi.ch/sys/psi.merlin/EM/cisTEM/1.0.0/cistem-1.0.0-beta/$command"
+profile_0_gui_address=""
+profile_0_controller_address=""
+profile_0_number_of_run_commands=1
+profile_0_command_0_command_to_run="sbatch /afs/psi.ch/sys/psi.merlin/EM/cisTEM/1.0.0/cistem-1.0.0-beta/slurm.sh $command"
+profile_0_command_0_number_of_copies=128
+profile_0_command_0_delay_time_in_ms=10
+profile_1_name="slurm_32"
+profile_1_manager_command="nohup /afs/psi.ch/sys/psi.merlin/EM/cisTEM/1.0.0/cistem-1.0.0-beta/$command"
+profile_1_gui_address=""
+profile_1_controller_address=""
+profile_1_number_of_run_commands=1
+profile_1_command_0_command_to_run="sbatch /afs/psi.ch/sys/psi.merlin/EM/cisTEM/1.0.0/cistem-1.0.0-beta/slurm.sh $command"
+profile_1_command_0_number_of_copies=32
+profile_1_command_0_delay_time_in_ms=10

@@ -1,0 +1,33 @@
+number_of_profiles=4
+profile_0_name="preallocated 44cpu"
+profile_0_manager_command="/opt/psi/EM/cisTEM/1.0.0/cistem-1.0.0-beta/preallocated.sh $command"
+profile_0_gui_address=""
+profile_0_controller_address=""
+profile_0_number_of_run_commands=1
+profile_0_command_0_command_to_run="/opt/psi/EM/cisTEM/1.0.0/cistem-1.0.0-beta/preallocated.sh $command"
+profile_0_command_0_number_of_copies=43
+profile_0_command_0_delay_time_in_ms=10
+profile_1_name="preallocated 132cpu"
+profile_1_manager_command="/opt/psi/EM/cisTEM/1.0.0/cistem-1.0.0-beta/preallocated.sh $command"
+profile_1_gui_address=""
+profile_1_controller_address=""
+profile_1_number_of_run_commands=1
+profile_1_command_0_command_to_run="/opt/psi/EM/cisTEM/1.0.0/cistem-1.0.0-beta/preallocated.sh $command"
+profile_1_command_0_number_of_copies=131
+profile_1_command_0_delay_time_in_ms=10
+profile_2_name="allocate 44cpu"
+profile_2_manager_command="sbatch --ntasks=44 --job-name=cisTEM --partition=daily --cpus-per-task=2 /opt/psi/EM/cisTEM/1.0.0/cistem-1.0.0-beta/slurm.sh $command"
+profile_2_gui_address=""
+profile_2_controller_address=""
+profile_2_number_of_run_commands=1
+profile_2_command_0_command_to_run="srun -n 1 -c 2 $command"
+profile_2_command_0_number_of_copies=43
+profile_2_command_0_delay_time_in_ms=10
+profile_3_name="allocate 132cpu"
+profile_3_manager_command="sbatch --ntasks=132 --job-name=cisTEM --partition=daily --cpus-per-task=2 /opt/psi/EM/cisTEM/1.0.0/cistem-1.0.0-beta/slurm.sh $command"
+profile_3_gui_address=""
+profile_3_controller_address=""
+profile_3_number_of_run_commands=1
+profile_3_command_0_command_to_run="srun -n 1 -c 2 $command"
+profile_3_command_0_number_of_copies=131
+profile_3_command_0_delay_time_in_ms=10

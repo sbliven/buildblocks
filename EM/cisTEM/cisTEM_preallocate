@@ -1,0 +1,22 @@
+#!/bin/bash
+# Launch script for running cisTEM with the 'preallocated_44cpu' profile
+
+# Default arguments
+args=()
+if [[ ! "${@}" =~ -t|--time ]]; then
+    args+=(--time=08:00:00)
+fi
+if [[ ! "${@}" =~ -p|--partition ]]; then
+    args+=(--partition=daily)
+fi
+if [[ ! "${@}" =~ -n|--ntasks ]]; then
+    # Take number of tasks from the script name
+    DEFAULT_TASKS="$(echo "$0"|sed -rn 's/.*[^0-9]([0-9]+$)/\1/p')"
+    args+=(--ntasks="${DEFAULT_TASKS:-44}")
+fi
+if [[ ! "${@}" =~ -c|--cpus-per-task ]]; then
+    args+=(--cpus-per-task=2)
+fi
+
+exec interactive "${args[@]}" "$@"
+

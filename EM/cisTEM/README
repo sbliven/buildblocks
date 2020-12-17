@@ -1,0 +1,16 @@
+# CisTEM
+
+## Installation
+
+1. Download binaries from https://cistem.org/
+2. Update files/variants
+3. Run `./build <version>` to create directories
+4. Move all executables to /opt/psi/EM/cisTEM/$VERSION/bin
+5. Copy/link files:
+
+    cisTEM_preallocate
+    cisTEM_preallocate132 -> cisTEM_preallocate
+    cisTEM_preallocate44 -> cisTEM_preallocate
+    default_run_profiles.txt -> ../settings/settings.txt
+
+6. Fix permissions: chmod 755 /opt/psi/EM/cisTEM/$VERSION/bin/*
