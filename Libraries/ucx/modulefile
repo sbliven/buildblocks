@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"Unified Communication X"
+module-url		"http://www.openucx.org"
+module-license		"$PREFIX/share/doc/ucx/LICENSE"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+Unified Communication X (ucx) is an open-source production grade communication
+framework for data centric and high-performance application.
+"

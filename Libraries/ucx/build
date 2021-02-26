@@ -1,0 +1,12 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "https://github.com/openucx/ucx/releases/download/v${V_PKG}/$P-$V.tar.gz"
+pbuild::add_to_group 'Libraries'
+
+# use system gcc to compile
+declare -rx CC=gcc
+declare -rx CPP=/usr/bin/cpp
+
+#pbuild::add_configure_args "--disable-shared"
+pbuild::add_configure_args "--with-pic"
+
