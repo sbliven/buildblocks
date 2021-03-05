@@ -9,3 +9,5 @@ admin account.
 Currently only gcc/7.4.0 is used. Better performance is reported with intel icc
 and MKL, but this would require additional openmpi variants.
 
+After running ./build, install relion scripts from the repository at
+https://git.psi.ch/lsm-hpce/relion-scripts
