@@ -1,0 +1,13 @@
+#%Module1.0
+
+module-whatis		"High-Performance Intra-Node MPI Communication"
+module-url		"https://knem.gitlabpages.inria.fr/"
+module-license		"$PREFIX/COPYING"
+module-maintainer	"Marc Caubet <marc.caubet@psi.ch>"
+
+module-help		"
+KNEM is a Linux kernel module enabling high-performance intra-node MPI 
+communication for large messages. KNEM works on all Linux kernel since 
+2.6.15 and offers support for asynchronous and vectorial data transfers
+as well as offloading memory copies on to Intel I/OAT hardware. 
+"

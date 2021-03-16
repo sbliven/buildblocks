@@ -1,0 +1,12 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "https://gitlab.inria.fr/$P/$P/-/archive/$P-${V_PKG}/$P-$P-${V_PKG}.tar.gz"
+pbuild::add_to_group 'Libraries'
+
+pbuild::install_docfiles AUTHORS COPYING README
+
+pbuild::compile_in_sourcetree
+
+pbuild::post_prep() {
+  ./autogen.sh
+}
