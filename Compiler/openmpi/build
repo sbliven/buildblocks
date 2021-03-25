@@ -26,7 +26,7 @@ pbuild::pre_configure() {
 	pbuild::add_configure_args "--with-slurm=yes"
 	pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
 
-        if pbuild::use_flag slurm ; then
+        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
 		pbuild::add_configure_args "--with-pmi"
 		pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/"
 
