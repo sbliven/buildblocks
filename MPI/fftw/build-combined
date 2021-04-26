@@ -1,0 +1,6 @@
+#!/bin/bash
+
+declare mydir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd )
+
+./build --use-flags=sp "$@"
+./build --use-flags=dp -f "$@"
