@@ -1,9 +1,7 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "ftp://ftp.gnu.org/gnu/${P}/${P}-${V_PKG}.tar.gz"
+pbuild::set_download_url "http://ftp.gnu.org/gnu/${P}/${P}-${V_PKG}.tar.gz"
 pbuild::add_to_group 'Libraries'
-
-module use 'Libraries'
 
 pbuild::pre_configure() {
 	pbuild::add_configure_args "--with-gmp=${GMP_PREFIX}"
