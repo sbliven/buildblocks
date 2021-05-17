@@ -1,0 +1,21 @@
+name: ray_py38.yml
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pandas
+  - xlrd
+  - numpy
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - tensorflow=2.4.1
+  - pytables
+  - ipython
+  - dask
+  - deap
+  - nb_conda_kernels
+  - ipywidgets
+  - chaospy
+  - pip
