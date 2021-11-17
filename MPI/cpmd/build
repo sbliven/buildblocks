@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-# :FIXME: download url must be added and script must be reviewed!
+# :FIXME: this build-script is incomplete!!!
 
 #pbuild::supported_os 'Linux'
 
@@ -28,8 +28,5 @@ pbuild::install() {
 }
 
 pbuild::add_to_group 'MPI'
-pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
-pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
 pbuild::compile_in_sourcetree
-pbuild::make_all
 
