@@ -1,1 +1,2 @@
-doxygen/1.8.14	unstable	b:cmake/3.9.6
+doxygen/1.8.14	stable	b:cmake/3.9.6
+doxygen/1.9.2	stable	b:cmake/3.15.5 b:bison/3.8.2 b:gcc/8.4.0
