@@ -1,1 +1,2 @@
 tmux/2.8	stable	b:libevent/2.1.8
+tmux/3.2	stable	b:libevent/2.1.12
