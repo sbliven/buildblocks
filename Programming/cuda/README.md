@@ -2,6 +2,8 @@
 
 ## Download the proper Cuda version
 
+Different Cuda versions can be downloaded from this link (which also should include latest): https://developer.nvidia.com/cuda-toolkit-archive
+
 ```bash
 wget https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run
 ```
