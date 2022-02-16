@@ -1,0 +1,19 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'MX'
+pbuild::prep() {
+    :
+}
+
+pbuild::configure() {
+    :
+}
+
+pbuild::compile() {
+    :
+}
+
+pbuild::install() {
+    :
+}
+

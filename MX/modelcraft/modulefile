@@ -1,0 +1,17 @@
+#%Module
+
+module-whatis	        "An automated model building pipeline for X-ray crystallography and cryo-EM"
+module-url		"https://paulsbond.co.uk/modelcraft/"
+module-license	        "LGPL 2.1"
+module-maintainer	"Spencer Bliven <spencer.bliven@psi.ch>"
+
+module-help	"
+ModelCraft is an automated model building pipeline for X-ray crystallography
+and cryo-EM.
+
+It contains the commands `modelcraft`, `modelcraft-contents` and
+`modelcraft-copies`.
+"
+
+prepend-path PATH $::env(ANACONDA_DIR)/conda/envs/modelcraft-${V_PKG}/bin
+
