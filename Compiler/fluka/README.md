@@ -14,6 +14,7 @@ FLAIR_VERSION=3.1-15.1
 
 GCC_VERSION=9.3.0
 PYTHON_VERSION=3.8.8
+TCLTK_VERSION=8.6.9
 
 PREFIX="${PMODULES_ROOT}/Compiler/fluka4/${FLUKA4_VERSION}/gcc/${GCC_VERSION}"
 DISTFILES_DIR='/afs/psi.ch/software/Pmodules/distfiles'
@@ -21,7 +22,7 @@ FLUKA_TAR="${DISTFILES_DIR}/fluka-4-${FLUKA4_VERSION}.x86-Linux-gfor${GCC_VERSIO
 FLAIR_TAR="${DISTFILES_DIR}/flair-${FLAIR_VERSION}.tar.bz2"
 GEOVIEWER_TAR="${DISTFILES_DIR}/flair-geoviewer-${FLAIR_VERSION}.tar.bz2"
 
-module load gcc/${GCC_VERSION} Python/${PYTHON_VERSION}
+module load gcc/${GCC_VERSION} Python/${PYTHON_VERSION} TclTk/${TCLTK_VERSION}
 
 mkdir -p "${PREFIX}" && cd "$_"
 
@@ -31,7 +32,12 @@ make
 
 mkdir -p "${PREFIX}/flair" && cd "$_"
 make
-```
 
-## Install FLUKA
+cd "${PREFIX}"
+ln -s lib lib64
+cp -av "${TCLTK_DIR}/lib/libtcl8.6.so" lib
+cp -av "${TCLTK_DIR}/lib/libtk8.6.so"  lib64
+
+echo "gcc/${GCC_VERSION}"       > .dependencies
+echo "Python/${PYTHON_VERSION}" >> .dependencies
 ```
