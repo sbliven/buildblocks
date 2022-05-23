@@ -11,6 +11,12 @@ by NVIDIA. It enables dramatic increases in computing performance by
 harnessing the power of the graphics processing unit (GPU).
 "
 
-prepend-path	LIBRARY_PATH	"$PREFIX/lib/stubs"
-prepend-path	LD_LIBRARY_PATH	"$PREFIX/lib/stubs"
 prepend-path    CUDA_PATH       "$PREFIX"
+
+# libnvidia-ml.so in GDK package is a stub library that is attached only for build purposes
+prepend-path	LIBRARY_PATH	"$PREFIX/lib64/stubs"
+
+# We should always run with libnvidia-ml.so that is installed with your NVIDIA Display Driver. 
+# By default it's installed in /usr/lib and /usr/lib64.
+# Therefore, LD_LIBRARY_PATH must not contain it
+#   prepend-path    LD_LIBRARY_PATH    "$PREFIX/lib/stubs" 

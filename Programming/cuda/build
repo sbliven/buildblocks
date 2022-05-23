@@ -18,3 +18,12 @@ pbuild::install() {
 	:
 }
 
+pbuild::post_install() {
+  if [ -f "/opt/psi/Programming/cuda/${V_PKG}/lib64/stubs/libnvidia-ml.so" ]
+  then
+    if [ ! -f "/opt/psi/Programming/cuda/${V_PKG}/lib64/stubs/libnvidia-ml.so.1" ]
+    then
+      ln -s /opt/psi/Programming/cuda/$V/lib64/stubs/libnvidia-ml.so /opt/psi/Programming/cuda/${V_PKG}/lib64/stubs/libnvidia-ml.so.1
+    fi
+  fi
+}
