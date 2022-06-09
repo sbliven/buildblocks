@@ -52,4 +52,28 @@ For the installation, we will choose the second option: **Static serial & parall
    /opt/psi/MPI/orca/5.0.3/openmpi/4.1.3_slurm/gcc/11.2.0/bin/EULA_ORCA_2021.pdf
    ```
 3. Commit + push:
+   ```bash
+   (base) [caubet_m-adm@merlin-l-001 orca]# git add build modulefile variants/variants.merlin6 README.md
+   (base) [caubet_m-adm@merlin-l-001 orca]# git commit -m "Add ORCA 5.0.3"
+   [orca d4fddd3] Add ORCA 5.0.3
+    4 files changed, 100 insertions(+)
+    create mode 100644 MPI/orca/README.md
+    create mode 100755 MPI/orca/build
+    create mode 100644 MPI/orca/modulefile
+    create mode 100644 MPI/orca/variants/variants.merlin6
+   
+   (base) [caubet_m-adm@merlin-l-001 orca]# git push --set-upstream origin orca
+   Counting objects: 11, done.
+   Delta compression using up to 88 threads.
+   Compressing objects: 100% (8/8), done.
+   Writing objects: 100% (9/9), 2.31 KiB | 0 bytes/s, done.
+   Total 9 (delta 2), reused 0 (delta 0)
+   remote: 
+   remote: To create a merge request for orca, visit:
+   remote:   https://gitlab.psi.ch/Pmodules/buildblocks/-/merge_requests/new?merge_request%5Bsource_branch%5D=orca
+   remote: 
+   To https://gitlab.psi.ch/Pmodules/buildblocks.git
+    * [new branch]      orca -> orca
+   Branch orca set up to track remote branch orca from origin.
+   ```
 4. Request merge request from the provided URL
