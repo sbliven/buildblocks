@@ -1,0 +1,18 @@
+#!/usr/bin/env modbuild
+#
+
+pbuild::add_to_group 'Compiler'
+pbuild::set_download_url "https://gitlab.com/libeigen/$P/-/archive/${V_PKG}/$P-${V_PKG}.tar.bz2"
+#pbuild::pre_configure() {
+#	export BOOST_ROOT="${BOOST_PREFIX}"
+#	pbuild::add_configure_args "-DUMFPACK_INCLUDES=${UMFPACK_INCLUDE_DIR}"
+#	pbuild::add_configure_args "-DUMFPACK_LIBRARIES=${UMFPACK_LIBRARY_DIR}"
+#	pbuild::add_configure_args "-DGMP_INCLUDES=${GMP_INCLUDE_DIR}"
+#	pbuild::add_configure_args "-DGMP_LIBRARIES=${GMP_LIBRARY_DIR}"
+#	pbuild::add_configure_args "-DMPFR_INCLUDES=${MPFR_INCLUDE_DIR}"
+#	pbuild::add_configure_args "-DMPFR_LIBRARIES=${MPFR_LIBRARY_DIR}"
+#	pbuild::add_configure_args "-DSUPERLU_INCLUDES=${SUPERLU_INCLUDE_DIR}"
+#	pbuild::add_configure_args "-DSUPERLU_LIBRARIES=${SUPERLU_LIBRARY_DIR}"
+#}
+
+
