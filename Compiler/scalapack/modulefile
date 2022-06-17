@@ -1,0 +1,20 @@
+#%Module1.0
+
+module-whatis		"ScaLAPACK — Scalable Linear Algebra PACKage"
+module-url		"http://www.netlib.org/scalapack/"
+module-license		"See $PREFIX/share/doc/openmpi/LICENSE"
+module-maintainer	"Marc Caubet Serrabou <marc.caubet@psi.ch>"
+module-help 		"
+ScaLAPACK, version 2.0, includes routines for the solution of dense,
+band, and tridiagonal linear systems of equations, condition estimation and
+iterative refinement, for LU and Cholesky factorization, matrix inversion,
+full-rank linear least squares problems, orthogonal and generalized orthogonal
+factorizations, orthogonal transformation routines, reductions to upper
+Hessenberg, bidiagonal and tridiagonal form, reduction of a symmetric-definite/
+Hermitian-definite generalized eigenproblem to standard form, the
+symmetric/Hermitian, divide-and-conquer symmetric/Hermitian, generalized
+symmetric/Hermitian and the nonsymmetric eigenproblem, and the singular value
+decomposition.  With the exception of the singular value decomposition,
+most routines are available in four types: single precision real, double
+precision real, single precision complex, and double precision complex.
+"

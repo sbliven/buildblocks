@@ -46,6 +46,7 @@ pbuild::pre_configure() {
 		pbuild::add_configure_args "--enable-mpi-fortran"
 		pbuild::add_configure_args "--without-verbs"
 	fi
+
 }
 
 pbuild::post_install() {
