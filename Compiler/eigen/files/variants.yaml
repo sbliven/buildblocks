@@ -1,17 +1,8 @@
 overlay: base
+relstage: stable
 eigen/3.3.9:
-- with: gcc/{7.5.0,8.4.0,9.3.0,10.3.0,11.2.0}
-  rel_stage: unstable
+- with: gcc/{7.5.0,8.4.0,8.5.0,9.3.0,9.5.0,10.3.0,11.2.0,11.3.0,12.1.0}
   dependencies: b:cmake/3.15.5
-- with: gcc/{8.5.0,9.5.0,11.3.0,12.1.0}
-  rel_stage: unstable
-  dependencies: b:cmake/3.15.5
-  overlay: devel
 eigen/3.4.0:
-- with: gcc/{7.5.0,8.4.0,9.3.0,10.3.0,11.2.0}
-  rel_stage: unstable
+- with: gcc/{7.5.0,8.4.0,8.5.0,9.3.0,9.5.0,10.3.0,11.2.0,11.3.0,12.1.0}
   dependencies: b:cmake/3.15.5
-- with: gcc/{8.5.0,9.5.0,11.3.0,12.1.0}
-  rel_stage: unstable
-  dependencies: b:cmake/3.15.5
-  overlay: devel
