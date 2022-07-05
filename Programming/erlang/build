@@ -1,0 +1,19 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'Programming'
+pbuild::compile_in_sourcetree
+
+pbuild::set_download_url \
+	"https://github.com/$P/otp/releases/download/OTP-${V_PKG}/otp_src_${V_PKG}.tar.gz"
+pbuild::set_sha256sum 'otp-24.2.1.tar.gz:380a77aef34ad449bf8370a380b7901364b9be23e3d25068fc5c43258bcbec11'
+#pbuild::install_docfiles 'Copyright' 'NEWS' 'README'
+
+pbuild::pre_configure() {
+	pbuild::add_configure_args "--with-ssl=${OPENSSL_DIR}"
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

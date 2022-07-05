@@ -1,0 +1,4 @@
+overlay: base
+relstage: stable
+erlang/24.2.1:
+  - dependencies: openssl/1.1.1m wxWidgets/3.0.5
