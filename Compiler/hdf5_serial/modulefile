@@ -16,3 +16,4 @@ managing, manipulating, viewing, and analyzing data in the HDF5 format.
 module-addgroup	HDF5_serial
 conflict	hdf5
 
+setenv HDF5_ROOT "$PREFIX"
