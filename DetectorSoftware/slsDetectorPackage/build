@@ -1,0 +1,12 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "https://github.com/slsdetectorgroup/$P/archive/refs/tags/${V_PKG}.tar.gz"
+
+pbuild::add_to_group 'DetectorSoftware'
+pbuild::add_patch 'files/fname-fix.patch'
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
