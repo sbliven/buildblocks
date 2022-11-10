@@ -6,6 +6,7 @@
 4. Move all executables to /opt/psi/EM/MotionCor2/$VERSION/bin
 5. Move user manual to /opt/psi/EM/MotionCor2/$VERSION/
 6. Fix permissions: chmod 755 /opt/psi/EM/MotionCor2/$VERSION/bin
+7. Create bin/MotionCor2 wrapper for each version
 
 
 ## Cuda versions
