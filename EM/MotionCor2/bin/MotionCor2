@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Script directory. Better than $MOTIONCOR2_HOME/bin since it can be called without loading modules.
+BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+if [ -z ${CUDA_VERSION} ]; then 
+    echo 'MotionCor2 requires the cuda module. Run `module load cuda/<version>`' >&2
+    exit 1
+fi
+
+CUDA=$(echo "${CUDA_VERSION}" | sed -r 's/([0-9]+)\.([0-9]+)(\..*)/\1\2/')
+
+EXE=$(echo "$BIN"/MotionCor2_*_Cuda${CUDA}*)
+#echo "Running $EXE"
+
+if [ ! -x "$EXE" ]; then
+    echo "MotionCor2/$MOTIONCOR2_VERSION is not compatible with cuda/$CUDA_VERSION" >&2
+    exit 1
+fi
+
+exec "$EXE" "$@"

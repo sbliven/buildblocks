@@ -18,5 +18,6 @@ pbuild::compile() {
 
 pbuild::install() {
     cp $BUILDBLOCK_DIR/files/LICENSE $PREFIX/
+    cp -r $BUILDBLOCK_DIR/bin $PREFIX/
 }
 
