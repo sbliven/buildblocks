@@ -1,0 +1,21 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "https://go.dev/dl/go${V_PKG}.src.tar.gz"
+
+pbuild::add_to_group 'Programming'
+pbuild::install_docfiles 'CONTRIBUTING.md' 'LICENSE' 'PATENTS' 'README.md'  'SECURITY.md' 'VERSION'
+
+pbuild::compile_in_sourcetree
+
+pbuild::compile() {
+  export GOROOT_FINAL=${PREFIX}
+  export GOMAXPROCS=8
+  cd src
+  ./all.bash
+  cd ..
+}
+
+pbuild::install() {
+  rsync -av --exclude "pkg/obj/*" . "${PREFIX}"
+}
+
