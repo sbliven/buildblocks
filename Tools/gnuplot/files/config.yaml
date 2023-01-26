@@ -1,19 +1,33 @@
 overlay: base 
 relstage: stable
+group: Tools
+shasums:
+  gnuplot/5.4.4: 372300b7867f5b3538b25fc5d0ac7734af6e3fe0d202b6db926e4369913f0902
+  gnuplot/5.4.3: 51f89bbab90f96d3543f95235368d188eb1e26eda296912256abcd3535bd4d84
+  gnuplot/5.4.2: e57c75e1318133951d32a83bcdc4aff17fed28722c4e71f2305cfc2ae1cae7ba
+  gnuplot/5.4.1: 6b690485567eaeb938c26936e5e0681cf70c856d273cc2c45fabf64d8bc6590e
+  gnuplot/5.4.0: eb4082f03a399fd1e9e2b380cf7a4f785e77023d8dcc7e17570c1b5570a49c47
+  gnuplot/5.2.8: 60a6764ccf404a1668c140f11cc1f699290ab70daa1151bb58fed6139a28ac37
+  gnuplot/5.2.7: 97fe503ff3b2e356fe2ae32203fc7fd2cf9cef1f46b60fe46dc501a228b9f4ed
+  gnuplot/5.2.6: 35dd8f013139e31b3028fac280ee12d4b1346d9bb5c501586d1b5a04ae7a94ee
+  gnuplot/5.2.4: 1515f000bd373aaa53b16183f274189d4f5e0ae47d22f434857933d16a4770cb
+  gnuplot/5.0.0: 417d4bc5bc914a60409bb75cf18dd14f48b07f53c6ad3c4a4d3cd9a8d7370faf
+  gnuplot/4.6.3: df5ffafa25fb32b3ecc0206a520f6bca8680e6dcc961efd30df34c0a1b7ea7f5
 
-gnuplot/4.6.3:
-gnuplot/5.0.0:        
-gnuplot/5.2.0:       
-gnuplot/5.2.4:       
-gnuplot/5.2.6:       
-gnuplot/5.2.7:       
-gnuplot/5.2.8:       
-gnuplot/5.4.0:       
-gnuplot/5.4.1:       
-gnuplot/5.4.2:       
+gnuplot/5.4.5:
+    systems: rhel7 rhel6
+gnuplot/5.4.4:
+    systems: rhel7 rhel6
 gnuplot/5.4.3:
-  - relstage: unstable
-    overlay: devel
-    systems: rhel7
-  - systems: rhel6
+gnuplot/5.4.2:       
+gnuplot/5.4.1:       
+gnuplot/5.4.0:       
+gnuplot/5.2.8:       
+gnuplot/5.2.7:       
+gnuplot/5.2.6:
+gnuplot/5.2.4:       
+gnuplot/5.2.0:       
+gnuplot/5.0.0:        
+gnuplot/4.6.3:
+
 
