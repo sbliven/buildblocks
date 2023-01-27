@@ -1,0 +1,52 @@
+overlay: base
+root/5.34.19:
+  - with: gcc/{4.7.4,4.8.3,4.8.4,4.9.2}
+    relstage: deprecated
+root/5.34.26:
+  - with: gcc/{4.7.4,4.8.3,4.8.4,4.9.2}
+    relstage: deprecated
+root/5.34.34:
+  - with: gcc/4.8.3
+    relstage: deprecated
+root/5.34.36:
+  - with: gcc/{4.8.5,4.9.4}
+    relstage: deprecated
+
+root/6.04.10:
+  - with: gcc/{4.9.2,5.2.0}
+    dependencies: b:psi-python27/2.3.0 
+    relstage: deprecated
+
+root/6.08.00:
+  - with: gcc/{4.8.5,4.9.4,5.4.0,6.2.0}
+    dependencies: b:Python/2.7.12 b:gsl/1.16 b:cmake/3.6.3
+    relstage: deprecated
+
+root/6.08.02:
+  - with: gcc/{4.8.5,4.9.4,5.4.0,6.2.0}
+    dependencies: b:Python/2.7.12 b:gsl/2.2.1 b:cmake/3.6.3
+    relstage: deprecated
+
+root/6.12.06:
+  - with: gcc/7.3.0
+    dependencies: b:Python/2.7.12 b:gsl/2.4 b:cmake/3.6.3
+    relstage: deprecated
+
+root/6.24.06:
+  - with: gcc/10.3.0
+    dependencies: b:Python/3.8.12 b:gsl/2.7 b:cmake/3.20.5 b:binutils/2.29
+    relstage: stable
+
+root/6.26.02:
+  - with: gcc/10.3.0
+    dependencies: b:Python/3.8.12 b:gsl/2.7 b:cmake/3.20.5 b:binutils/2.29 b:tiff/4.3.0
+    relstage: deprecated
+root/6.26.02-1:
+  - with: gcc/{8.5.0,9.5.0,10.3.0,11.3.0,12.1.0}
+    dependencies: b:Python/3.8.12 b:gsl/2.7 b:cmake/3.20.5 b:binutils/2.29 b:tiff/4.3.0
+    relstage: stable
+
+root/6.26.04:
+  - with: gcc/{8.5.0,9.5.0,10.3.0,11.3.0,12.1.0}
+    dependencies: b:Python/3.8.12 b:gsl/2.7 b:cmake/3.20.5 b:binutils/2.29 b:tiff/4.3.0
+    relstage: unstable
