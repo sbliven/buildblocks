@@ -1,0 +1,13 @@
+#%Module1.0
+
+module-whatis		"large file support for Git"
+module-url		"https://git-lfs.com"
+module-license		"MIT"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+Git Large File Storage (LFS) replaces large files such as audio samples,
+videos, datasets, and graphics with text pointers inside Git, while
+storing the file contents on a remote server like GitHub.com or GitHub
+Enterprise.
+"
