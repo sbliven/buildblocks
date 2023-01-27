@@ -10,7 +10,11 @@ pbuild::add_to_group 'Tools'
 unset -f pbuild::configure
 
 pbuild::install() {
-	install ./bin/git-lfs "${PREFIX}/bin"
+	install -m 0755 -d "${PREFIX}/bin"
+	install -m 0755 ./bin/git-lfs "${PREFIX}/bin"
+	install -m 0755 -d "${PREFIX}/.lib64"
+	install -m 0755 "${GCC_PREFIX}/lib64/libgo.so.21.0.0" "${PREFIX}/.lib64/libgo.so.21"
+	patchelf --force-rpath  --set-rpath '$ORIGIN/../.lib64' "${PREFIX}/bin/git-lfs"
 }
 
 # Local Variables:
