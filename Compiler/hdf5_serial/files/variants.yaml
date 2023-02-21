@@ -14,6 +14,8 @@ hdf5_serial/1.8.13:
 hdf5_serial/1.8.14:
   - with: gcc/{4.7.4,4.8.5,4.9.3}
     relstage: deprecated
+  - with: intel/15.2
+    relstage: deprecated
 
 hdf5_serial/1.8.15-patch1:
   - with: gcc/5.2.0
@@ -53,6 +55,8 @@ hdf5_serial/1.8.21:
 
 hdf5_serial/1.10.0:
   - with: gcc/6.1.0
+    relstage: deprecated
+  - with: intel/16.3
     relstage: deprecated
 
 hdf5_serial/1.10.1:
