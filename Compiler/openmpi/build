@@ -39,7 +39,10 @@ pbuild::pre_configure() {
                 pbuild::add_configure_args "CC=icc"
                 pbuild::add_configure_args "CXX=icpc"
                 pbuild::add_configure_args "FC=ifort"
+                pbuild::add_configure_args "F90=ifort"
+                pbuild::add_configure_args "F77=ifort"
                 pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel"
+                pbuild::add_configure_args "--without-ofi"
         fi
 
 	if [[ -n "${UCX_VERSION}" ]]; then
