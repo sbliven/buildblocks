@@ -1,6 +1,10 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "https://github.com/google/googletest/archive/release-1.8.1.tar.gz"
+if (( V_MAJOR == 1 )) && (( V_MINOR <= 12 )); then
+	pbuild::set_download_url "https://github.com/google/googletest/archive/refs/tags/release-${V_PKG}.tar.gz"
+else
+	pbuild::set_download_url "https://github.com/google/googletest/archive/refs/tags/v${V_PKG}.tar.gz"
+fi
 pbuild::add_to_group 'Compiler'
 
 if (( V_MAJOR == 1 )) && (( V_MINOR <= 7 )); then
