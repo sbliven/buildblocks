@@ -3,14 +3,10 @@
 module-whatis		"Julia"
 module-url		"https://julialang.org/"
 module-license		"https://github.com/JuliaLang/julia/blob/master/LICENSE.md"
-module-maintainer       "Marc Caubet <marc.caubet@psi.ch>"
+module-maintainer       "Marc Caubet Serrabou <marc.caubet@psi.ch>"
 module-help	"
 Julia is a high-level, high-performance dynamic language for technical
 computing. 
-
-Julia is an open source project with over 1,000 contributors. It is 
-made available under the MIT license. The source code is available on 
-GitHub.
 "
 
 module-addgroup	Programming
