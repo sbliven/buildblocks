@@ -8,6 +8,8 @@ dependencies:
   - nb_conda_kernels
   - jupyter_contrib_nbextensions
   - ipywidgets=7.6.3
+# needed for widgets!
+  - ipympl
   - pip
   - jupytext
   - python=3.11.6
