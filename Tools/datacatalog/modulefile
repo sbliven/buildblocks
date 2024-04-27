@@ -1,11 +1,16 @@
 #%Module1.0
 
 module-whatis		"SciCat datacatalog related tools"
-module-url		"https://melanie.gitpages.psi.ch/SciCatPages/"
-module-license		"GPL-V3"
-module-maintainer	"Stephan Egli <stephan.egli@psi.ch>"
+module-url		"https://scicatproject.github.io/documentation/Ingestor/ingestManual.html"
+module-license		"BSD 3"
+module-maintainer	"Spencer Bliven <scicat-help@lists.psi.ch>"
 
 module-help		"
 Data catalog ingest and retrieve tools.
-"
 
+Source code for the command line tools (datasetIngestor and datasetRetreiver)
+is available at https://github.com/paulscherrerinstitute/scicat-cli.  Source
+code for the SciCat GUI is available from PSI at
+https://git.psi.ch/MELANIE/rollout 
+
+"
