@@ -58,6 +58,13 @@ pbuild::pre_configure() {
                 pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
         fi
 
+        if [[ -v NVHPC_VERSION ]]; then
+                pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
+                pbuild::add_configure_args "CFLAGS=-fPIC -DPIC"
+				pbuild::add_configure_args "CXXFLAGS=-fPIC -DPIC"
+                pbuild::add_configure_args "FCFLAGS=-Mstandard -fPIC -DPIC"
+        fi
+
         if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
 		pbuild::add_configure_args "--with-gpfs=/usr/lpp/mmfs"
 		pbuild::add_configure_args "--with-pmi"

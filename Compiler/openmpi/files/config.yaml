@@ -9,7 +9,7 @@ openmpi:
     systems: [rhel7, rhel8, rhel9]
     docfiles: [AUTHORS, LICENSE, NEWS, README]
     urls:
-      - url: https://download.open-mpi.org/release/open-mpi/v${V_MAJOR}.${V_MINOR}/openmpi-${V_PKG}.tar.bz
+      - url: https://download.open-mpi.org/release/open-mpi/v${V_MAJOR}.${V_MINOR}/openmpi-${V_PKG}.tar.bz2
   shasums:
     openmpi-1.10.0.tar.bz2: 26b432ce8dcbad250a9787402f2c999ecb6c25695b00c9c6ee05a306c78b6490
     openmpi-1.10.4.tar.bz2: fb3c0c4c77896185013b6091b306d29ba592eb40d8395533da5c8bc300d922db
@@ -54,6 +54,14 @@ openmpi:
     openmpi-4.1.5.tar.bz2: a640986bc257389dd379886fdae6264c8cfa56bc98b71ce3ae3dfbd8ce61dbe3
 
   versions:
+    4.1.4:
+      variants:
+        - systems: [merlin-*, ra-*]
+          relstage: unstable
+          suffix: _slurm
+          group_deps:
+            compiler: {nvhpc: [24.3_cuda_12.3, 23.5_cuda_12.1]}
+          build_requires: [pmix/4.2.4, ucx/1.14.1_slurm, libfabric/1.18.0, hwloc/2.9.1, patchelf/0.14.5]
 
     4.1.5:
       variants:

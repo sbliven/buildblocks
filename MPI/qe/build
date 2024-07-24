@@ -1,23 +1,22 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "https://github.com/QEF/q-e/archive/$P-$V.tar.gz"
-
-pbuild::add_to_group 'MPI'
-
-pbuild::install_docfiles License README.md CONTRIBUTING.md
-
-pbuild::compile_in_sourcetree
-
 pbuild::pre_configure() {
-        pbuild::add_configure_args "-enable-openmp"
-}
+        pbuild::add_configure_args "-DQE_ENABLE_OPENMP=ON"
+        pbuild::add_configure_args "-DQE_ENABLE_MPI=ON"
+        # Recommended by the Quantum Espresso Developers
+        pbuild::add_configure_args "-DCMAKE_C_COMPILER=mpicc"
+        pbuild::add_configure_args "-DCMAKE_Fortran_COMPILER=mpif90"
+        pbuild::add_configure_args "-DCMAKE_SYSTEM_PROCESSOR=x86_64"
 
-pbuild::compile() {
-        make all
-        make install
-}
+        case "${COMPILER}" in
+                nvhpc )
+                        pbuild::add_configure_args "-DQE_ENABLE_CUDA=ON"
+                        pbuild::add_configure_args "-DQE_ENABLE_MPI_GPU_AWARE=ON"
+                        pbuild::add_configure_args "-DQE_ENABLE_OPENACC=ON"
+                        pbuild::add_configure_args "-DNVFORTRAN_CUDA_VERSION=12.1"
+                        pbuild::add_configure_args "-DNVFORTRAN_CUDA_CC=60"
+                        ;;
+        esac
 
-pbuild::install() {
-	:
 }
 
