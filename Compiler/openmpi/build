@@ -1,16 +1,6 @@
 #!/usr/bin/env modbuild
 
-# pbuild::set_download_url \
-    #	"http://www.open-mpi.org/software/ompi/v${V_MAJOR}.${V_MINOR}/downloads/openmpi-${V_PKG}.tar.bz2"
-
-pbuild::set_download_url \
-    "https://download.open-mpi.org/release/open-mpi/v${V_MAJOR}.${V_MINOR}/openmpi-${V_PKG}.tar.bz2"
-
-pbuild::set_sha256sum "openmpi-3.1.2.tar.bz2:c654ed847f34a278c52a15c98add40402b4a90f0c540779f1ae6c489af8a76c5"
-
-pbuild::add_to_group 'Compiler'
 pbuild::install_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
-
 
 pbuild::pre_configure() {
 	pbuild::add_configure_args "--prefix=${PREFIX}"
@@ -56,13 +46,6 @@ pbuild::pre_configure() {
                 pbuild::add_configure_args "F90=ifort"
                 pbuild::add_configure_args "F77=ifort"
                 pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
-        fi
-
-        if [[ -v NVHPC_VERSION ]]; then
-                pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
-                pbuild::add_configure_args "CFLAGS=-fPIC -DPIC"
-				pbuild::add_configure_args "CXXFLAGS=-fPIC -DPIC"
-                pbuild::add_configure_args "FCFLAGS=-Mstandard -fPIC -DPIC"
         fi
 
         if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
