@@ -1,14 +1,2 @@
 #!/usr/bin/env modbuild
 
-#pbuild::pre_prep() {
-#	if (( V_MAJOR == 10 && V_MINOR == 2 )); then
-#		pbuild::add_patch "files/gcc-10.2.0-cpp-__has_include.patch"
-#	fi
-#}
-
-
-#pbuild::pre_configure_Linux() {
-#	if (( V_MAJOR >= 8 )); then
-#		pbuild::add_configure_args "--enable-languages=c,c++,objc,obj-c++,lto,fortran,go"
-#	fi
-#}
