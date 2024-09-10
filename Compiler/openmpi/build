@@ -1,15 +1,25 @@
 #!/usr/bin/env modbuild
 
-pbuild::install_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
-
 pbuild::pre_configure() {
-	pbuild::add_configure_args "--prefix=${PREFIX}"
-	pbuild::add_configure_args "--enable-mpi-cxx"
-	pbuild::add_configure_args "--enable-mpi-cxx-seek"
-	pbuild::add_configure_args "--enable-orterun-prefix-by-default"
-	pbuild::add_configure_args "--enable-shared"
-	pbuild::add_configure_args "--enable-static"
-	pbuild::add_configure_args "--with-slurm=yes"
+        if (( V_MAJOR < 5 )); then
+		pbuild::add_configure_args "--enable-mpi-cxx"
+		pbuild::add_configure_args "--enable-mpi-cxx-seek"
+		pbuild::add_configure_args "--with-pmi=/usr"
+		pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/slurmpmi"
+		pbuild::add_configure_args "--enable-orterun-prefix-by-default"
+        fi
+        if (( V_MAJOR >= 5 )); then
+		pbuild::add_configure_args "--enable-prte-prefix-by-default"
+	fi
+        if (( V_MAJOR < 4 )); then
+		pbuild::add_configure_args "--enable-mpi-f90"
+		pbuild::add_configure_args "--enable-mpi-profile"
+		pbuild::add_configure_args "--enable-smp-locks"
+	fi
+        if (( V_MAJOR >= 4 )); then
+		pbuild::add_configure_args "--enable-mpi-fortran"
+		pbuild::add_configure_args "--without-verbs"
+	fi
 
 	if [[ -v CUDA_VERSION ]]; then	
 		pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
@@ -27,15 +37,27 @@ pbuild::pre_configure() {
         fi 
 
         if [[ -v PMIX_VERSION ]]; then
+		std::info "Enabling PMIX ${PMIX_VERSION}"
                 unset PMIX_VERSION
 		pbuild::add_configure_args "--with-pmix=${PMIX_PREFIX}"
         fi
 
+	if [[ ! -v LIBFABRIC_VERSION ]]; then
+	      if pkg-config --exists libfabric; then
+	      	     std::info "Get LIBFABRIC_VERSION via pkg-config"
+	      	     LIBFABRIC_PREFIX=$(pkg-config --variable=prefix libfabric)
+	             LIBFABRIC_VERSION="$(LIBFABRIC_PREFIX##*/)"
+	      fi
+	fi
+	std::info "LIBFABRIC_PREFIX: ${LIBFABRIC_PREFIX}"
+	std::info "LIBFABRIC_VERSION=: ${LIBFABRIC_VERSION}"
 	if [[ -v LIBFABRIC_VERSION ]]; then
+		std::info "Enabling libfabric ${LIBFABRIC_VERSION}"
                 pbuild::add_configure_args "--with-ofi=${LIBFABRIC_PREFIX}"
         fi 
 
 	if [[ -v UCX_VERSION ]]; then
+		std::info "Enabling UCX ${UCX_VERSION}"
 		pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
 	fi
 
@@ -48,31 +70,23 @@ pbuild::pre_configure() {
                 pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
         fi
 
-#        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
-#		pbuild::add_configure_args "--with-gpfs=/usr/lpp/mmfs"
-#		pbuild::add_configure_args "--with-pmi"
-#		# pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/"
-#
-#                if pbuild::use_flag "libpmix"; then
-#                  pbuild::add_configure_args "--enable-install-libpmix"
-#                fi
-#        fi
-
-	local version
-	(( version = (${V_MAJOR} * 100 + ${V_MINOR}) * 100 + V_PATCHLVL ))
-        if (( V_MAJOR < 4 )); then
-		pbuild::add_configure_args "--enable-mpi-f90"
-		pbuild::add_configure_args "--enable-mpi-profile"
-		pbuild::add_configure_args "--enable-smp-locks"
-	elif (( V_MAJOR >= 4 )); then
-		pbuild::add_configure_args "--enable-mpi-fortran"
-		pbuild::add_configure_args "--without-verbs"
+        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6 || pbuild::use_flag merlin7; then
+		std::info "Enabling SLURM."
+		pbuild::add_configure_args "--with-slurm=yes"
 	fi
+        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
+		std::info "Enabling GPFS."
+		pbuild::add_configure_args "--with-gpfs=/usr/lpp/mmfs"
+        fi
 
+        if pbuild::use_flag "libpmix"; then
+		std::info "Enabling install of libpmix."
+        	pbuild::add_configure_args "--enable-install-libpmix"
+        fi
 }
 
-pbuild::post_install() {
-        if ! pbuild::use_flag slurm && ! pbuild::use_flag dgx && ! pbuild::use_flag merlin6; then
+pbuild::post_install_no_slurm() {
+        if ! pbuild::use_flag slurm && ! pbuild::use_flag dgx && ! pbuild::use_flag merlin6 && ! pbuild::use_flag merlin7; then
 	  mkdir -p "${PREFIX}/lib/fallback"
 	  local -r binary=$(ls "${PREFIX}"/lib/libmpi.so.*.*.*)
 	  pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libuc[mpst].so'
@@ -84,17 +98,20 @@ pbuild::post_install() {
 	  pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libpmi2.so'
 	  pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libpmi2.so'
 	fi
+}
 
+pbuild::post_install() {
 	if [[ -v CUDA_VERSION ]]; then
-	  echo "opal_warn_on_missing_libcuda = 0" >> ${PREFIX}/etc/openmpi-mca-params.conf
+	   echo "opal_warn_on_missing_libcuda = 0" >> ${PREFIX}/etc/openmpi-mca-params.conf
 	fi
 
-        for FILE in $(find $PREFIX -type f \( ! -name "*.a" -and ! -name "*.mod" \) -exec grep -IL . "{}" \;)
-        do 
-          OLD_RPATH=$(objdump -a -x $FILE | grep RPATH | awk '{print $2}')
-          NEW_RPATH=$(echo $OLD_RPATH | sed 's/:\/usr\/lib64:/:/g')
-         if [[ "${OLD_RPATH}" != "${NEW_RPATH}" ]]; then
-           patchelf --force-rpath  --set-rpath "${NEW_RPATH}" "${FILE}"
-         fi
-        done
-}
+#        for FILE in $(find $PREFIX -type f \( ! -name "*.a" -and ! -name "*.mod" \) -exec grep -IL .
+"{}" \;)
+#        do 
+#          OLD_RPATH=$(objdump -a -x $FILE | grep RPATH | awk '{print $2}')
+#          NEW_RPATH=$(echo $OLD_RPATH | sed 's/:\/usr\/lib64:/:/g')
+#         if [[ "${OLD_RPATH}" != "${NEW_RPATH}" ]]; then
+#           patchelf --force-rpath  --set-rpath "${NEW_RPATH}" "${FILE}"
+#         fi
+#        done
+
