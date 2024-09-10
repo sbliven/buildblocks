@@ -1,7 +1,6 @@
 #!/usr/bin/env modbuild
 
 pbuild::pre_configure() {
-<<<<<<< HEAD
         if (( V_MAJOR < 5 )); then
 		pbuild::add_configure_args "--enable-mpi-cxx"
 		pbuild::add_configure_args "--enable-mpi-cxx-seek"
@@ -21,14 +20,6 @@ pbuild::pre_configure() {
 		pbuild::add_configure_args "--enable-mpi-fortran"
 		pbuild::add_configure_args "--without-verbs"
 	fi
-=======
-	pbuild::add_configure_args "--prefix=${PREFIX}"
-
-	pbuild::add_configure_args "--enable-shared"
-	pbuild::add_configure_args "--enable-static"
-	pbuild::add_configure_args "--enable-orterun-prefix-by-default"
-	pbuild::add_configure_args "--with-slurm=yes"
->>>>>>> a5c5629 (Update openmpi and libevent)
 
 	if [[ -v CUDA_VERSION ]]; then	
 		pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
