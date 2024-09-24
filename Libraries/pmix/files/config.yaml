@@ -87,11 +87,11 @@ pmix:
         - systems: [.*.merlin7.psi.ch]
           overlay: Alps
           use_overlays: [PSI]
-          # configure_args+:
-          #   - --with-cxi
-          #   - --with-lustre
-          #   - --with-slingshot
-          #   - --with-zlib
-          #   - --with-jansson
-          #   - --with-curl
+          configure_args+:
+            - --with-lustre
+          # - --with-cxi
+          # - --with-slingshot
+          # - --with-zlib
+          # - --with-jansson
+          # - --with-curl
         - systems: [rhel.*]

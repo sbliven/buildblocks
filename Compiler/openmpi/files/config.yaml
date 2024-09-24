@@ -67,7 +67,7 @@ openmpi:
           overlay: Alps
           use_overlays: [PSI]
           group_deps:
-            compiler: {gcc: [12.3.0]}
+            compiler: {gcc: [12.3.0], intelcc: [22.2]}
           build_requires: [pmix/5.0.3, hwloc/2.11.1, patchelf/0.14.5]
           runtime_deps: [cuda/12.2.0]
           configure_args+:
