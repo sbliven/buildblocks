@@ -13,6 +13,10 @@ pbuild::pre_configure() {
 		pbuild::add_configure_args "--with-pmi=/usr"
 		pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/slurmpmi"
 	fi
+	if (( V_MAJOR < 5 )) && pbuild::use_flag 'ra'; then
+		pbuild::add_configure_args "--with-pmi=/usr"
+		pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/slurm"
+	fi
 	if (( V_MAJOR >= 5 )); then
 		pbuild::add_configure_args "--enable-prte-prefix-by-default"
 	fi
