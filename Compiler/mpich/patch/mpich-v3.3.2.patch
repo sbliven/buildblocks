@@ -1,0 +1,13 @@
+diff --git a/src/pm/hydra/tools/bootstrap/external/slurm_query_node_list.c b/src/pm/hydra/tools/bootstrap/external/slurm_query_node_list.c
+index 9b35471f3..7b5dd782f 100644
+--- a/src/pm/hydra/tools/bootstrap/external/slurm_query_node_list.c
++++ b/src/pm/hydra/tools/bootstrap/external/slurm_query_node_list.c
+@@ -26,7 +26,7 @@ static struct HYD_node *global_node_list = NULL;
+ #if defined(HAVE_LIBSLURM)
+ static HYD_status list_to_nodes(char *str)
+ {
+-    hostlist_t hostlist;
++    hostlist_t *hostlist;
+     char *host;
+     int k = 0;
+     HYD_status status = HYD_SUCCESS;

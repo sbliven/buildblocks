@@ -1,0 +1,46 @@
+---
+# yamllint disable rule:line-length
+format: 1
+mpich:
+  defaults:
+    group: Compiler
+    overlay: base
+    relstage: stable
+    configure_args:
+      - --enable-cxx
+      - --enable-fortran
+    docfiles: [COPYRIGHT, README]
+    urls:
+      - url: http://www.mpich.org/static/downloads/$V/$P-${V_PKG}.tar.gz
+  shasums:
+    mpich-3.3.2.tar.gz: 4bfaf8837a54771d3e4922c84071ef80ffebddbb6971a006038d91ee7ef959b9
+    mpich-4.2.3.tar.gz: 7a019180c51d1738ad9c5d8d452314de65e828ee240bcb2d1f80de9a65be88a8
+
+  versions:
+    4.2.3:
+      variants:
+        - systems: [.*.merlin7.psi.ch]
+          relstage: unstable
+          overlay: Alps
+          use_overlays: [PSI]
+          use_flags: [merlin7, slurm]
+          group_deps:
+            compiler: {gcc: [12.3.0]}
+          build_requires: [hwloc/2.11.1, libfabric/1.15.2.0, patchelf/0.14.5]
+          runtime_deps: [cuda/12.2.0]
+          configure_args+:
+            - --with-pm=hydra,gforker
+    3.3.2:
+      variants:
+        - systems: [.*.merlin7.psi.ch]
+          relstage: unstable
+          overlay: Alps
+          use_overlays: [PSI]
+          use_flags: [merlin7, slurm]
+          group_deps:
+            compiler: {gcc: [8.4.0]}
+          build_requires: [libfabric/1.15.2.0, patchelf/0.14.5]
+          patch_files:
+            - patch/mpich-v3.3.2.patch
+          configure_args+:
+            - --with-device=ch3:nemesis:ofi

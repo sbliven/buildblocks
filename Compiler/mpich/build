@@ -1,28 +1,70 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "http://www.mpich.org/static/downloads/$V/$P-${V_PKG}.tar.gz"
-pbuild::add_to_group 'Compiler'
-pbuild::install_docfiles 'COPYRIGHT' 'README'
-
-module use System
-
 pbuild::pre_configure() {
-	unset F90
-	pbuild::add_configure_args "--enable-cxx"
-	pbuild::add_configure_args "--enable-fortran"
-	if pbuild::use_flag merlin; then
-		MXM_DIR='/opt/mellanox/mxm/'
-		pbuild::add_configure_args "--with-device=ch3:nemesis:mxm"
-		pbuild::add_configure_args "--with-mxm=${MXM_DIR}"
-		pbuild::add_configure_args "--without-x"
-		#pbuild::add_configure_args "--with-slurm-include=/usr/include/slurm"
-		#pbuild::add_configure_args "--with-slurm-lib=/usr/lib64"
-		#pbuild::add_configure_args "--with-pmi=slurm"
-		#pbuild::add_configure_args "--with-pm=no"
-		pbuild::add_configure_args "--enable-gl=no"
+        unset F90
+
+        pbuild::add_configure_args "--enable-shared"
+        pbuild::add_configure_args "--enable-static"
+
+        if [[ -v CUDA_VERSION ]]; then
+                std::info "Enabling CUDA ${CUDA_VERSION}."
+                pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
+        fi
+
+        if [[ -v HWLOC_VERSION ]]; then
+                unset HWLOC_VERSION
+		std::info "Enabling external hwloc ${HWLOC_PREFIX}."
+		pbuild::add_configure_args "--with-hwloc=${HWLOC_PREFIX}"
+        else
+       		pbuild::add_configure_args "--with-hwloc=embedded"
+        fi
+
+        if [[ -v PMIX_VERSION ]]; then
+		std::info "Enabling PMIX ${PMIX_VERSION}."
+                unset PMIX_VERSION
+		pbuild::add_configure_args "--with-pmix=${PMIX_PREFIX}"
+        	pbuild::add_configure_args "--with-pmi=pmix"
+        fi
+
+	if pbuild::use_flag merlin7 && [[ ! -v LIBFABRIC_VERSION ]]; then
+	      if pkg-config --exists libfabric; then
+	      	     std::info "Get LIBFABRIC_VERSION via pkg-config"
+	      	     LIBFABRIC_PREFIX=$(pkg-config --variable=prefix libfabric)
+	             LIBFABRIC_VERSION="$(LIBFABRIC_PREFIX##*/)"
+	      fi
 	fi
-	if [[ "${COMPILER}" == 'gcc' ]] && (( ${COMPILER_VERSION%.*.*} == 10 )); then
-		pbuild::add_configure_args "FFLAGS=-fallow-argument-mismatch"
+	if [[ -v LIBFABRIC_VERSION ]]; then
+		std::info "Enabling libfabric ${LIBFABRIC_VERSION}."
+                if (( V_MAJOR < 4 )); then
+                	pbuild::add_configure_args "--with-ofi=${LIBFABRIC_PREFIX}"
+                fi
+                pbuild::add_configure_args "--with-libfabric=${LIBFABRIC_PREFIX}"
+        fi 
+	
+	if [[ -v UCX_VERSION ]]; then
+		std::info "Enabling UCX ${UCX_VERSION}."
+		pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
+	fi
+
+        if [[ -v INTEL_VERSION ]]; then
+                pbuild::add_configure_args "CC=icc"
+                pbuild::add_configure_args "CXX=icpc"
+                pbuild::add_configure_args "FC=ifort"
+                pbuild::add_configure_args "F90=ifort"
+                pbuild::add_configure_args "F77=ifort"
+                pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
+        fi
+
+        if pbuild::use_flag slurm || \
+		pbuild::use_flag merlin6 || \
+		pbuild::use_flag merlin7; then
+		std::info "Enabling SLURM."
+		pbuild::add_configure_args "--with-slurm"
 	fi
 }
 
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
