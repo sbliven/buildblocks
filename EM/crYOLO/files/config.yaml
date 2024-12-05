@@ -1,0 +1,13 @@
+---
+format: 1
+crYOLO:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: unstable
+  versions:
+    1.9.9:
+      variants:
+        - overlay: Alps 
+          systems: [.*.merlin7.psi.ch]
+          relstage: unstable

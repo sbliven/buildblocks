@@ -3,7 +3,7 @@
 module-whatis	        "crYOLO is a fast and accurate particle picking procedure for electron microscopy"
 module-url		"http://sphire.mpg.de/wiki/doku.php?id=pipeline:window:cryolo"
 module-license	        "SPHIRE-crYOLO Complimentary Science Software License (http://sphire.mpg.de/wiki/doku.php?id=cryolo_license). Non-commercial academic and research purposes only"
-module-maintainer	"Spencer Bliven <spencer.bliven@psi.ch>"
+module-maintainer	"Greta Assmann  <greta.assmann@psi.ch>"
 
 module-help	"
 CrYOLO is a fast and accurate particle picking procedure. It's based on
@@ -26,28 +26,20 @@ convolutional neural networks and utilizes the popular You Only Look Once
 set shelltype [module-info shelltype]
 switch -- $shelltype {
     "sh" {
-        puts stdout "source \"\${ANACONDA_PREFIX}\"/admintools/conda_setup.sh;\n"
+        puts stdout "conda(){ :; };"
+        puts stdout "set +u"
+        puts stdout "source \"${PREFIX}\"/miniconda/etc/profile.d/conda.sh;\n"
     }
     default {
         puts stderr "Shells of type '$shelltype' are NOT supported!"
     }
 }
 
-# Determine useflags and construct conda env name
-set list [split $V "_"]
-set version  [lindex ${list} 0]
-set useflags [lrange ${list} 1 end]
-set flavour  [lindex $useflags 0]
-set env_to_activate [string tolower ${P}]-${version}-${flavour}
-
-#puts stderr "P/V: $P/$V"
-#puts stderr "USEFLAG: [lindex $useflags 0]"
-#puts stderr "$env_to_activate"
 
 switch [module-info mode] {
     "load" {
       # Relies on the anaconda module being loaded since we need to update the path
-      puts stdout "conda activate $env_to_activate;\n"
+      puts stdout "conda activate ${P}_${V};\n"
     }
     "unload" -
     "remove" {
