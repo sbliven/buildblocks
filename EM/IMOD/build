@@ -1,18 +1,16 @@
 #!/usr/bin/env modbuild
-set -e
 
-pbuild::add_to_group 'EM'
 
 
 pbuild::prep() {
     : ${CUDA_VERSION:?No CUDA_VERSION set}
+    #local cuda="${CUDA_VERSION%.*}"  IF the cua version matches the cuda version in the filename 
     local cuda="${CUDA_VERSION%.*}"
-    local filename="imod_${V_PKG}_RHEL7-64_CUDA${cuda}.sh"
-    if [[ $V_RELEASE == *beta* ]]; then
-        local url="https://bio3d.colorado.edu/ftp/latestIMOD/RHEL7-64_CUDA${cuda}/$filename"
-    else
-        local url="https://bio3d.colorado.edu/imod/AMD64-RHEL5/$filename"
-    fi
+    #otherwise: 
+    local cuda="12.0"
+    local filename="imod_${V_PKG}_RHEL8-64_CUDA${cuda}.sh"
+    # beta release link for Merlin7 ( RH8 for Opensuse)
+    local url="https://bio3d.colorado.edu/ftp/latestIMOD/RHEL8-64_CUDA${cuda}/$filename"
     local dst="$PMODULES_DISTFILESDIR/${filename}"
     if [ -f "$dst" ]; then
         echo "Found cached $dst" >&2
@@ -35,8 +33,11 @@ pbuild::compile() {
 
 pbuild::install() {
     : ${CUDA_VERSION:?No CUDA_VERSION set}
-    local cuda="${CUDA_VERSION%.*}"
-    local filename="imod_${V_PKG}_RHEL7-64_CUDA${cuda}.sh"
+    #local cuda="${CUDA_VERSION%.*}"
+    #(if cuda version matches the file name) if not:
+    local cuda="12.0"
+    
+    local filename="imod_${V_PKG}_RHEL8-64_CUDA${cuda}.sh"
     local dst="$PMODULES_DISTFILESDIR/${filename}"
 
     mkdir -p "$PREFIX/profile.d"
