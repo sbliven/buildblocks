@@ -1,0 +1,27 @@
+---
+format: 1
+VSCode:
+  defaults:
+    group: Tools
+    overlay: base
+    relstage: stable
+    systems: [.*]
+    build_functions:
+      configure: []
+      compile: []
+    urls:
+      - url: https://update.code.visualstudio.com/${V_PKG}/linux-x64/stable
+        name: VSCode-${V_PKG}.tar.gz
+        unpacker: none
+  shasums:
+    VSCode-1.100.2.tar.gz: 5c2cbbeaa08b92340dce899a78d66be8d92c09b4d75313bfdfc46fb3bddca5c0
+  versions:
+    1.100.2:
+      config:
+        relstage: unstable
+    1.87.0:
+      config:
+        relstage: stable
+    1.38.1_rhel7;1.73.1:
+      config:
+        relstage: deprecated

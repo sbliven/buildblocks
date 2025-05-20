@@ -1,0 +1,12 @@
+#!/usr/bin/env modbuild
+
+pbuild::install() {
+	:
+	cd "${PREFIX}"
+	tar --strip-components=1 -xvf "${PMODULES_DISTFILESDIR}/VSCode-${V_PKG}.tar.gz"
+}
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
