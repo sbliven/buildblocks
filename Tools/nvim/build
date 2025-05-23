@@ -1,0 +1,14 @@
+#!/usr/bin/env modbuild
+
+pbuild::install_linux_x86_64() {
+	cd "${PREFIX}"
+	tar --strip-components=1 -xvf "${PMODULES_DISTFILESDIR}/${P}-${V_PKG}-linux-x86_64.tar.gz"
+}
+
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
