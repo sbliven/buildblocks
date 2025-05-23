@@ -1,0 +1,16 @@
+#%Module1.0
+
+module-whatis		"C library to handle the Public Suffix List"
+module-url		"https://github.com/rockdaboot/libpsl"
+module-license		"See https://github.com/rockdaboot/libpsl/blob/master/LICENSE"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+A Public Suffix List is a collection of Top Level Domains (TLDs) suffixes.
+TLDs include Global Top Level Domains (gTLDs) like .com and .net; Country
+Top Level Domains (ccTLDs) like .de and .cn; and Brand Top Level Domains
+like .apple and .google. Brand TLDs allows users to register their own 
+top level domain that exist at the same level as ICANN's gTLDs. Brand TLDs
+are sometimes referred to as Vanity Domains.
+"
+
