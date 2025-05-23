@@ -1,5 +1,19 @@
 #!/usr/bin/env modbuild
 
+pbuild::set_download_url "https://www.python.org/ftp/python/${V_PKG}/$P-${V_PKG}.tgz"
+
+pbuild::set_sha256sum 'Python-3.7.3.tgz:d62e3015f2f89c970ac52343976b406694931742fbde2fed8d1ce8ebb4e1f8ff'
+pbuild::set_sha256sum 'Python-2.7.12.tgz:3cb522d17463dfa69a155ab18cffa399b358c966c0363d6c8b5b3bf1384da4b6'
+pbuild::set_sha256sum 'Python-2.7.14.tgz:304c9b202ea6fbd0a4a8e0ad3733715fbd4749f2204a9173a58ec53c32ea73e8'
+pbuild::set_sha256sum 'Python-2.7.16.tgz:01da813a3600876f03f46db11cc5c408175e99f03af2ba942ef324389a83bad5'
+pbuild::set_sha256sum 'Python-3.6.3.tgz:ab6193af1921b30f587b302fe385268510e80187ca83ca82d2bfe7ab544c6f91'
+pbuild::set_sha256sum 'Python-3.7.3.tgz:d62e3015f2f89c970ac52343976b406694931742fbde2fed8d1ce8ebb4e1f8ff'
+pbuild::set_sha256sum 'Python-3.7.4.tgz:d63e63e14e6d29e17490abbe6f7d17afb3db182dbd801229f14e55f4157c4ba3'
+
+pbuild::add_to_group 'Programming'
+
+pbuild::compile_in_sourcetree
+
 pbuild::pre_configure() {
 	local -a cflags=()
 	local -a ldflags=()
@@ -60,7 +74,7 @@ pbuild::post_install() {
 	std::info "Building scipy\n"
 	pip${V_MAJOR} install scipy
 
-	std::info "Building matplotlib\n"
+	std::info "Building matplotlub\n"
 	pip${V_MAJOR} install matplotlib
 
 	std::info "Building ipython\n"
@@ -78,11 +92,11 @@ pbuild::post_install() {
 	std::info "Building pandas\n"
 	pip${V_MAJOR} install pandas
 
-	#std::info "Building virtualenv\n"
-	#pip${V_MAJOR} install virtualenv
+	std::info "Building virtualenv\n"
+	pip${V_MAJOR} install virtualenv
 
-	#std::info "Building ansible\n"
-	#pip${V_MAJOR} install ansible ansible-core==2.15.4
+	std::info "Building virtualenv\n"
+	pip${V_MAJOR} install ansible ansible-core==2.15.4
 }
 
 
