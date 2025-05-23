@@ -1,0 +1,13 @@
+format: 1
+perl:
+  defaults:
+    group: Programming
+    overlay: base
+    relstage: stable
+    compile_in_sourcetree: true
+    urls:
+      - url: http://www.cpan.org/src/5.0/$P-$V.tar.gz
+
+  shasums:
+  versions:
+    5.30.0;5.40.0;5.40.1:

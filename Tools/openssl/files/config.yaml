@@ -1,0 +1,43 @@
+---
+format: 1
+openssl:
+  defaults:
+    group: Tools
+    overlay: base
+    relstage: stable
+    compile_in_sourcetree: true
+    urls:
+      - url: https://www.openssl.org/source/$P-$V.tar.gz
+  shasums:
+  versions:
+    3.4.1:
+      config:
+        docfiles:
+          - ACKNOWLEDGEMENTS.md
+          - AUTHORS.md
+          - CHANGES.md
+          - CODE-OF-CONDUCT.md
+          - CONTRIBUTING.md
+          - HACKING.md
+          - INSTALL.md
+          - LICENSE.txt
+          - NEWS.md
+          - NOTES-ANDROID.md
+          - NOTES-ANSI.md
+          - NOTES-DJGPP.md
+          - NOTES-NONSTOP.md
+          - NOTES-PERL.md
+          - NOTES-POSIX.md
+          - NOTES-UNIX.md
+          - NOTES-VALGRIND.md
+          - NOTES-VMS.md
+          - NOTES-WINDOWS.md
+          - README-ENGINES.md
+          - README-FIPS.md
+          - README-PROVIDERS.md
+          - README-QUIC.md
+          - README.md
+          - SUPPORT.md
+        build_requires:
+          - perl/5.40.1
+
