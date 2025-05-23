@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"Ruby installer"
+module-url		"https://github.com/postmodern/ruby-install"
+module-license		"MIT"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+Installs Ruby, JRuby, TruffleRuby (native / GraalVM), or mruby.
+"
+

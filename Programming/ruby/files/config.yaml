@@ -1,0 +1,16 @@
+---
+format: 1
+ruby:
+  defaults:
+    group: Programming
+    relstage: stable
+    docfiles:
+    configure_args:
+    build_functions:
+      prep: []
+      configure: []
+      compile: []
+  versions:
+    3.4.4:
+      config:
+        build_requires: [ruby-install/0.10.1]

@@ -1,0 +1,17 @@
+---
+format: 1
+ruby-install:
+  defaults:
+    group: System
+    overlay: base
+    relstage: stable
+    patch_files: []
+    compile_in_sourcetree: true
+    urls:
+      - url: https://github.com/postmodern/$P/releases/download/v${V_PKG}/$P-${V_PKG}.tar.gz 
+  shasums:
+    ruby-install-0.10.1.tar.gz: 7f563af2bae257c006a5dba0b1976e0885d3814332cc4391eeaa88d702753289
+  versions:
+    0.10.1:
+      config:
+        build_requires: []

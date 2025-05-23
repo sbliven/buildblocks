@@ -1,0 +1,5 @@
+#!/usr/bin/env modbuild
+
+pbuild::install(){
+	ruby-install --prefix "${PREFIX}" ruby "${V_PKG}"
+}

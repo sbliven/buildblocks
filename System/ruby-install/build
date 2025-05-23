@@ -1,0 +1,19 @@
+#!/usr/bin/env modbuild
+
+pbuild::configure() {
+	:
+}
+
+pbuild::compile() {
+	:
+}
+
+pbuild::install() {
+	make -e install
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
