@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"Ruby-based text processor for parsing AsciiDoc"
+module-url		"https://asciidoctor.org"
+module-license		"MIT"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+"
+
+prepend-path GEM_PATH	$PREFIX

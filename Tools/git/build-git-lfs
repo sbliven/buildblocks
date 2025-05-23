@@ -1,7 +1,5 @@
 #!/usr/bin/env modbuild
 
-unset -f pbuild::configure
-unset -f pbuild::compile
 pbuild::install(){
 	install -m 0755 git-lfs "${PREFIX}/bin"
 	install -m 0755 -d  "${PREFIX}/share/man/man{1,5,7}"

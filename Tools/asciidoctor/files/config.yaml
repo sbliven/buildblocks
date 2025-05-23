@@ -1,0 +1,16 @@
+---
+format: 1
+asciidoctor:
+  defaults:
+    group: Tools
+    relstage: stable
+    docfiles:
+    configure_args:
+    build_functions:
+      prep: []
+      configure: []
+      compile: []
+  versions:
+    2.0.23:
+      config:
+        build_requires: [ruby/3.4.4]
