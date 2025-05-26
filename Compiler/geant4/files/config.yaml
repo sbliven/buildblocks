@@ -5,24 +5,27 @@ geant4:
   defaults:
     group: Compiler
     overlay: base
-    systems: [rhel7, rhel8, rhel9]
     docfiles: [AUTHORS, LICENSE, NEWS, README]
     configure_with: cmake
     urls:
-      - url: https://gitlab.cern.ch/geant4/geant4/-/archive/v11.2.1/geant4-v11.2.1.tar.gz
+      - url: https://gitlab.cern.ch/${P}/${P}/-/archive/v${V_PKG}/${P}-v${V_PKG}.tar.gz
   shasums:
     geant4-v11.2.1.tar.gz: 76c9093b01128ee2b45a6f4020a1bcb64d2a8141386dea4674b5ae28bcd23293
 
   versions:
-    v11.2.1:
+    11.2.1:
       variants:
-        - systems: [merlin-*, ra-*]
+        - systems: [merlin-.*, ra-.*]
           group_deps:
             compiler: {gcc: [13.1.0]}
-          build_requires: ['clhep/2.4.7.1', 'libexpat/2.2.6','cmake/3.26.3']
-          configure_args: ['-DGEANT4_USE_SYSTEM_CLHEP=ON',
-            '-DPC_EXPAT_INCLUDE_DIRS=${LIBEXPAT_INCLUDE_DIR}',
-            '-DGEANT4_INSTALL_DATA=ON',
-            '-DGEANT4_BUILD_MULTITHREADED=ON']
-          relstage: unstable
+          build_requires:
+            - clhep/2.4.7.1
+            - libexpat/2.2.6
+            - cmake/3.26.3
+          configure_args: 
+            - -DGEANT4_USE_SYSTEM_CLHEP=ON
+            - -DPC_EXPAT_INCLUDE_DIRS=${LIBEXPAT_INCLUDE_DIR}
+            - -DGEANT4_INSTALL_DATA=ON
+            - -DGEANT4_BUILD_MULTITHREADED=ON
+          relstage: stable
 

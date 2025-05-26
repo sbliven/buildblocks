@@ -1,0 +1,26 @@
+format: 1
+libexpat:
+  defaults:
+    group: Libraries
+    overlay: base 
+    relstage: stable
+    configure_args: []
+    docfiles:
+      - AUTHOR'
+      - Changes
+      - COPYING
+      - README.md
+    urls:
+      - url: https://github.com/$P/$P/releases/download/R_${V_PKG//./_}/expat-${V_PKG}.tar.bz2
+    configure_args:
+      - --disable-shared
+      - --with-pic
+
+  shasums:
+    libexpat-2.2.6.tar.bz2: 0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5
+
+  versions:
+    2.2.6:
+      config:
+        relstage: stable
+

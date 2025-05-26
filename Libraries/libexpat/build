@@ -1,19 +1,2 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "https://github.com/$P/$P/releases/download/R_${V_PKG//./_}/expat-${V_PKG}.tar.bz2"
-pbuild::add_to_group 'Libraries'
-
-#pbuild::compile_in_sourcetree
-
-pbuild::install_docfiles 'AUTHORS'
-pbuild::install_docfiles 'Changes'
-pbuild::install_docfiles 'COPYING'
-pbuild::install_docfiles 'README.md'
-
-pbuild::pre_configure() {
-	pbuild::add_configure_args "--disable-shared"
-	pbuild::add_configure_args "--with-pic"
-}
-
-pbuild::make_all
-

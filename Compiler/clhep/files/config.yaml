@@ -9,6 +9,7 @@ clhep:
     docfiles: [AUTHORS, LICENSE, NEWS, README]
     configure_with: cmake
     build_requires: ['cmake/3.26.3']
+    relstage: stable
     urls:
       - url: https://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-2.4.7.1.tgz
   shasums:
@@ -20,4 +21,3 @@ clhep:
         - systems: [merlin-*, ra-*]
           group_deps:
             compiler: {gcc: [13.1.0]}
-          relstage: unstable
