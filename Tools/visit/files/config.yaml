@@ -20,5 +20,5 @@ visit:
           - url: https://github.com/visit-dav/visit/releases/download/v${V_PKG}/visit3_4_2.linux-x86_64-rocky8.tar.gz
             name: visit3_4_2.linux-x86_64.tar.gz
             unpacker: none
-        relstage: unstable
+        relstage: stable
 
