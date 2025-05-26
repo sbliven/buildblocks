@@ -1,32 +1,22 @@
 #!/usr/bin/env modbuild
 
 pbuild::add_to_group 'Tools'
-
-pbuild::prep() {
-    :
-}
+pbuild::set_download_url https://github.com/paulscherrerinstitute/scicat-cli/releases/download/v${V_PKG}/scicat-cli_v${V_PKG}_Linux_x86_64.tar.gz
 
 pbuild::configure() {
-    :
+  :
 }
 
 pbuild::compile() {
-    :
+  :
 }
 
 pbuild::install() {
-   mkdir -p "$PREFIX/bin"
+  mkdir -p "$PREFIX/bin"
 
-   /usr/bin/curl -o "$PREFIX/bin/datasetIngestor" https://intranet.psi.ch/pub/Daas/WebHome/datasetIngestor
-   chmod +x "$PREFIX/bin/datasetIngestor"
+  cp $SRC_DIR/dataset{Ingestor,Retriever,Archiver} "$PREFIX/bin"
 
-   /usr/bin/curl -o "$PREFIX/bin/datasetRetriever" https://intranet.psi.ch/pub/Daas/WebHome/datasetRetriever
-   chmod +x "$PREFIX/bin/datasetRetriever"
-
-   /usr/bin/curl -o "$PREFIX/bin/datasetArchiver" https://intranet.psi.ch/pub/Daas/WebHome/datasetArchiver
-   chmod +x "$PREFIX/bin/datasetArchiver"
-
-   # Hardcoded; could be made version-specific in the future if needed
-   ln -s "${PMODULES_ROOT}/Programming/anaconda/2019.07/conda/envs/scicat_client-0.1.0/bin/scicat_client" "$PREFIX/bin/scicat_client"
+  # Hardcoded; could be made version-specific in the future if needed
+  ln -s "${PMODULES_ROOT}/Programming/anaconda/2019.07/conda/envs/scicat_client-0.1.0/bin/scicat_client" "$PREFIX/bin/scicat_client"
 }
 

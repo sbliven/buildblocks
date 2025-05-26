@@ -1,0 +1,20 @@
+---
+format: 1
+nvim:
+  defaults:
+    group: Tools
+    relstage: stable
+  shasums:
+    nvim-0.11.1-linux-x86_64.tar.gz: 92ecb2dbdfbd0c6d79b522e07c879f7743c5d395d0a4f13b0d4f668f8565527a
+  versions:
+    0.11.1:
+      config:
+        target_cpus: [x86_64]
+        urls:
+          - url: https://github.com/neovim/neovim/releases/download/v${V_PKG}/${P}-linux-x86_64.tar.gz
+            name: ${P}-${V_PKG}-linux-x86_64.tar.gz
+            unpacker: none
+        build_functions:
+          configure: []
+          compile: []
+          install: [pbuild::install_linux_x86_64]

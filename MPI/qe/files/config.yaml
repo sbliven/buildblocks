@@ -1,0 +1,32 @@
+---
+# yamllint disable rule:line-length
+format: 1
+qe:
+  defaults:
+    group: MPI
+    overlay: base
+    relstage: stable
+    systems: [rhel7, rhel8, rhel9]
+    docfiles: [AUTHORS, LICENSE, NEWS, README]
+    configure_with: cmake
+    urls:
+      - url: https://gitlab.com/QEF/q-e/-/archive/qe-${V_PKG}/q-e-qe-${V_PKG}.tar.bz2
+  shasums:
+    qe-7.3.1.tar.bz2: 4955e4ca5e47a0faafefc72442155bef02ff94c8b796698ad81d4804a1cf6d88
+
+  versions:
+    7.3.1:
+      variants:
+        - systems: [merlin-*, ra-*]
+          group_deps:
+            compiler: {gcc: [13.1.0]}
+            mpi: {openmpi: [4.1.5_slurm]}
+          relstage: unstable
+          build_requires: [cmake/3.26.3, git/2.39.1, lapack/3.10.0, OpenBLAS/0.3.23, hdf5/1.13.1_slurm]
+        - systems: [merlin-*, ra-*]
+          group_deps:
+            compiler: {nvhpc: [23.5_cuda_12.1]}
+            mpi: {openmpi: [4.1.4_slurm]}
+          relstage: unstable
+          build_requires: [cmake/3.26.3, git/2.39.1]
+          runtime_deps: [libfabric/1.18.0]

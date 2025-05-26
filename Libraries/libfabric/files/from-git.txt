@@ -1,0 +1,2 @@
+1.22.0 https://github.com/thomasgillis/libfabric.git dev-cxi
+# 1.22.0 https://github.com/ofiwg/libfabric.git main cherry-pick:5793243aec20c4fee126aa3093ff07bb5889f154|https://github.com/raffenet/libfabric.git

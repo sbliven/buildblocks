@@ -1,0 +1,15 @@
+#%Pmodule
+
+module-whatis		"command line tool and library for transferring data with URLs"
+module-url		"https://curl.se"
+module-license		"See \$PREFIX/share/doc/curl/curl.txt"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+curl is used in command lines or scripts to transfer data. curl is also
+libcurl, used in cars, television sets, routers, printers, audio equipment,
+mobile phones, tablets, medical devices, settop boxes, computer games,
+media players and is the Internet transfer engine for countless software
+applications in over twenty billion installations.
+"
+

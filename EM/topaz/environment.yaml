@@ -1,0 +1,8 @@
+channels:
+  - tbepler
+  - pytorch
+dependencies:
+  - python=3.6
+  - cudatoolkit
+  - topaz 
+  - pytorch

@@ -1,0 +1,34 @@
+#!/usr/bin/env modbuild
+
+
+pbuild::configure() {
+    #MINICONDA INSTALL
+    mkdir -p  "$PREFIX/miniconda"
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O "$PREFIX/miniconda/miniconda.sh"
+    bash "$PREFIX/miniconda/miniconda.sh" -b -u -p "$PREFIX/miniconda/"
+
+ 
+    #CREATE ENV
+    "$PREFIX/miniconda/condabin/conda" env create --name "${P}_${V}" -f "$BUILDBLOCK_DIR/environment.yaml"
+        
+    
+    #activate env and download deep learning models 
+    mkdir -p "$PREFIX/deepmodels"
+    source "$PREFIX/miniconda/etc/profile.d/conda.sh" 
+    conda activate "${P}_${V}"
+    deepemhancer --download "$PREFIX/deepmodels"
+    conda deactivate
+} 
+
+#DO NOTHING
+pbuild::compile(){
+    :
+}
+
+pbuild::install(){
+    :
+}
+
+
+
+

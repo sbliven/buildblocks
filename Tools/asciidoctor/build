@@ -1,0 +1,6 @@
+#!/usr/bin/env modbuild
+
+pbuild::install(){
+	/usr/bin/which gem
+	"${RUBY_DIR}/bin/gem" install --install-dir="${PREFIX}" asciidoctor -v "${V_PKG}"
+}

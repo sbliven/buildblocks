@@ -1,0 +1,13 @@
+---
+format: 1
+napari:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: unstable
+  versions:
+    0.4.17:
+      variants:
+        - overlay: Alps 
+          systems: [.*.merlin7.psi.ch]
+          relstage: unstable

@@ -1,6 +1,6 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "ftp://ftp.vim.org/pub/vim/unix/$P-$V.tar.bz2"
+pbuild::set_download_url "http://ftp.vim.org/pub/vim/unix/$P-$V.tar.bz2"
 
 pbuild::add_to_group 'Tools'
 pbuild::compile_in_sourcetree

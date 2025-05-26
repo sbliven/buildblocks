@@ -1,0 +1,7 @@
+channels:
+  - rsanchez1369
+  - anaconda
+  - conda-forge
+dependencies:
+  - python=3.10
+  - deepEMhancer

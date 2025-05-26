@@ -1,24 +1,12 @@
 #!/usr/bin/env modbuild
 
-pbuild::add_to_group 'Tools'
-
-pbuild::set_download_url \
-        "https://sourceforge.net/projects/lzmautils/files/$P-${V_PKG}.tar.gz"
-
-pbuild::set_sha256sum 'xz-5.2.4.tar.gz:b512f3b726d3b37b6dc4c8570e137b9311e7552e8ccbab4d39d47ce5f4177145'
-pbuild::install_docfiles \
-	AUTHORS \
-	COPYING \
-	COPYING.GPLv2 \
-	COPYING.GPLv3 \
-	COPYING.LGPLv2.1 \
-	ChangeLog \
-	NEWS \
-	PACKAGERS \
-	README \
-	THANKS \
-	TODO
-
+pbuild::post_prep(){
+	# autogen.sh exits with an error if po4a
+	# is not installed. For now we ignore this.
+	# :FIXME:
+	# build a po4a module 
+	./autogen.sh || :
+}
 # Local Variables:
 # mode: sh
 # sh-basic-offset: 8

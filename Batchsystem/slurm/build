@@ -1,0 +1,9 @@
+#!/usr/bin/env modbuild
+
+pbuild::pre_configure() {
+	# pbuild::add_configure_args "--with-pmix=${PMIX_PREFIX}"
+	pbuild::add_configure_args "--with-nvml=${CUDA_PREFIX}"
+	pbuild::add_configure_args "--with-hwloc=${HWLOC_PREFIX}"
+	# pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
+	# pbuild::add_configure_args "--with-netloc=${HWLOC_PREFIX}"
+}

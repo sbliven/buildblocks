@@ -1,0 +1,16 @@
+format: 1
+libpsl:
+  defaults:
+    group: Libraries
+    overlay: base 
+    relstage: stable
+    docfiles: []
+    urls:
+      - url: https://github.com/rockdaboot/$P/releases/download/${V_PKG}/$P-${V_PKG}.tar.gz
+
+  shasums:
+
+  versions:
+    0.21.5:
+      config:
+

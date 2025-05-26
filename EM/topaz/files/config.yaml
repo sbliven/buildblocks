@@ -1,0 +1,13 @@
+---
+format: 1
+topaz:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: unstable
+  versions:
+    0.2.5:
+      variants:
+        - overlay: Alps 
+          systems: [.*.merlin7.psi.ch]
+          relstage: unstable

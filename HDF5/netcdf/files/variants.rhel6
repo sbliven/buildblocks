@@ -3,4 +3,4 @@ netcdf/4.3.2	deprecated	gcc/{4.7.4,4.8.3,4.8.4,4.9.2} openmpi/{1.6.5,1.8.2,1.8.4
 netcdf/4.3.3.1	deprecated	gcc/{4.7.4,4.8.3,4.8.4,4.9.2} openmpi/{1.6.5,1.8.2,1.8.4} hdf5/{1.8.12,1.8.14}
 
 netcdf/4.6.1	deprecated	gcc/7.3.0 openmpi/{1.10.7,3.0.1} hdf5/1.10.1 parallel-netcdf/1.9.0
-netcdf/4.6.1	stable		pgi/18.5  pgi-mpi/18.5   hdf5/1.10.1 parallel-netcdf/1.9.0
+netcdf/4.6.1	deprecated	pgi/18.5  pgi-mpi/18.5   hdf5/1.10.1 parallel-netcdf/1.9.0

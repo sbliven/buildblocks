@@ -1,0 +1,15 @@
+---
+format: 1
+IMOD:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: unstable
+  versions:
+    5.0.0:
+      variants:
+        - overlay: Alps 
+          systems: [.*.merlin7.psi.ch]
+          relstage: unstable
+          runtime_deps:
+            - cuda/12.2.0 

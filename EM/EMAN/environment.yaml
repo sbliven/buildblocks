@@ -1,0 +1,5 @@
+channels:
+  - cryoem
+  - conda-forge
+dependencies:
+  - eman-dev

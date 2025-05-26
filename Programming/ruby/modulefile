@@ -1,0 +1,13 @@
+#%Module1.0
+
+module-whatis		"Ruby, open source programming language"
+module-url		"https://www.ruby-lang.org/"
+module-license		"https://www.ruby-lang.org/en/about/license.txt"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+Ruby is a dynamic, open source programming language with a focus on
+simplicity and productivity. It has an elegant syntax that is natural
+to read and easy to write.
+"
+

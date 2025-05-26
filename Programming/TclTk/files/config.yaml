@@ -1,0 +1,32 @@
+format: 1
+TclTk:
+  defaults:
+    group: Programming
+    overlay: base
+    relstage: stable
+    urls:
+      - url: http://prdownloads.sourceforge.net/tcl/tcl${V_PKG}-src.tar.gz
+  shasums:
+  versions:
+    8.6.16:
+      config:
+        sub_packages:
+          - name: Tk
+            version: 8.6.16
+            build_args:
+    8.6.9:
+      config:
+        sub_packages:
+          - name: Tk
+            version: 8.6.9
+            build_args:
+
+Tk:
+  type: sub_package
+  defaults:
+    urls:
+      - url: http://prdownloads.sourceforge.net/tcl/tk${V_PKG}-src.tar.gz 
+  versions:
+    8.6.16:
+    8.6.9:
+

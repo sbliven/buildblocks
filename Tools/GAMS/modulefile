@@ -1,0 +1,21 @@
+#%Module1.0
+
+module-whatis		"The General Algebraic Modeling System (GAMS)"
+module-url		"https://www.gams.com"
+module-license		"https://www.gams.com/fileadmin/GAMS_EULA.pdf"
+module-maintainer       "Marc Caubet Serrabou <marc.caubet@psi.ch>"
+
+module-help	"
+
+The General Algebraic Modeling System (GAMS) is a high-level modeling 
+system for mathematical programming and optimization. It consists of a
+language compiler and a stable of integrated high-performance solvers.
+GAMS is tailored for complex, large scale modeling applications, and
+allows you to build large maintainable models that can be adapted 
+quickly to new situations. GAMS is specifically designed for modeling 
+linear, nonlinear and mixed integer optimization problems.
+"
+
+prepend-path    PATH             $PREFIX/gams${V_MAJOR}.${V_MINOR}_linux_x64_64_sfx
+prepend-path    LD_LIBRARY_PATH  $PREFIX/gams${V_MAJOR}.${V_MINOR}_linux_x64_64_sfx
+

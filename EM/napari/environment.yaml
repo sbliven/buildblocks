@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - anaconda
+dependencies:
+  - python=3.10
+  - pyqt
+  - napari=0.4.17
+  - pip
+  - pip:
+    - napari-boxmanager
+

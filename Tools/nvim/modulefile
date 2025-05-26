@@ -1,0 +1,11 @@
+#%Pmodule
+
+module-whatis		"hyperextensible Vim-based text editor"
+module-url		"https://neovim.io"
+module-license		"iApache License Version 2.0"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+hyperextensible Vim-based text editor
+"
+

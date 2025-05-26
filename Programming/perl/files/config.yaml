@@ -1,0 +1,30 @@
+format: 1
+perl:
+  defaults:
+    group: Programming
+    overlay: base
+    relstage: stable
+    compile_in_sourcetree: true
+    urls:
+      - url: http://www.cpan.org/src/5.0/$P-${V_PKG}.tar.gz
+
+  shasums:
+    perl-5.30.1.tar.gz: f160169fd7b1bd13d1b78b3fa23a5af91709fe732d2d9504c0b40b445846aff5
+    perl-5.30.0.tar.gz: 851213c754d98ccff042caa40ba7a796b2cee88c5325f121be5cbb61bbf975f2
+    perl-5.28.1.tar.gz: 3ebf85fe65df2ee165b22596540b7d5d42f84d4b72d84834f74e2e0b8956c347
+    perl-5.26.1.tar.gz: e763aa485e8dc1a70483dbe6d615986bbf32b977f38016480d68c99237e701dd
+    perl-5.10.1.tar.gz: cb7f26ea4b2b28d6644354d87a269d01cac1b635287dae64e88eeafa24b44f35
+    perl-5.8.5.tar.gz: 3dd1cba53ce6348ed5119b5f7d1ef6cd4d165f89e4ecc7c21adf7932e0df2709
+    perl-5.8.1.tar.gz: 90f5ef25b993cea2def2648d7bca9e351f2e417004cdc76fa02a9ec235ce4490
+
+  versions:
+    5.40.2;5.40.1:
+      config:
+
+    5.30.0;5.28.1:
+      config:
+        relstage: stable
+
+    5.10.1;5.26.1:
+      config:
+        relstage: deprecated

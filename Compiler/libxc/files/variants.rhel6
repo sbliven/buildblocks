@@ -1,1 +1,1 @@
-libxc/4.3.4	stable		intel/19.4 b:autoconf/2.69 b:automake/1.16.1 b:libtool/2.4.6-1
+libxc/4.3.4	deprecated		intel/19.4 b:autoconf/2.69 b:automake/1.16.1 b:libtool/2.4.6-1

@@ -45,6 +45,11 @@ pbuild::pre_configure() {
 			pbuild::add_configure_args "CXXFLAGS=-fPIC"
 			pbuild::add_configure_args "FCFLAGS=-fPIC"
 			;;
+		nvhpc )
+			pbuild::add_configure_args "CFLAGS=-fPIC"
+			pbuild::add_configure_args "CXXFLAGS=-fPIC"
+			pbuild::add_configure_args "FCFLAGS=-fPIC"
+			;;
 	esac
 
 	if [[ "${enable_fortran}" == 'yes' ]]; then

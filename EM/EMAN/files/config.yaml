@@ -1,0 +1,13 @@
+---
+format: 1
+EMAN:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: unstable
+  versions:
+    2.99.66:
+      variants:
+        - overlay: Alps 
+          systems: [.*.merlin7.psi.ch]
+          relstage: unstable

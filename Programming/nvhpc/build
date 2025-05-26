@@ -1,0 +1,23 @@
+#!/usr/bin/env modbuild
+
+pbuild::configure() {
+	:
+}
+
+pbuild::compile() {
+	:
+}
+
+pbuild::install() {
+	export NVHPC_SILENT="true"
+	export NVHPC_INSTALL_DIR=$PREFIX
+	export NVHPC_INSTALL_TYPE="network"
+	./install
+}
+
+pbuild::post_install() {	
+	cd $PREFIX/Linux_x86_64/$V_MAJOR.$V_MINOR/compilers/bin
+	rm -rf localrc*
+	./makelocalrc -x $PWD
+}
+

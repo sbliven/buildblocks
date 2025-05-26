@@ -1,21 +1,5 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "http://glaros.dtc.umn.edu/gkhome/fetch/sw/$P/$P-${V_PKG}.tar.gz"
-
-pbuild::add_to_group 'MPI'
-
-case ${V_MAJOR} in
-3 )
-	pbuild::install_docfiles CHANGES INSTALL LICENSE.txt README VERSION
-	;;
-4 )
-	pbuild::install_docfiles Changelog Install.txt LICENSE.txt
-	;;
-* )
-	std::die 4 "Unsupported major version!"
-	;;
-esac
-
 pbuild::configure() {
 	CC=$MPICC
 	CXX=$MPICXX
