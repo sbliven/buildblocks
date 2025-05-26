@@ -1,0 +1,27 @@
+---
+format: 1
+awscli:
+  defaults:
+    group: Tools
+    overlay: base
+    relstage: stable
+    systems: [.*]
+    build_functions:
+      configure: []
+      compile: []
+  shasums:
+  versions:
+    2.27.22:
+      config:
+        relstage: stable
+        urls:
+          - url: https://awscli.amazonaws.com/$P-exe-linux-x86_64-$V.zip
+            name: $P-${V_PKG}.zip
+            unpacker: none
+    2.9.21:
+      config:
+        relstage: deprecated
+        urls:
+          - url: https://awscli.amazonaws.com/$P-exe-linux-x86_64-$V.zip
+            name: $P-${V_PKG}.zip
+            unpacker: none

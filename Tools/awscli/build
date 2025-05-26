@@ -1,0 +1,12 @@
+#!/usr/bin/env modbuild
+
+pbuild::install() {
+	unzip "${PMODULES_DISTFILESDIR}/awscliv2.zip"
+	./aws/install -i $PREFIX -b ${PREFIX}/bin --update
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
