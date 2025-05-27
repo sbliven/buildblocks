@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Path to the Apptainer (Singularity) image
+IMAGE_DIR="$APPTAINER_IMAGE_DIR"
+IMAGE="$IMAGE_DIR/chimerax.sif"
+
+# Execute ChimeraX inside the container
+singularity exec "$IMAGE" /usr/bin/chimerax "$@"
