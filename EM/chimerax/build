@@ -5,7 +5,7 @@ pbuild::prep() {
     mkdir -p $PREFIX/bin/
 
     # Copy the chimerax executable script to the installation directory
-    cp -n "$BUILDBLOCK_DIR/chimerax" "$PREFIX/bin/"
+    cp -n "$BUILDBLOCK_DIR/${P}" "$PREFIX/bin/"
 }
 
 pbuild::configure() {
