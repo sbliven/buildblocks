@@ -7,7 +7,7 @@ RFdiffusion:
     relstage: unstable
 
   versions:
-    1.1.0-dev:
+    dev:
       variants:
         - overlay: Alps
           systems: [.*.merlin7.psi.ch]
