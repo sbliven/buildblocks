@@ -1,5 +1,9 @@
 #!/usr/bin/env modbuild
 
+pbuild::prep() {
+    git clone https://github.com/dauparas/${P}.git "$SRC_DIR" || return $?
+}
+
 pbuild::configure() {
     # Install Miniforge
     mkdir -p "$PREFIX/miniforge"

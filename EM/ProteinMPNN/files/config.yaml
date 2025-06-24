@@ -18,3 +18,8 @@ ProteinMPNN:
         - overlay: Alps
           systems: [.*.merlin7.psi.ch]
           relstage: unstable
+    dev:
+      variants:
+        - overlay: Alps
+          systems: [.*.merlin7.psi.ch]
+          relstage: unstable
