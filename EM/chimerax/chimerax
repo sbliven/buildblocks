@@ -18,4 +18,5 @@ singularity exec \
     --bind "/data/project:/data/project" \
     --bind "/scratch:/scratch" \
     --bind "/tmp:/tmp" \
+    --bind "/etc/ssl/ca-bundle.pem:/etc/ssl/ca-bundle.pem" \
     "$APPTAINER_IMAGE" /usr/bin/chimerax "$@"
