@@ -16,3 +16,7 @@ pbuild::install() {
 	:
 }
 
+pbuild::post_install() {
+	:
+}
+
