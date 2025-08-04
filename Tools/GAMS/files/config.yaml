@@ -8,20 +8,16 @@ GAMS:
     50.3.0:
       variants:
         - relstage: stable
-          overlay: merlin
-          use_overlays: [PSI]
+          overlay: base
     42.3.0:
       variants:
         - relstage: stable
-          overlay: merlin
-          use_overlays: [PSI]
+          overlay: base
     31.1.1:
       variants:
         - relstage: deprecated
-          overlay: merlin
-          use_overlays: [PSI]
+          overlay: base
     30.3.0:
       variants:
         - relstage: deprecated 
-          overlay: merlin
-          use_overlays: [PSI]
+          overlay: base
