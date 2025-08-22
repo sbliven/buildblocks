@@ -18,42 +18,85 @@ set year [string range  $V_PKG 2 3]
 set release [string range  $V_PKG end end]
 set version "v$year$release"
 
-prepend-path    PATH    $PREFIX/$version/ansys/bin
-prepend-path    PATH    $PREFIX/$version/aisol/bin
-prepend-path    PATH    $PREFIX/$version/CEI/bin
-prepend-path    PATH    $PREFIX/$version/CFD-Post/bin
-prepend-path    PATH    $PREFIX/$version/CFX/bin
-prepend-path    PATH    $PREFIX/$version/EKM/bin
-prepend-path    PATH    $PREFIX/$version/fensapice/bin
-prepend-path    PATH    $PREFIX/$version/fluent/bin
-prepend-path    PATH    $PREFIX/$version/Framework/bin
-prepend-path    PATH    $PREFIX/$version/Icepak/bin
-prepend-path    PATH    $PREFIX/$version/polyflow/bin
-prepend-path    PATH    $PREFIX/$version/RSM/bin
-prepend-path    PATH    $PREFIX/$version/SystemCoupling/bin
-prepend-path    PATH    $PREFIX/$version/TurboGrid/bin
-# 20.09.2023 add lumerical bin
-prepend-path    PATH    $PREFIX/$version/lumerical/$version/bin
-# 07.04.2020
-prepend-path    PATH    $PREFIX/$version/Electronics/Linux64
-prepend-path    PATH    $PREFIX/$version/Framework/bin/Linux64
-prepend-path    PATH    $PREFIX/$version/AnsysEM$year.$release/$version/Linux64/
-prepend-path    PATH    $PREFIX/shared_files/licensing/lic_admin/
+# Helper: does $dir end with the relative pattern (e.g. "lib", "lib64", "lib/linx64")?
+proc endsWithParts {dir patParts} {
+    set dirParts [file split $dir]
+    set n [llength [string map {/ " "} $patParts]]
+    if {[llength $dirParts] < $n} { return 0 }
+    set tailParts [string map {" " /} [lrange $dirParts end-[expr {$n-1}] end]]
+    expr {$tailParts eq $patParts}
+}
 
-# General
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/tp/qt/5.9.6/linx64/lib
+# Recursive search using only file split; patternsParts is a list of list-parts
+proc findDirs {base targetList patternsParts {level 0} {maxDepth 2}} {
+    upvar $targetList results
+    if {$level > $maxDepth} { return }
+    foreach dir [glob -nocomplain -types d -directory $base *] {
+        # match against any pattern (already split)
+        foreach patParts $patternsParts {
+            if {[endsWithParts $dir $patParts]} {
+                lappend results $dir
+                break
+            }
+        }
+        # Recurse deeper
+        findDirs $dir results $patternsParts [expr {$level+1}] $maxDepth
+    }
+}
 
-# CFX5
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/lib/linux-amd64
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/boost-1.63.0/linx64/lib/Release
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/boost-1.71.0/linx64/lib/Release
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/icemcfd-$year.$release/linx64/IcemExe2Cfx/syslib
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/qwt-6.1.2/linx64/lib
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/qwtpolar-1.1.1/linx64/lib
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/xerces-3.2.2/linx64/lib
+##############################################
+# Auto PATH and LD_LIBRARY_PATH definitions
 
-# Lumerical
-prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/lumerical/$version/lib/
+# Initialize lists
+set libDirs {}
+set binDirs {}
 
-# RSM
+# Base to search
+set baseDir "$PREFIX/$version"
+
+# LD_LIBRARY_PATH: Find lib dirs up to 3 levels
+# set libPatterns {lib lib64 lib/linx64}
+# findDirs $baseDir libDirs $libPatterns 0 1
+
+# PATH: Find bin dirs up to 1 levels
+set binPatterns {bin linx64 Linux64}
+findDirs $baseDir binDirs $binPatterns 0 1
+
+set binPatterns {bin/linx64 bin/Linux64}
+findDirs $baseDir binDirs $binPatterns 0 2
+
+# Deduplicate
+set libDirs [lsort -unique $libDirs]
+set binDirs [lsort -unique $binDirs]
+
+# Update environment variables according to searches
+# if {[llength $libDirs] > 0} {
+# 	# prepend-path    LD_LIBRARY_PATH 	[join $libDirs ":"]
+# 	foreach libDir $libDirs {
+# 		prepend-path    LD_LIBRARY_PATH 	$libDir
+# 	}
+# }
+
+if {[llength $binDirs] > 0} {
+	# prepend-path    PATH 			[join $binDirs ":"]
+	foreach binDir $binDirs {
+		prepend-path    PATH 			$binDir
+	}
+}
+
+##############################################
+# Manual PATH and LD_LIBRARY_PATH definitions
+
+# RSM binaries
 prepend-path    PATH    $PREFIX/$version/RSM/Config/tools/linux
+
+# AnsysEM location will depend on ANSYS version. 
+# From 2025 it's included in the main installation script, and placed into AnsysEM
+# - The new version is already found in the above binDirs/libDirs searches above
+# - For older releases one must install EM indepedently, and therefore PATH manually defined
+if { [file isdirectory $PREFIX/$version/AnsysEM$year.$release/$version/Linux64] } {
+	prepend-path    PATH    $PREFIX/$version/AnsysEM$year.$release/$version/Linux64/
+}
+if { [file isdirectory $PREFIX/$version/AnsysEM] } {
+	prepend-path    PATH    $PREFIX/$version/AnsysEM/
+}
