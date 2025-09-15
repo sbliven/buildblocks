@@ -17,5 +17,5 @@ interactions.
 "
 
 # Environment variables
-setenv APPTAINER_IMAGE /data/project/bio/shared/containers/alphafold3/3.0.1/alphafold3.sif
-setenv PUBLIC_DATABASES_DIR /data/project/bio/shared/alphafold3/public_databases
+setenv APPTAINER_IMAGE /data/project/cls/shared/containers/alphafold3/3.0.1/alphafold3.sif
+setenv PUBLIC_DATABASES_DIR /data/project/cls/shared/databases/alphafold3/public_databases
