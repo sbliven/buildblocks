@@ -1,7 +1,8 @@
 #!/usr/bin/env modbuild
 
 pbuild::add_to_group 'Tools'
-pbuild::set_download_url https://github.com/paulscherrerinstitute/scicat-cli/releases/download/v${V_PKG}/scicat-cli_v${V_PKG}_Linux_x86_64.tar.gz
+pbuild::set_download_url https://github.com/paulscherrerinstitute/scicat-cli/releases/download/v${V}/scicat-cli_${V}_Linux_x86_64.tar.gz
+
 
 pbuild::configure() {
   :

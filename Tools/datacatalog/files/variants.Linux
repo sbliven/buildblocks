@@ -8,3 +8,6 @@ datacatalog/1.1.10	deprecated
 datacatalog/1.1.11	deprecated
 datacatalog/2.2.0	stable
 datacatalog/2.2.1	stable
+datacatalog/2.2.2	stable
+datacatalog/3.0.0-alpha7	unstable
+
