@@ -1,9 +1,6 @@
 #!/bin/bash -e
-# Relion Script '5.0.0-perf' v1.6.0 (2024-09-16)
 
-
-
-# The following Relion variables were defined
+# The following Relion variables were defined:
 # queue         XXXqueueXXX
 # mpinodes      XXXmpinodesXXX
 # threads       XXXthreadsXXX
@@ -13,36 +10,40 @@
 # extra1        XXXextra1XXX
 # extra2        XXXextra2XXX
 # extra3        XXXextra3XXX
-# extra4        XXXextra4XXX
+# extra5        XXXextra5XXX
 
-#SBATCH --job-name=r500p-1cpu
-#SBATCH --partition=XXXqueueXXX
+#SBATCH --job-name=r501-cpu
+#SBATCH --open-mode=append
+#SBATCH --clusters=merlin7
 #SBATCH --hint=nomultithread
 #SBATCH --export=NONE
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+
+#SBATCH --partition=XXXqueueXXX
+#SBATCH --ntasks=XXXmpinodesXXX
+#SBATCH --cpus-per-task=XXXthreadsXXX
 #SBATCH --error=XXXerrfileXXX
 #SBATCH --output=XXXoutfileXXX
-#SBATCH --open-mode=append
 #SBATCH --time=XXXextra1XXX
-#SBATCH --nodes=XXXextra3XXX
-#SBATCH --mem=XXXextra4XXX
-#SBATCH XXXextra2XXX
+#SBATCH --nodes=XXXextra2XXX
+#SBATCH --mem=XXXextra3XXX
+#SBATCH XXXextra5XXX
 
+# Load RELION module
 module purge
-module load relion/5.0.0-perf
+module load relion/5.0.1
 
-# capture some system information
-echo "INFO: Getting system information" >&2
-echo -n " Hostname => " >&2 && hostname >&2
-echo " CPU      =>" >&2 && lscpu | grep -u 'Model name' | uniq >&2
-echo " MEM      =>" >&2 && free -h >&2
+# System diagnostics
+echo "=== System Information ===" >&2
+echo -n "Hostname       => " >&2 && hostname >&2
+echo "CPU Model      =>" >&2 && lscpu | grep "Model name" | uniq >&2
+echo "Total Memory   =>" >&2 && free -h >&2
 
 # OpenMP setup
 export OMP_PROC_BIND=close
 export OMP_PLACES=cores
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
+# Execute RELION
 mpirun -np "${SLURM_NTASKS}" \
   --map-by node:PE=${SLURM_CPUS_PER_TASK} \
   --bind-to core --report-bindings \

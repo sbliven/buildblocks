@@ -59,21 +59,21 @@ setenv RELION_QSUB_EXTRA1                "Time limit:"
 setenv RELION_QSUB_EXTRA1_DEFAULT        "1-00:00:00"
 setenv RELION_QSUB_EXTRA1_HELP           "Maximum runtime before the job is terminated by SLURM. Format: days-hh:mm:ss"
 
-setenv RELION_QSUB_EXTRA2                "Additional sbatch arguments:"
-setenv RELION_QSUB_EXTRA2_DEFAULT        ""
-setenv RELION_QSUB_EXTRA2_HELP           "Any extra SLURM sbatch arguments to include."
+setenv RELION_QSUB_EXTRA2                "Number of nodes:"
+setenv RELION_QSUB_EXTRA2_DEFAULT        "1"
+setenv RELION_QSUB_EXTRA2_HELP           "Total number of compute nodes to request."
 
-setenv RELION_QSUB_EXTRA3                "Number of nodes:"
-setenv RELION_QSUB_EXTRA3_DEFAULT        "1"
-setenv RELION_QSUB_EXTRA3_HELP           "Total number of compute nodes to request."
+setenv RELION_QSUB_EXTRA3                "Total memory per node:"
+setenv RELION_QSUB_EXTRA3_DEFAULT        "59G"
+setenv RELION_QSUB_EXTRA3_HELP           "Amount of memory to allocate per node."
 
-setenv RELION_QSUB_EXTRA4                "Total memory per node:"
-setenv RELION_QSUB_EXTRA4_DEFAULT        "62G"
-setenv RELION_QSUB_EXTRA4_HELP           "Amount of memory to allocate per node."
+setenv RELION_QSUB_EXTRA4                "(GPU jobs) Number of GPUs per node:"
+setenv RELION_QSUB_EXTRA4_DEFAULT        "1"
+setenv RELION_QSUB_EXTRA4_HELP           "Amount of GPUs to allocate per node. This option is only valid for GPU jobs."
 
-setenv RELION_QSUB_EXTRA5                "(GPU jobs) Number of GPUs per node:"
-setenv RELION_QSUB_EXTRA5_DEFAULT        "1"
-setenv RELION_QSUB_EXTRA5_HELP           "Amount of GPUs to allocate per node. This option is only valid for GPU jobs."
+setenv RELION_QSUB_EXTRA5                "Additional sbatch arguments:"
+setenv RELION_QSUB_EXTRA5_DEFAULT        ""
+setenv RELION_QSUB_EXTRA5_HELP           "Any extra SLURM sbatch arguments to include."
 
 # --------------------------------------------------------------------------
 # External Tool Paths
@@ -81,8 +81,8 @@ setenv RELION_QSUB_EXTRA5_HELP           "Amount of GPUs to allocate per node. T
 setenv RELION_RESMAP_EXECUTABLE          /opt/psi/EM/ResMap/1.1.4/bin/ResMap
 setenv RELION_CTFFIND_EXECUTABLE         /opt/psi/EM/ctffind4/4.1.14/bin/ctffind
 setenv RELION_MOTIONCOR2_EXECUTABLE      /opt/psi/overlays/Alps/EM/MotionCor3/1.2.1/bin/MotionCor3
-setenv RELION_TOPAZ_EXECUTABLE           /opt/psi/overlays/Alps/EM/relion/$V/miniconda/envs/relion-5.0/bin/topaz
-setenv RELION_PYTHON_EXECUTABLE          /opt/psi/overlays/Alps/EM/relion/$V/miniconda/envs/relion-5.0/bin/python
+setenv RELION_TOPAZ_EXECUTABLE           /opt/psi/overlays/Alps/EM/relion/$V/miniforge/envs/relion-${V_MAJOR}.${V_MINOR}/bin/topaz
+setenv RELION_PYTHON_EXECUTABLE          /opt/psi/overlays/Alps/EM/relion/$V/miniforge/envs/relion-${V_MAJOR}.${V_MINOR}/bin/python
 setenv RELION_TORCH_HOME_PATH            /opt/psi/overlays/Alps/EM/relion/$V/torch/
 setenv RELION_BATCHTOMO_EXECUTABLE       /opt/psi/overlays/Alps/EM/IMOD/5.0.0/imod_5.0.0/bin/batchruntomo
 setenv RELION_ARETOMO_EXECUTABLE         /opt/psi/overlays/Alps/EM/AreTomo2/1.1.2/bin/AreTomo2

@@ -1,9 +1,6 @@
 #!/bin/bash -e
-# Relion Script '5.0.0-perf' v1.6.0 (2024-09-16)
 
-
-
-# The following Relion variables were defined
+# The following Relion variables were defined:
 # queue         XXXqueueXXX
 # mpinodes      XXXmpinodesXXX
 # threads       XXXthreadsXXX
@@ -15,37 +12,42 @@
 # extra3        XXXextra3XXX
 # extra4        XXXextra4XXX
 
-#SBATCH --job-name=r500p-1gpu
-#SBATCH --partition=XXXqueueXXX
-#SBATCH --clusters=gmerlin7
+#SBATCH --job-name=r402-cpu
+#SBATCH --open-mode=append
+#SBATCH --clusters=merlin7
 #SBATCH --hint=nomultithread
 #SBATCH --export=NONE
-#SBATCH --gpus=1
-#SBATCH --ntasks=3
-#SBATCH --cpus-per-task=5
+
+#SBATCH --partition=XXXqueueXXX
+#SBATCH --ntasks=XXXmpinodesXXX
+#SBATCH --cpus-per-task=XXXthreadsXXX
 #SBATCH --error=XXXerrfileXXX
 #SBATCH --output=XXXoutfileXXX
-#SBATCH --open-mode=append
 #SBATCH --time=XXXextra1XXX
 #SBATCH --nodes=XXXextra3XXX
 #SBATCH --mem=XXXextra4XXX
 #SBATCH XXXextra2XXX
 
+# Load RELION module
 module purge
-module load relion/5.0.0-perf
+module load relion/4.0.2
 
-# capture some system information
-echo "INFO: Getting system information" >&2
-echo -n " Hostname => " >&2 && hostname >&2
-echo " CPU      =>" >&2 && lscpu | grep -u 'Model name' | uniq >&2
-echo " MEM      =>" >&2 && free -h >&2
-echo " GPU      =>" >&2 && nvidia-smi -L >&2
+if [ "$(uname -m)" = "x86_64" ]; then
+    module load IMOD/5.0.0
+fi
+
+# System diagnostics
+echo "=== System Information ===" >&2
+echo -n "Hostname       => " >&2 && hostname >&2
+echo "CPU Model      =>" >&2 && lscpu | grep "Model name" | uniq >&2
+echo "Total Memory   =>" >&2 && free -h >&2
 
 # OpenMP setup
 export OMP_PROC_BIND=close
 export OMP_PLACES=cores
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
+# Execute RELION
 mpirun -np "${SLURM_NTASKS}" \
   --map-by node:PE=${SLURM_CPUS_PER_TASK} \
   --bind-to core --report-bindings \
