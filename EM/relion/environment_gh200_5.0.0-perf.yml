@@ -1,7 +1,6 @@
 name: relion-5.0
 channels:
   - conda-forge
-  - bioconda
 dependencies:
   - python=3.10
   - setuptools=59.5.0

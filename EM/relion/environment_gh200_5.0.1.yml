@@ -1,16 +1,16 @@
 name: relion-5.0
 channels:
   - conda-forge
-  - bioconda
 dependencies:
   - python=3.10
   - setuptools=59.5.0
   - pyqt=5.15.11
   - pip
+  - biopython=1.81
   - pip:
-      - --extra-index-url https://download.pytorch.org/whl/cu129
-      - torch==2.7.1+cu129
-      - torchvision==0.22.1+cu129
+      - --extra-index-url https://download.pytorch.org/whl/cu128
+      - torch==2.7.1
+      - torchvision==0.22.1
       - tqdm==4.65.0
       - mrcfile==1.4.3
       - starfile>=0.5.6
@@ -24,7 +24,6 @@ dependencies:
       - tsnecuda==3.0.1
       - typer==0.9.0
       - click<8.2.0
-      - biopython==1.81
       - fastcluster==1.2.6
       - seaborn==0.12.2
       - dill==0.3.7

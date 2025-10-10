@@ -15,12 +15,12 @@ relion:
           build_requires:
             - cmake/3.26.3
             - git/2.49.0
-            - gcc/14.2.0
+            - gcc/12.3.0
             - cuda/12.9.1
             - openmpi/5.0.8
           relstage: stable
           runtime_deps:
-            - gcc/14.2.0
+            - gcc/12.3.0
             - cuda/12.9.1
             - openmpi/5.0.8
             - IMOD/5.1.6
@@ -41,14 +41,13 @@ relion:
           systems: [gpu0.*.merlin7.psi.ch]
           relstage: unstable
           build_requires:
-            - gcc/14.2.0
+            - gcc/12.3.0
             - cuda/12.9.1
             - openmpi/5.0.8
           runtime_deps:
-            - gcc/14.2.0
+            - gcc/12.3.0
             - cuda/12.9.1
             - openmpi/5.0.8
-            - IMOD/5.1.6
           configure_with: cmake
           configure_args:
             - "-DCMAKE_BUILD_TYPE=RELEASE"
