@@ -13,3 +13,6 @@ General Public License (GPL). Many Linux distributions use OpenJDK as their
 default Java SE implementation, and it can be used to build other Java
 platforms.
 "
+
+setenv	JAVA_HOME	$PREFIX
+prepend-path	LD_LIBRARY_PATH	$PREFIX/lib
