@@ -18,7 +18,12 @@ pbuild::configure() {
     conda activate "${P}_${V_PKG}"
 
     # Install the package using pip within the conda environment
-    pip install "${P}==${V_PKG}"
+    conda install -y "${P}=${V_PKG}"
+
+    # Required to have the frontend displayed 
+    ln -s "${PREFIX}/miniforge/envs/jupyterlab_4.4.10/share/jupyter/lab/schemas" "${PREFIX}"
+    ln -s "${PREFIX}/miniforge/envs/jupyterlab_4.4.10/share/jupyter/lab/themes" "${PREFIX}"
+    ln -s "${PREFIX}/miniforge/envs/jupyterlab_4.4.10/share/jupyter/lab/static" "${PREFIX}"
 }
 
 pbuild::compile() {
