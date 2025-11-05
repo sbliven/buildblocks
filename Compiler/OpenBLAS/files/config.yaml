@@ -7,7 +7,7 @@ OpenBLAS:
     overlay: base
     relstage: stable
     urls:
-      - url: http://github.com/xianyi/$P/archive/v${V_PKG}.tar.gz
+      - url: http://github.com/OpenMathLib/OpenBLAS/archive/refs/tags/v${V_PKG}.tar.gz
         name: OpenBLAS-${V_PKG}.tar.gz
     configure_args:
       - -DCMAKE_BUILD_TYPE=Release
@@ -29,6 +29,8 @@ OpenBLAS:
     OpenBLAS-0.3.21.tar.gz: f36ba3d7a60e7c8bcc54cd9aaa9b1223dd42eaf02c811791c37e8ca707c241ca
     OpenBLAS-0.3.23.tar.gz: 5d9491d07168a5d00116cdc068a40022c3455bf9293c7cb86a65b1054d7e5114
     OpenBLAS-0.3.24.tar.gz: ceadc5065da97bd92404cac7254da66cc6eb192679cf1002098688978d4d5132
+    OpenBLAS-0.3.28.tar.gz: f1003466ad074e9b0c8d421a204121100b0751c96fc6fcf3d1456bd12f8a00a1
+    OpenBLAS-0.3.30.tar.gz: 27342cff518646afb4c2b976d809102e368957974c250a25ccc965e53063c95d
 
   versions:
     0.3.30:
@@ -37,7 +39,10 @@ OpenBLAS:
           compiler:
             gcc: [12.3.0, 12.4.0, 13.3.0, 13.4.0, 14.2.0, 14.3.0, 15.2.0]
         build_requires: [cmake/3.23.2]
-        relstage: unstable
+        relstage: stable
+        configure_args+:
+          - -DBUILD_SHARED_LIBS=ON
+          - -DBUILD_STATIC_LIBS=ON
       variants:
         - systems: [rhel.*]
         - systems: [.*.merlin7.psi.ch]
@@ -50,7 +55,10 @@ OpenBLAS:
           compiler:
             gcc: [12.3.0, 12.4.0, 13.3.0, 13.4.0, 14.2.0, 14.3.0, 15.2.0]
         build_requires: [cmake/3.23.2]
-        relstage: unstable
+        relstage: stable
+        configure_args+:
+          - -DBUILD_SHARED_LIBS=ON
+          - -DBUILD_STATIC_LIBS=ON
       variants:
         - systems: [rhel.*]
         - systems: [.*.merlin7.psi.ch]
