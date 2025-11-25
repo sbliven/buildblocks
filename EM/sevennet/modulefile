@@ -1,0 +1,16 @@
+#%Module1.0
+
+module-whatis       "SevenNet (Scalable EquiVariance-Enabled Neural Network) is a graph neural network (GNN)-based interatomic potential package"
+module-url          "https://github.com/MDIL-SNU/SevenNet"
+module-license      "MIT license"
+module-maintainer   "João Pedro Agostinho de Sousa <joao.agostinho-de-sousa@psi.ch>"
+
+module-help "
+SevenNet (Scalable EquiVariance Enabled Neural Network) is a general-purpose
+force field that uses graph neural networks (GNNs) to compute interatomic
+interactions and perform molecular dynamics simulations for systems with
+various compositions.
+"
+
+# Add conda env bin directory to PATH
+prepend-path PATH "${PREFIX}/miniforge/envs/${P}_${V_PKG}/bin"
