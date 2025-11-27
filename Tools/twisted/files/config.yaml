@@ -9,11 +9,11 @@ twisted:
   versions:
     25.5.0:
       variants:
-        - overlay: Alps
+        - overlay: base
           target_cpus: [x86_64]
           systems: [.*.merlin7.psi.ch]
           relstage: stable
-        - overlay: Alps
+        - overlay: base 
           target_cpus: [aarch64]
           systems: [gpu0.*.merlin7.psi.ch]
           relstage: stable
