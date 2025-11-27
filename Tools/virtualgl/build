@@ -1,0 +1,25 @@
+#!/usr/bin/env modbuild
+
+pbuild::configure(){
+    :
+}
+
+pbuild::compile(){
+    :
+}
+
+pbuild::install() {
+    # Download RPM
+    FILE="VirtualGL-${V_PKG}.$(uname -i).rpm"
+    URL="https://github.com/VirtualGL/${P}/releases/download/${V_PKG}/${FILE}"
+    wget -q -O "${SRC_DIR}/${FILE}" "$URL"
+
+    # Extract using rpm2cpio
+    cd "$SRC_DIR" || exit 1
+    rpm2cpio "$FILE" | cpio -idmv
+
+    # Extract to $PREFIX
+    cp -r "${SRC_DIR}/opt/VirtualGL/bin" "$PREFIX/"
+    cp -r "${SRC_DIR}/opt/VirtualGL/include" "$PREFIX/"
+    cp -r "${SRC_DIR}/usr/lib64" "$PREFIX/"
+}
