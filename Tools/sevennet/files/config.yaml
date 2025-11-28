@@ -2,26 +2,34 @@
 format: 1
 sevennet:
   defaults:
-    group: EM
+    group: Tools
     overlay: base
     relstage: stable
 
   versions:
     0.11.2:
       variants:
-        - overlay: Alps
+        - overlay: base
           target_cpus: [x86_64]
           systems: [.*.merlin7.psi.ch]
           relstage: stable
           build_requires:
+            - gcc/14.2.0
             - cuda/12.9.1
+            - openmpi/5.0.8
           runtime_deps:
+            - gcc/14.2.0
             - cuda/12.9.1
-        - overlay: Alps
+            - openmpi/5.0.8
+        - overlay: base
           target_cpus: [aarch64]
           systems: [gpu0.*.merlin7.psi.ch]
           relstage: unstable
           build_requires:
+            - gcc/14.2.0
             - cuda/12.9.1
+            - openmpi/5.0.8
           runtime_deps:
+            - gcc/14.2.0
             - cuda/12.9.1
+            - openmpi/5.0.8
